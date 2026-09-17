@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { InnovationItem, ReviewItem } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -32,12 +32,16 @@ export const AddReviewModal: React.FC<AddReviewModalProps> = ({
   const [troubleshootingTip, setTroubleshootingTip] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const verifiedInnovations = useMemo(() => {
+    return innovations.filter((i) => i.status === 'verified');
+  }, [innovations]);
+
   useEffect(() => {
     if (isOpen) {
-      if (preSelectedInnovation) {
+      if (preSelectedInnovation && preSelectedInnovation.status === 'verified') {
         setSelectedInnovationId(preSelectedInnovation.id);
-      } else if (innovations.length > 0) {
-        setSelectedInnovationId(innovations[0].id);
+      } else if (verifiedInnovations.length > 0) {
+        setSelectedInnovationId(verifiedInnovations[0].id);
       } else {
         setSelectedInnovationId('');
       }
@@ -49,7 +53,7 @@ export const AddReviewModal: React.FC<AddReviewModalProps> = ({
       setTroubleshootingTip('');
       setIsSubmitting(false);
     }
-  }, [isOpen, preSelectedInnovation, innovations]);
+  }, [isOpen, preSelectedInnovation, verifiedInnovations]);
 
   if (!isOpen) return null;
 
@@ -178,7 +182,7 @@ export const AddReviewModal: React.FC<AddReviewModalProps> = ({
                   className="form-select"
                   required
                 >
-                  {innovations.map((inv) => (
+                  {verifiedInnovations.map((inv: InnovationItem) => (
                     <option key={inv.id} value={inv.id}>
                       {inv.title} ({inv.wasteSource})
                     </option>

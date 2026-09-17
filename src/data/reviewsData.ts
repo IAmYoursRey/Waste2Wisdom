@@ -84,5 +84,33 @@ export const initialReviewsData: ReviewItem[] = [
     troubleshootingTip: 'Pastikan tutup botol airlock tertutup rapat dengan plastisin agar udara luar tidak masuk membuat bau busuk.',
     createdAt: '8 Maret 2026',
     likes: 18
+  },
+  {
+    id: 'rev-7',
+    innovationId: 'inv-briket-bioenergi',
+    innovationTitle: 'Briket Arang Bio-Energi Padat',
+    userName: 'Pak Joko Sutrisno (Sentra Kuliner Solo)',
+    userRole: 'Pengrajin UMKM',
+    rating: 5,
+    isEasyToMake: 'Cukup Mudah',
+    isSuccessful: 'Berhasil 100%',
+    comment: 'Briket dari ampas tebu ini sangat panas dan baranya tahan lebih dari 3 jam tanpa asap perih. Sangat menghemat pengeluaran arang kayu biasa untuk usaha kuliner kami.',
+    troubleshootingTip: 'Pastikan penjemuran minimal 3 hari sampai terdengar denting nyaring saat dua briket diadu.',
+    createdAt: '10 Maret 2026',
+    likes: 27
+  },
+  {
+    id: 'rev-8',
+    innovationId: 'inv-paving-faba',
+    innovationTitle: 'Paving Block Ramah Lingkungan FABA K-300',
+    userName: 'Ir. Hendra Wijaya',
+    userRole: 'Praktisi Daur Ulang',
+    rating: 4,
+    isEasyToMake: 'Butuh Keterampilan Khusus',
+    isSuccessful: 'Berhasil dengan Modifikasi',
+    comment: 'Hasil uji kuat tekan di laboratorium kampus mencapai mutu K-280 pada umur 14 hari dan tembus K-310 pada 28 hari. Sangat layak untuk area parkir dan pedestrian.',
+    troubleshootingTip: 'Perendaman air (water curing) selama 14 hari penuh jangan pernah dilewati agar reaksi silika pozzolan FABA optimal.',
+    createdAt: '12 Maret 2026',
+    likes: 14
   }
 ];

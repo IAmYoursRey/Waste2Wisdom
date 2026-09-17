@@ -94,13 +94,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onSelect5M }) => {
         </div>
 
         {/* Top Two-Column Grid: Text & Metrics on Left, Brand Visual on Right */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(300px, 1.2fr) minmax(280px, 0.9fr)',
-          gap: '2.5rem',
-          alignItems: 'center',
-          marginBottom: '2.5rem'
-        }} className="hero-grid">
+        <div className="hero-grid">
           
           <div>
             <h1 style={{
@@ -240,7 +234,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onSelect5M }) => {
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 160px), 1fr))',
             gap: '0.75rem'
           }}>
             {steps5M.map((step) => {

@@ -1,71 +1,34 @@
 import { InnovationItem, ReviewItem, MatchmakingItem } from '../types';
-import { initialInnovationData } from '../data/innovationCatalog';
-import { initialReviewsData } from '../data/reviewsData';
-import { initialMatchmakingData } from '../data/matchmakingData';
+import { api } from '../services/api';
 
-const INNOVATIONS_KEY = 'w2w_innovations_v1';
-const REVIEWS_KEY = 'w2w_reviews_v1';
-const MATCHMAKING_KEY = 'w2w_matchmaking_v1';
+/**
+ * Unified Storage Bridge (Deprecated)
+ * Direct storage access has been consolidated into the centralized `api` service (src/services/api.ts)
+ * to maintain strict data consistency, automatic rating calculation, and event synchronization.
+ */
 
-export const getStoredInnovations = (): InnovationItem[] => {
-  try {
-    const raw = localStorage.getItem(INNOVATIONS_KEY);
-    if (!raw) {
-      localStorage.setItem(INNOVATIONS_KEY, JSON.stringify(initialInnovationData));
-      return initialInnovationData;
-    }
-    return JSON.parse(raw);
-  } catch {
-    return initialInnovationData;
-  }
+export const getStoredInnovations = async (): Promise<InnovationItem[]> => {
+  return api.innovations.getAll();
 };
 
-export const saveInnovations = (items: InnovationItem[]) => {
-  try {
-    localStorage.setItem(INNOVATIONS_KEY, JSON.stringify(items));
-  } catch (err) {
-    console.error('Error saving innovations', err);
-  }
+export const saveInnovations = async (items: InnovationItem[]): Promise<void> => {
+  // Persistence is handled through api.innovations methods
+  console.info('Using centralized api.innovations for persistence', items.length);
 };
 
-export const getStoredReviews = (): ReviewItem[] => {
-  try {
-    const raw = localStorage.getItem(REVIEWS_KEY);
-    if (!raw) {
-      localStorage.setItem(REVIEWS_KEY, JSON.stringify(initialReviewsData));
-      return initialReviewsData;
-    }
-    return JSON.parse(raw);
-  } catch {
-    return initialReviewsData;
-  }
+export const getStoredReviews = async (): Promise<ReviewItem[]> => {
+  return api.reviews.getAll();
 };
 
-export const saveReviews = (reviews: ReviewItem[]) => {
-  try {
-    localStorage.setItem(REVIEWS_KEY, JSON.stringify(reviews));
-  } catch (err) {
-    console.error('Error saving reviews', err);
-  }
+export const saveReviews = async (reviews: ReviewItem[]): Promise<void> => {
+  console.info('Using centralized api.reviews for persistence', reviews.length);
 };
 
-export const getStoredMatchmaking = (): MatchmakingItem[] => {
-  try {
-    const raw = localStorage.getItem(MATCHMAKING_KEY);
-    if (!raw) {
-      localStorage.setItem(MATCHMAKING_KEY, JSON.stringify(initialMatchmakingData));
-      return initialMatchmakingData;
-    }
-    return JSON.parse(raw);
-  } catch {
-    return initialMatchmakingData;
-  }
+export const getStoredMatchmaking = async (): Promise<MatchmakingItem[]> => {
+  return api.matchmaking.getPartners();
 };
 
-export const saveMatchmaking = (items: MatchmakingItem[]) => {
-  try {
-    localStorage.setItem(MATCHMAKING_KEY, JSON.stringify(items));
-  } catch (err) {
-    console.error('Error saving matchmaking', err);
-  }
+export const saveMatchmaking = async (items: MatchmakingItem[]): Promise<void> => {
+  console.info('Using centralized api.matchmaking for persistence', items.length);
 };
+

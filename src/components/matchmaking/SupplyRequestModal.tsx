@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MatchmakingItem } from '../../types';
 import { X, CheckCircle2, Send, Building2, MapPin, Package, ShieldCheck } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -28,15 +28,28 @@ export const SupplyRequestModal: React.FC<SupplyRequestModalProps> = ({
   const [isSuccess, setIsSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    if (partner) {
+      setApplicantName(user.id !== 'guest' ? user.name : '');
+      setOrganizationName(user.id !== 'guest' && user.organization && user.organization !== '-' ? user.organization : '');
+      setPhone(user.id !== 'guest' && user.phone && user.phone !== '-' ? user.phone : '');
+      setEmail(user.id !== 'guest' && user.email && user.email !== '-' ? user.email : '');
+      setRequestedVolume('200 kg / Bulan');
+      setIntendedProduct('');
+      setPickupMethod('Ambil Langsung dengan Armada Sendiri');
+      setIsSuccess(false);
+    }
+  }, [partner, user]);
+
   if (!partner) return null;
 
   const isSupplier = partner.type === 'industry_supplier';
 
   const resetForm = () => {
-    setApplicantName(user.name || '');
-    setOrganizationName(user.organization || '');
-    setPhone(user.phone || '');
-    setEmail(user.email || '');
+    setApplicantName(user.id !== 'guest' ? user.name : '');
+    setOrganizationName(user.id !== 'guest' && user.organization && user.organization !== '-' ? user.organization : '');
+    setPhone(user.id !== 'guest' && user.phone && user.phone !== '-' ? user.phone : '');
+    setEmail(user.id !== 'guest' && user.email && user.email !== '-' ? user.email : '');
     setRequestedVolume('200 kg / Bulan');
     setIntendedProduct('');
     setPickupMethod('Ambil Langsung dengan Armada Sendiri');
@@ -102,7 +115,7 @@ export const SupplyRequestModal: React.FC<SupplyRequestModalProps> = ({
               {isSupplier ? 'Ajukan Permintaan Pasokan Limbah' : 'Tawarkan Pasokan Bahan Baku'}
             </h2>
           </div>
-          <button onClick={onClose} style={{ padding: '0.4rem' }}>
+          <button onClick={onClose} aria-label="Tutup modal pengajuan pasokan" style={{ padding: '0.4rem', background: 'transparent', border: 'none', cursor: 'pointer' }}>
             <X size={20} />
           </button>
         </div>

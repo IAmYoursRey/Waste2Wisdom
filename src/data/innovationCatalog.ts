@@ -12,9 +12,9 @@ export const initialInnovationData: InnovationItem[] = [
     estimatedTime: '2 - 3 Hari (Termasuk Penjemuran)',
     estimatedCost: 'Rp 25.000 - Rp 40.000 / panel (60x60 cm)',
     economicValue: 'Dapat dijual Rp 120.000 - Rp 180.000 / panel ke studio podcast, kantor, atau kafe.',
-    rating: 4.8,
-    reviewCount: 38,
-    successRate: 94,
+    rating: 0,
+    reviewCount: 0,
+    successRate: null,
     materials: [
       { name: 'Serbuk Kayu Sengon Halus Terayak', amount: '1.5 kg' },
       { name: 'Serat Ampas Tebu Kering (Blended)', amount: '500 gram' },
@@ -80,9 +80,9 @@ export const initialInnovationData: InnovationItem[] = [
     estimatedTime: '3 - 4 Jam',
     estimatedCost: 'Rp 8.000 - Rp 15.000 / jar lilin (100 gram)',
     economicValue: 'Dijual Rp 45.000 - Rp 75.000 / jar sebagai lilin aromaterapi premium di gift shop atau marketplace.',
-    rating: 4.9,
-    reviewCount: 64,
-    successRate: 98,
+    rating: 0,
+    reviewCount: 0,
+    successRate: null,
     materials: [
       { name: 'Minyak Jelantah Tersaring', amount: '250 ml' },
       { name: 'Arang Aktif / Kulit Pisang Kering (Purifier)', amount: '30 gram' },
@@ -148,9 +148,9 @@ export const initialInnovationData: InnovationItem[] = [
     estimatedTime: '2 Hari',
     estimatedCost: 'Rp 15.000 / lembaran 1 meter persegi',
     economicValue: 'Sangat diminati toko fashion & e-commerce hijau untuk amplop kiriman dan polybag bibit tanaman.',
-    rating: 4.7,
-    reviewCount: 29,
-    successRate: 88,
+    rating: 0,
+    reviewCount: 0,
+    successRate: null,
     materials: [
       { name: 'Pati Ekstrak Kulit Singkong Bagian Dalam', amount: '100 gram' },
       { name: 'Gliserol / Gliserin Nabati (Plasticizer)', amount: '15 ml' },
@@ -215,9 +215,9 @@ export const initialInnovationData: InnovationItem[] = [
     estimatedTime: '2 - 4 Jam',
     estimatedCost: 'Rp 10.000 - Rp 20.000 / tas',
     economicValue: 'Harga jual pasar Rp 55.000 - Rp 110.000 / tas di festival UMKM dan butik merchandise.',
-    rating: 4.9,
-    reviewCount: 82,
-    successRate: 99,
+    rating: 0,
+    reviewCount: 0,
+    successRate: null,
     materials: [
       { name: 'Kain Perca Aneka Corak & Warna', amount: '500 gram (20-30 potong)' },
       { name: 'Kain Furing Bagian Dalam (Blacu / Spunbond)', amount: '0.5 meter' },
@@ -282,9 +282,9 @@ export const initialInnovationData: InnovationItem[] = [
     estimatedTime: '7 - 10 Hari (Proses Fermentasi)',
     estimatedCost: 'Rp 12.000 / botol 1 Liter',
     economicValue: 'Harga jual Rp 35.000 - Rp 50.000 / botol di sentra tanaman hias dan hidroponik.',
-    rating: 4.8,
-    reviewCount: 45,
-    successRate: 95,
+    rating: 0,
+    reviewCount: 0,
+    successRate: null,
     materials: [
       { name: 'Ampas Kopi Segar Industri', amount: '1 kg' },
       { name: 'Molase / Gula Merah Cair', amount: '100 ml' },
@@ -347,9 +347,9 @@ export const initialInnovationData: InnovationItem[] = [
     estimatedTime: '7 - 14 Hari (Curing Air)',
     estimatedCost: 'Rp 2.500 / buah paving block standar',
     economicValue: 'Dapat menggantikan paving konvensional dengan penghematan biaya semen hingga 40%, lulus uji tekan Dinas PUPR.',
-    rating: 4.6,
-    reviewCount: 22,
-    successRate: 91,
+    rating: 0,
+    reviewCount: 0,
+    successRate: null,
     materials: [
       { name: 'Fly Ash Industri Tersaring Silika Aktif', amount: '35% berat total' },
       { name: 'Bottom Ash / Pasir Silika Halus', amount: '40% berat total' },
@@ -401,5 +401,71 @@ export const initialInnovationData: InnovationItem[] = [
     status: 'verified',
     submittedBy: 'Tim Riset Material Sipil Universitas Indonesia',
     submissionDate: '5 Maret 2026'
+  },
+  {
+    id: 'inv-briket-bioenergi',
+    title: 'Briket Arang Bio-Energi Padat',
+    tagline: 'Karbonisasi ampas tebu dan serbuk gergaji menjadi bahan bakar padat ramah lingkungan berkalori tinggi',
+    wasteSource: 'Bagasse Ampas Tebu & Serbuk Gergaji Kayu',
+    wasteId: 'w-ampas-tebu',
+    category: 'Material Bangunan Alternatif',
+    difficulty: 'Menengah',
+    estimatedTime: '1 - 2 Hari',
+    estimatedCost: 'Rp 4.000 / kg briket',
+    economicValue: 'Harga jual pasar Rp 15.000 - Rp 22.000 / kg ke restoran kuliner, UMKM sate/BBQ, dan industri.',
+    rating: 0,
+    reviewCount: 0,
+    successRate: null,
+    materials: [
+      { name: 'Ampas Tebu Kering (Bagasse)', amount: '1 kg' },
+      { name: 'Serbuk Gergaji Sengon / Jati', amount: '1 kg' },
+      { name: 'Tepung Tapioka / Pati Singkong (Binder)', amount: '150 gram' },
+      { name: 'Air Hangat Bersih', amount: '1 Liter' }
+    ],
+    tools: [
+      'Drum Pirolisis / Tungku Karbonisasi Arang',
+      'Alat Cetak Briket Silinder / Hexagonal',
+      'Ayakan Mesh 40 & Baskom Pencampur',
+      'Panci Pemanas Lem Kanji'
+    ],
+    steps: [
+      {
+        stepNumber: 1,
+        title: 'Karbonisasi Pirolisis Terkontrol',
+        description: 'Masukkan ampas tebu dan serbuk gergaji kering ke dalam drum kedap oksigen. Panaskan hingga menjadi arang hitam merata.',
+        tip: 'Tutup rapat lubang ventilasi drum saat asap mulai menipis agar arang tidak terbakar habis menjadi abu putih.'
+      },
+      {
+        stepNumber: 2,
+        title: 'Penghalusan & Pengayakan Bubuk Arang',
+        description: 'Tumbuk arang yang telah dingin lalu ayak menggunakan mesh 40 untuk mendapatkan butiran halus seragam.',
+        tip: 'Semakin halus serbuk arang, semakin padat dan stabil nyala bara briket saat digunakan.'
+      },
+      {
+        stepNumber: 3,
+        title: 'Pembuatan Larutan Perekat Tapioka',
+        description: 'Larutkan tepung tapioka ke dalam air mendidih bersuhu 90°C hingga membentuk lem gel kental bening.',
+        tip: 'Rasio perekat 6-8% dari total berat arang ideal untuk menjaga kalori tinggi dan menghasilkan asap minimal.'
+      },
+      {
+        stepNumber: 4,
+        title: 'Pencampuran & Pencetakan Bertekanan',
+        description: 'Campur adonan arang dan lem tapioka hingga merata. Masukkan ke pipa cetakan lalu tekan kuat menggunakan tuas pres atau dongkrak.',
+        tip: 'Buat lubang silinder di bagian tengah briket untuk aliran sirkulasi oksigen optimal.'
+      },
+      {
+        stepNumber: 5,
+        title: 'Pengeringan Sinar Matahari / Oven',
+        description: 'Jemur briket di bawah terik matahari selama 2-3 hari hingga kadar air di bawah 8%.',
+        tip: 'Briket kering berbunyi denting keras saat diadu dan menghasilkan bara panas stabil bertahan hingga 3-4 jam tanpa bau sangit.'
+      }
+    ],
+    safetyTips: [
+      'Gunakan masker debu saat menumbuk dan mengayak bubuk arang hitam.',
+      'Jauhkan proses pembakaran pirolisis dari bahan mudah terbakar dan pastikan ventilasi terbuka di luar ruangan.'
+    ],
+    status: 'verified',
+    submittedBy: 'Laboratorium Konversi Energi Ramah Lingkungan',
+    submissionDate: '15 Januari 2026'
   }
 ];

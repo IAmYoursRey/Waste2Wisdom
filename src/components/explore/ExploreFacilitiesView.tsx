@@ -636,7 +636,7 @@ export const ExploreFacilitiesView: React.FC = () => {
                     />
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                  <div className="grid-2-col" style={{ marginBottom: '1rem' }}>
                     <div className="form-group" style={{ marginBottom: 0 }}>
                       <label className="form-label">Rencana Tanggal Kunjungan *</label>
                       <input

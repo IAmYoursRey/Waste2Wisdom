@@ -298,7 +298,7 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
               </div>
 
               {/* Waste Source & Category */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+              <div className="grid-2-col" style={{ marginBottom: '1rem' }}>
                 <div className="form-group" style={{ marginBottom: 0 }}>
                   <label className="form-label">Sumber Limbah Industri *</label>
                   <input
@@ -328,7 +328,7 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
               </div>
 
               {/* Difficulty & Cost */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+              <div className="grid-3-col" style={{ marginBottom: '1rem' }}>
                 <div className="form-group" style={{ marginBottom: 0 }}>
                   <label className="form-label">Tingkat Kesulitan</label>
                   <select

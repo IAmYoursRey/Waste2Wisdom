@@ -20,9 +20,13 @@ import {
 
 interface WasteDictionaryViewProps {
   onSelectWasteForInnovation: (wasteId: string, wasteName: string) => void;
+  onSelectSpecificInnovation?: (innovationId: string, innovationTitle: string) => void;
 }
 
-export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({ onSelectWasteForInnovation }) => {
+export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({ 
+  onSelectWasteForInnovation,
+  onSelectSpecificInnovation
+}) => {
   const { isAdmin } = useAuth();
   const { addToast } = useToast();
 
@@ -314,7 +318,7 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({ onSele
         {isLoading && (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
             gap: '1.25rem'
           }}>
             {[1, 2, 3, 4, 5, 6].map((idx) => (
@@ -332,7 +336,7 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({ onSele
         {!isLoading && (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
             gap: '1.25rem'
           }}>
             {filteredWaste.map((waste) => {
@@ -503,6 +507,13 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({ onSele
           onClose={() => setSelectedWaste(null)}
           onSelectInnovation={() => {
             onSelectWasteForInnovation(selectedWaste.id, selectedWaste.name);
+          }}
+          onSelectSpecificInnovation={(invId, invTitle) => {
+            if (onSelectSpecificInnovation) {
+              onSelectSpecificInnovation(invId, invTitle);
+            } else {
+              onSelectWasteForInnovation(selectedWaste.id, selectedWaste.name);
+            }
           }}
         />
       )}

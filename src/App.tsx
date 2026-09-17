@@ -49,6 +49,7 @@ const Waste2WisdomMain: React.FC = () => {
 
   // Deep linked waste filter (from Kamus -> Marketplace)
   const [activeWasteFilter, setActiveWasteFilter] = useState<{ id: string, name: string } | undefined>(undefined);
+  const [highlightInnovationId, setHighlightInnovationId] = useState<string | undefined>(undefined);
 
   // Modals
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
@@ -73,8 +74,15 @@ const Waste2WisdomMain: React.FC = () => {
 
   useEffect(() => {
     loadPendingSupplyRequests();
+    const handleSupplyUpdate = () => {
+      loadPendingSupplyRequests();
+    };
+    window.addEventListener('w2w:supply_request_updated', handleSupplyUpdate);
     const interval = setInterval(loadPendingSupplyRequests, 4000);
-    return () => clearInterval(interval);
+    return () => {
+      window.removeEventListener('w2w:supply_request_updated', handleSupplyUpdate);
+      clearInterval(interval);
+    };
   }, []);
 
   const {
@@ -102,9 +110,17 @@ const Waste2WisdomMain: React.FC = () => {
 
   // Handle deep link from Kamus (1M) -> Marketplace (3M)
   const handleSelectWasteForInnovation = (wasteId: string, wasteName: string) => {
+    setHighlightInnovationId(undefined);
     setActiveWasteFilter({ id: wasteId, name: wasteName });
     setActiveTab('innovations');
     addToast(`Menampilkan tutorial inovasi berbahan: ${wasteName}`, 'info');
+  };
+
+  const handleSelectSpecificInnovation = (innovationId: string, innovationTitle: string) => {
+    setActiveWasteFilter(undefined);
+    setHighlightInnovationId(innovationId);
+    setActiveTab('innovations');
+    addToast(`Menampilkan panduan: ${innovationTitle}`, 'info');
   };
 
   return (
@@ -127,13 +143,17 @@ const Waste2WisdomMain: React.FC = () => {
       {/* Hero Banner */}
       <HeroBanner onSelect5M={(tab) => {
         setActiveWasteFilter(undefined);
+        setHighlightInnovationId(undefined);
         setActiveTab(tab);
       }} />
 
       {/* Main 5M Views */}
       <main style={{ flex: 1 }}>
         {activeTab === 'dictionary' && (
-          <WasteDictionaryView onSelectWasteForInnovation={handleSelectWasteForInnovation} />
+          <WasteDictionaryView 
+            onSelectWasteForInnovation={handleSelectWasteForInnovation}
+            onSelectSpecificInnovation={handleSelectSpecificInnovation}
+          />
         )}
 
         {activeTab === 'explore' && (
@@ -146,6 +166,8 @@ const Waste2WisdomMain: React.FC = () => {
             isLoading={isLoadingInnovations}
             activeWasteFilter={activeWasteFilter}
             onClearWasteFilter={() => setActiveWasteFilter(undefined)}
+            highlightInnovationId={highlightInnovationId}
+            onClearHighlightInnovation={() => setHighlightInnovationId(undefined)}
             onOpenSubmitModal={() => {
               setEditingInnovation(null);
               setIsSubmitModalOpen(true);

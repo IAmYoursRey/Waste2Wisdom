@@ -23,6 +23,8 @@ interface InnovationCatalogViewProps {
   isLoading?: boolean;
   activeWasteFilter?: { id: string, name: string };
   onClearWasteFilter?: () => void;
+  highlightInnovationId?: string;
+  onClearHighlightInnovation?: () => void;
   onOpenSubmitModal: () => void;
   onEditRejectedInnovation?: (innovation: InnovationItem) => void;
   onOpenReviewModal: (innovation: InnovationItem) => void;
@@ -33,6 +35,8 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
   isLoading = false,
   activeWasteFilter,
   onClearWasteFilter,
+  highlightInnovationId,
+  onClearHighlightInnovation,
   onOpenSubmitModal,
   onEditRejectedInnovation,
   onOpenReviewModal
@@ -70,6 +74,11 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
         if (item.wasteId !== activeWasteFilter.id) return false;
       }
 
+      // Highlight specific innovation from Kamus (Point 7)
+      if (highlightInnovationId) {
+        if (item.id !== highlightInnovationId) return false;
+      }
+
       const matchSearch =
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.wasteSource.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -83,7 +92,7 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
 
       return matchSearch && matchCategory && matchDifficulty;
     });
-  }, [innovations, activeTabFilter, activeWasteFilter, searchQuery, selectedCategory, selectedDifficulty, user]);
+  }, [innovations, activeTabFilter, activeWasteFilter, highlightInnovationId, searchQuery, selectedCategory, selectedDifficulty, user]);
 
   const myCount = innovations.filter((i) => i.authorId === user.id).length;
 
@@ -144,7 +153,31 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
             }}>
               <span>🔍 Memfilter Inovasi untuk Bahan: <strong>{activeWasteFilter.name}</strong></span>
               {onClearWasteFilter && (
-                <button onClick={onClearWasteFilter} style={{ display: 'flex', color: '#EF4444', padding: '2px' }}>
+                <button onClick={onClearWasteFilter} aria-label="Hapus filter bahan" style={{ display: 'flex', color: '#EF4444', padding: '2px', background: 'none', border: 'none', cursor: 'pointer' }}>
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Highlight Innovation Banner */}
+          {highlightInnovationId && (
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.6rem',
+              background: '#F0FDF4',
+              padding: '0.5rem 1rem',
+              borderRadius: 'var(--radius-full)',
+              border: '1.5px solid #059669',
+              width: 'fit-content',
+              fontSize: '0.86rem',
+              color: '#065F46',
+              fontWeight: 600
+            }}>
+              <span>💡 Menampilkan Inovasi Terpilih dari Kamus: <strong>{innovations.find(i => i.id === highlightInnovationId)?.title || highlightInnovationId}</strong></span>
+              {onClearHighlightInnovation && (
+                <button onClick={onClearHighlightInnovation} aria-label="Tampilkan semua inovasi" style={{ display: 'flex', color: '#EF4444', padding: '2px', background: 'none', border: 'none', cursor: 'pointer' }}>
                   <X size={16} />
                 </button>
               )}
@@ -406,13 +439,16 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
                     flexWrap: 'wrap'
                   }}>
                     <div style={{ display: 'flex', gap: '0.4rem' }}>
-                      <button
-                        onClick={() => onOpenReviewModal(inv)}
-                        className="btn-outline btn-sm"
-                      >
-                        <Star size={13} color="#F59E0B" />
-                        <span>Ulas</span>
-                      </button>
+                      {/* Only verified innovations can be reviewed (Point 10) */}
+                      {inv.status === 'verified' && (
+                        <button
+                          onClick={() => onOpenReviewModal(inv)}
+                          className="btn-outline btn-sm"
+                        >
+                          <Star size={13} color="#F59E0B" />
+                          <span>Ulas</span>
+                        </button>
+                      )}
 
                       {/* Re-submit / Revise button for rejected items (Point 21) */}
                       {isRejected && isOwn && onEditRejectedInnovation && (

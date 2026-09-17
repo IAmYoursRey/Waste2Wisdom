@@ -279,6 +279,43 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             );
           })}
+
+          {isAdmin && (
+            <button
+              onClick={() => {
+                onOpenAdminModal();
+                setMobileMenuOpen(false);
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0.75rem 1rem',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: '#ECFDF5',
+                color: '#065F46',
+                fontWeight: 700,
+                border: '1.5px solid #10B981'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <ShieldCheck size={18} color="#059669" />
+                <span>Moderasi Admin ({pendingCount})</span>
+              </div>
+              {pendingCount > 0 && (
+                <span style={{
+                  fontSize: '0.65rem',
+                  background: '#EF4444',
+                  color: '#fff',
+                  padding: '2px 8px',
+                  borderRadius: '10px',
+                  fontWeight: 800
+                }}>
+                  {pendingCount} Pending
+                </span>
+              )}
+            </button>
+          )}
         </div>
       )}
 

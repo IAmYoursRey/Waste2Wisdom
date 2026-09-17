@@ -5,13 +5,15 @@ import { X, ShieldAlert, CheckCircle2, AlertTriangle, FileText, HardHat, Sparkle
 interface WasteDetailModalProps {
   waste: WasteItem | null;
   onClose: () => void;
-  onSelectInnovation?: (innovationTitle: string) => void;
+  onSelectInnovation?: (wasteId: string, wasteName: string) => void;
+  onSelectSpecificInnovation?: (innovationId: string, innovationTitle: string) => void;
 }
 
 export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
   waste,
   onClose,
-  onSelectInnovation
+  onSelectInnovation,
+  onSelectSpecificInnovation
 }) => {
   if (!waste) return null;
 
@@ -263,13 +265,19 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
               Rekomendasi Kreasi Inovasi di Marketplace / Katalog:
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-              {waste.recommendedInnovations.map((item, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    if (onSelectInnovation) onSelectInnovation(item);
-                    onClose();
-                  }}
+              {waste.recommendedInnovations.map((item, idx) => {
+                const matchedId = waste.recommendedInnovationIds?.[idx];
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      if (matchedId && onSelectSpecificInnovation) {
+                        onSelectSpecificInnovation(matchedId, item);
+                      } else if (onSelectInnovation) {
+                        onSelectInnovation(waste.id, waste.name);
+                      }
+                      onClose();
+                    }}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -296,7 +304,8 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
                 >
                   💡 {item}
                 </button>
-              ))}
+                );
+              })}
             </div>
           </div>
 

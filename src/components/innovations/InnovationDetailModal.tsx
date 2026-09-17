@@ -251,7 +251,12 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
 
             <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', padding: '1.5rem', width: '100%' }}>
               <button
-                onClick={() => setIsPlayingVideo(!isPlayingVideo)}
+                onClick={() => {
+                  if (videoTime >= 270 && !isPlayingVideo) {
+                    setVideoTime(0);
+                  }
+                  setIsPlayingVideo(!isPlayingVideo);
+                }}
                 aria-label={isPlayingVideo ? 'Jeda simulasi video' : 'Putar simulasi video tutorial'}
                 style={{
                   width: '64px',

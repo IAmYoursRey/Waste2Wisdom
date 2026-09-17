@@ -28,7 +28,7 @@ export const initialWasteData: WasteItem[] = [
       'Briket Arang Bio-Energi Padat',
       'Kertas Seni Daur Ulang Tekstur Alami'
     ],
-    recommendedInnovationIds: ['inv-panel-akustik'],
+    recommendedInnovationIds: ['inv-panel-akustik', 'inv-briket-bioenergi'],
     characteristics: ['Kaya Selulosa (45-55%)', 'Biodegradable Cepat', 'Kadar Air Awal 40-50%']
   },
   {
@@ -55,10 +55,10 @@ export const initialWasteData: WasteItem[] = [
     ],
     recommendedInnovations: [
       'Panel Akustik Peredam Suara Ramah Lingkungan',
-      'Briket Kayu Biomassa Tanpa Asap',
+      'Briket Arang Bio-Energi Padat',
       'Media Tanam Jamur Tiram Organik'
     ],
-    recommendedInnovationIds: ['inv-panel-akustik'],
+    recommendedInnovationIds: ['inv-panel-akustik', 'inv-briket-bioenergi'],
     characteristics: ['Kandungan Lignin Tinggi', 'Daya Serap Air Baik', 'Isolator Akustik Alami']
   },
   {

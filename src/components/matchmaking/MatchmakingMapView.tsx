@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { MatchmakingItem, SupplyRequestRecord } from '../../types';
-import { api } from '../../services/api';
+import { api, resolveCityLocation } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { SupplyRequestModal } from './SupplyRequestModal';
@@ -237,6 +237,7 @@ export const MatchmakingMapView: React.FC = () => {
   const handleCreateListing = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const location = resolveCityLocation(listingCity);
       await api.matchmaking.createListing({
         name: listingName,
         type: listingType,
@@ -244,10 +245,10 @@ export const MatchmakingMapView: React.FC = () => {
         wasteType: listingWasteType,
         volumeMonthly: listingVolume,
         city: listingCity,
-        province: listingCity,
+        province: location.province,
         address: listingAddress,
-        coordinates: [-6.315, 107.14],
-        isCertifiedNonB3: false,
+        coordinates: location.coords,
+        isCertifiedNonB3: false, // Default unverified for safety
         priceExpectation: listingPrice,
         contactName: listingContact,
         phone: listingPhone,
@@ -257,7 +258,7 @@ export const MatchmakingMapView: React.FC = () => {
       });
       addToast('Listing kemitraan bahan baku berhasil diterbitkan ke peta!', 'success');
       setIsNewListingModalOpen(false);
-      // Reset form states (Point 39)
+      // Reset form states
       setListingWasteType('');
       setListingVolume('');
       setListingAddress('');
@@ -454,12 +455,7 @@ export const MatchmakingMapView: React.FC = () => {
             </div>
 
             {/* Layout Grid */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'minmax(320px, 1fr) 1.2fr',
-              gap: '1.5rem',
-              alignItems: 'start'
-            }} className="matchmaking-layout">
+            <div className="matchmaking-layout">
               
               {/* Directory List */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '540px', overflowY: 'auto', paddingRight: '4px' }}>
@@ -508,6 +504,17 @@ export const MatchmakingMapView: React.FC = () => {
                             border: '1px solid #A7F3D0'
                           }} title="Kecocokan algoritma matchmaking berbasis material dan lokasi">
                             ⚡ Cocok {computeMatchScore(partner)}%
+                          </span>
+                          <span style={{
+                            fontSize: '0.68rem',
+                            fontWeight: 700,
+                            padding: '2px 6px',
+                            borderRadius: 'var(--radius-full)',
+                            background: partner.isCertifiedNonB3 ? '#DCFCE7' : '#FEF3C7',
+                            color: partner.isCertifiedNonB3 ? '#166534' : '#92400E',
+                            border: partner.isCertifiedNonB3 ? '1px solid #86EFAC' : '1px solid #FDE68A'
+                          }}>
+                            {partner.isCertifiedNonB3 ? '✓ Terverifikasi Non-B3' : '⏳ Belum Diverifikasi'}
                           </span>
                         </div>
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-light)', fontWeight: 600 }}>
@@ -684,11 +691,11 @@ export const MatchmakingMapView: React.FC = () => {
 
                   // Privacy check: only involved parties or admin see full contacts
                   const isRequester = req.requesterId === user.id;
-                  const isPartner = req.partnerId === user.id || (user.organization && req.partnerName.toLowerCase().includes(user.organization.toLowerCase()));
+                  const isPartner = req.partnerId === user.id || Boolean(user.organization && user.organization !== '-' && req.partnerName.toLowerCase().includes(user.organization.toLowerCase()));
                   const canViewContacts = isAccepted && (isRequester || isPartner || isAdmin);
                   
-                  // Authority check: requester cannot accept their own request
-                  const canManage = isAdmin || (!isRequester && (isPartner || isIndustry));
+                  // Authority check: requester cannot accept their own request, only the target partner or admin can manage
+                  const canManage = isAdmin || (!isRequester && isPartner);
 
                   return (
                     <div
@@ -830,7 +837,11 @@ export const MatchmakingMapView: React.FC = () => {
               <h3 style={{ fontSize: '1.25rem', color: 'var(--leaf-deep)' }}>
                 {listingType === 'industry_supplier' ? 'Daftarkan Pasokan Limbah Pabrik' : 'Daftarkan Kebutuhan Material UMKM'}
               </h3>
-              <button onClick={() => setIsNewListingModalOpen(false)} style={{ padding: '0.35rem' }}>
+              <button 
+                onClick={() => setIsNewListingModalOpen(false)} 
+                aria-label="Tutup formulir pendaftaran listing"
+                style={{ padding: '0.35rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              >
                 <X size={18} />
               </button>
             </div>

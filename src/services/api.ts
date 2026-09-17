@@ -86,24 +86,34 @@ export const INDONESIA_CITIES: Record<string, { coords: [number, number]; provin
   'bekasi': { coords: [-6.2383, 106.9756], province: 'Jawa Barat' },
   'jakarta': { coords: [-6.2088, 106.8456], province: 'DKI Jakarta' },
   'tangerang': { coords: [-6.1783, 106.6319], province: 'Banten' },
+  'bogor': { coords: [-6.595, 106.8167], province: 'Jawa Barat' },
+  'depok': { coords: [-6.4025, 106.7942], province: 'Jawa Barat' },
+  'karawang': { coords: [-6.305, 107.304], province: 'Jawa Barat' },
+  'cirebon': { coords: [-6.732, 108.552], province: 'Jawa Barat' },
   'bandung': { coords: [-6.9175, 107.6191], province: 'Jawa Barat' },
   'surabaya': { coords: [-7.2575, 112.7521], province: 'Jawa Timur' },
   'sidoarjo': { coords: [-7.4478, 112.7183], province: 'Jawa Timur' },
   'gresik': { coords: [-7.1566, 112.6555], province: 'Jawa Timur' },
+  'malang': { coords: [-7.9839, 112.6214], province: 'Jawa Timur' },
   'semarang': { coords: [-6.9667, 110.4167], province: 'Jawa Tengah' },
   'solo': { coords: [-7.5755, 110.8243], province: 'Jawa Tengah' },
   'surakarta': { coords: [-7.5755, 110.8243], province: 'Jawa Tengah' },
+  'kudus': { coords: [-6.8048, 110.8405], province: 'Jawa Tengah' },
   'yogyakarta': { coords: [-7.7956, 110.3695], province: 'DI Yogyakarta' },
   'sleman': { coords: [-7.7167, 110.3556], province: 'DI Yogyakarta' },
   'ungaran': { coords: [-7.1395, 110.4045], province: 'Jawa Tengah' },
   'medan': { coords: [3.5952, 98.6722], province: 'Sumatera Utara' },
   'palembang': { coords: [-2.9761, 104.7754], province: 'Sumatera Selatan' },
+  'lampung': { coords: [-5.45, 105.2667], province: 'Lampung' },
+  'batam': { coords: [1.1301, 104.0529], province: 'Kepulauan Riau' },
   'makassar': { coords: [-5.1477, 119.4327], province: 'Sulawesi Selatan' },
-  'denpasar': { coords: [-8.6705, 115.2126], province: 'Bali' }
+  'denpasar': { coords: [-8.6705, 115.2126], province: 'Bali' },
+  'balikpapan': { coords: [-1.2654, 116.8312], province: 'Kalimantan Timur' },
+  'banjarmasin': { coords: [-3.3167, 114.5833], province: 'Kalimantan Selatan' }
 };
 
 export function resolveCityLocation(cityName: string): { coords: [number, number]; province: string } {
-  const query = cityName.trim().toLowerCase();
+  const query = (cityName || '').trim().toLowerCase();
   for (const [key, val] of Object.entries(INDONESIA_CITIES)) {
     if (query.includes(key) || key.includes(query)) {
       return val;
@@ -309,7 +319,19 @@ export const api = {
   waste: {
     async getAll(): Promise<WasteItem[]> {
       await delay(100);
-      return getStorage<WasteItem[]>(KEYS.WASTE, initialWasteData);
+      const list = getStorage<WasteItem[]>(KEYS.WASTE, initialWasteData);
+      const updatedList = list.map((w) => {
+        const init = initialWasteData.find((iw) => iw.id === w.id);
+        if (init && init.recommendedInnovationIds) {
+          return {
+            ...w,
+            recommendedInnovationIds: init.recommendedInnovationIds,
+            recommendedInnovations: init.recommendedInnovations
+          };
+        }
+        return w;
+      });
+      return updatedList;
     },
 
     async getById(id: string): Promise<WasteItem | null> {
@@ -342,10 +364,15 @@ export const api = {
   innovations: {
     async getAll(): Promise<InnovationItem[]> {
       await delay(120);
-      const innovations = getStorage<InnovationItem[]>(KEYS.INNOVATIONS, initialInnovationData);
+      const list = getStorage<InnovationItem[]>(KEYS.INNOVATIONS, initialInnovationData);
       const reviews = getStorage<ReviewItem[]>(KEYS.REVIEWS, initialReviewsData);
       
-      return innovations.map((inv) => computeInnovationMetrics(inv, reviews));
+      // Ensure all standard initial innovations exist (like newly added briket)
+      const existingIds = new Set(list.map((i) => i.id));
+      const missingDefaults = initialInnovationData.filter((i) => !existingIds.has(i.id));
+      const mergedList = missingDefaults.length > 0 ? [...list, ...missingDefaults] : list;
+      
+      return mergedList.map((inv) => computeInnovationMetrics(inv, reviews));
     },
 
     async getById(id: string): Promise<InnovationItem | null> {
@@ -516,6 +543,10 @@ export const api = {
       };
       const updated = [newRecord, ...list];
       setStorage(KEYS.SUPPLY_REQUESTS, updated);
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('w2w:supply_request_updated', { detail: newRecord }));
+      }
       return newRecord;
     },
 
@@ -554,6 +585,10 @@ export const api = {
 
       if (!target) throw new Error('Request not found');
       setStorage(KEYS.SUPPLY_REQUESTS, updated);
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('w2w:supply_request_updated', { detail: target }));
+      }
       return target;
     }
   },
@@ -562,7 +597,15 @@ export const api = {
   reviews: {
     async getAll(): Promise<ReviewItem[]> {
       await delay(100);
-      return getStorage<ReviewItem[]>(KEYS.REVIEWS, initialReviewsData);
+      const list = getStorage<ReviewItem[]>(KEYS.REVIEWS, initialReviewsData);
+      const existingIds = new Set(list.map((r) => r.id));
+      const missing = initialReviewsData.filter((r) => !existingIds.has(r.id));
+      if (missing.length > 0) {
+        const merged = [...list, ...missing];
+        setStorage(KEYS.REVIEWS, merged);
+        return merged;
+      }
+      return list;
     },
 
     async create(review: Omit<ReviewItem, 'id' | 'createdAt' | 'likes' | 'likedByUsers'>): Promise<ReviewItem> {
