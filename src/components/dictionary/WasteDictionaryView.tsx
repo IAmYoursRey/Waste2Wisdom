@@ -88,27 +88,39 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({ onSele
   const countNonB3 = wasteList.filter((i) => i.category === 'non-b3').length;
   const countB3 = wasteList.filter((i) => i.category === 'b3').length;
 
+  const resetAddWasteForm = () => {
+    setNewWasteName('');
+    setNewCategory('non-b3');
+    setNewSector('Industri Tekstil');
+    setNewSource('');
+    setNewPhysicalForm('');
+    setNewSafetyDesc('');
+    setNewLegalCode('PP No. 22/2021');
+    setNewPotential('');
+  };
+
   const handleCreateWaste = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await api.waste.create({
         name: newWasteName,
         category: newCategory,
-        categoryLabel: newCategory === 'b3' ? 'Wajib Penanganan Khusus (Limbah B3)' : 'Aman Diolah Mandiri (Non-B3)',
+        categoryLabel: newCategory === 'b3' ? 'Wajib Penanganan Khusus (Limbah B3)' : 'Non-B3 — dapat dimanfaatkan sesuai kondisi dan SOP',
         industrialSector: newSector,
-        source: newSource,
-        physicalForm: newPhysicalForm,
+        source: newSource || 'Sisa aliran proses industri manufaktur lokal',
+        physicalForm: newPhysicalForm || 'Padatan terpilah',
         safetyRating: newCategory === 'b3' ? 'danger' : 'safe',
-        safetyDescription: newSafetyDesc,
-        requiredPPE: ['Masker Debu', 'Sarung Tangan Kerja'],
+        safetyDescription: newSafetyDesc || (newCategory === 'b3' ? 'Wajib penanganan khusus berizin resmi.' : 'Dapat dimanfaatkan sesuai kondisi dan SOP keselamatan.'),
+        requiredPPE: newCategory === 'b3' ? ['Masker Respirator', 'Sarung Tangan Kimia', 'Kacamata Pelindung'] : ['Masker Debu', 'Sarung Tangan Kerja'],
         legalCode: newLegalCode,
-        economicPotential: newPotential,
-        handlingGuidelines: ['Simpan di tempat kering berventilasi baik'],
-        prohibitedActions: ['Dilarang dibakar sembarangan'],
-        recommendedInnovations: ['Produk daur ulang ramah lingkungan'],
-        characteristics: ['Limbah Terpilah']
+        economicPotential: newPotential || 'Potensi bahan baku alternatif industri sirkular',
+        handlingGuidelines: ['Simpan di tempat kering berventilasi baik (Data contoh — perlu verifikasi SOP lanjutan)'],
+        prohibitedActions: ['Dilarang dibakar sembarangan di ruang terbuka'],
+        recommendedInnovations: ['Produk Daur Ulang Ramah Lingkungan'],
+        characteristics: ['Data contoh prototype — perlu verifikasi laboratorium']
       });
       addToast('Data limbah baru berhasil ditambahkan ke kamus!', 'success');
+      resetAddWasteForm();
       setIsAddWasteModalOpen(false);
       loadWasteData();
     } catch (err) {
@@ -497,19 +509,41 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({ onSele
 
       {/* Admin Add Waste Modal */}
       {isAddWasteModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsAddWasteModalOpen(false)}>
-          <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '580px' }} onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay" onClick={() => { resetAddWasteForm(); setIsAddWasteModalOpen(false); }}>
+          <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '620px' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3 style={{ fontSize: '1.25rem', color: 'var(--leaf-deep)' }}>
-                Tambah Data Limbah Baru (Kamus Nasional)
-              </h3>
-              <button onClick={() => setIsAddWasteModalOpen(false)} style={{ padding: '0.35rem' }}>
+              <div>
+                <h3 style={{ fontSize: '1.25rem', color: 'var(--leaf-deep)' }}>
+                  Tambah Data Limbah Baru (Kamus Nasional)
+                </h3>
+                <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>
+                  Pencatatan rujukan limbah industri untuk inventarisasi 5M
+                </div>
+              </div>
+              <button 
+                onClick={() => { resetAddWasteForm(); setIsAddWasteModalOpen(false); }} 
+                aria-label="Tutup formulir tambah limbah" 
+                style={{ padding: '0.35rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              >
                 <X size={18} />
               </button>
             </div>
 
             <form onSubmit={handleCreateWaste}>
-              <div className="modal-body">
+              <div className="modal-body" style={{ maxHeight: '68vh', overflowY: 'auto' }}>
+                
+                <div style={{
+                  background: '#FEF3C7',
+                  padding: '0.75rem 1rem',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid #FDE68A',
+                  fontSize: '0.8rem',
+                  color: '#92400E',
+                  marginBottom: '1rem'
+                }}>
+                  <strong>Catatan Prototype:</strong> Karakteristik APD & penanganan awal akan diisi secara otomatis sebagai <em>data contoh percontohan</em> yang perlu diverifikasi lebih lanjut.
+                </div>
+
                 <div className="form-group">
                   <label className="form-label">Nama Jenis Limbah *</label>
                   <input
@@ -522,15 +556,15 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({ onSele
                   />
                 </div>
 
-                <div className="grid-2-col">
-                  <div className="form-group">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
                     <label className="form-label">Klasifikasi Regulasi *</label>
                     <select
                       value={newCategory}
                       onChange={(e) => setNewCategory(e.target.value as any)}
                       className="form-select"
                     >
-                      <option value="non-b3">Aman Diolah Mandiri (Non-B3)</option>
+                      <option value="non-b3">Non-B3 — dapat dimanfaatkan sesuai kondisi dan SOP</option>
                       <option value="b3">Wajib Penanganan Khusus (Limbah B3)</option>
                     </select>
                   </div>

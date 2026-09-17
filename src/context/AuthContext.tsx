@@ -9,6 +9,7 @@ interface AuthContextType {
   isAdmin: boolean;
   isIndustry: boolean;
   isUMKM: boolean;
+  isGuest: boolean;
   login: (email: string, role?: UserRole) => Promise<void>;
   register: (name: string, email: string, role: UserRole, organization: string, phone: string) => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
@@ -98,14 +99,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const logout = async () => {
     await api.auth.logout();
-    const guestUser = await api.auth.getCurrentUser();
-    setUser(guestUser);
-    addToast('Anda telah keluar dari akun.', 'info');
+    const guest = await api.auth.getCurrentUser();
+    setUser(guest);
+    addToast('Anda telah keluar dan kini berada dalam mode Pengunjung (Tamu).', 'info');
   };
 
-  const isAdmin = user.role === 'admin';
-  const isIndustry = user.role === 'industry';
-  const isUMKM = user.role === 'umkm';
+  const isGuest = user.id === 'guest';
+  const isAdmin = !isGuest && user.role === 'admin';
+  const isIndustry = !isGuest && user.role === 'industry';
+  const isUMKM = !isGuest && user.role === 'umkm';
 
   return (
     <AuthContext.Provider value={{
@@ -114,6 +116,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       isAdmin,
       isIndustry,
       isUMKM,
+      isGuest,
       login,
       register,
       updateProfile,

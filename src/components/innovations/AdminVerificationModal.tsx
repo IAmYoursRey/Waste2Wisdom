@@ -6,11 +6,11 @@ import {
   ShieldCheck, 
   Check, 
   Trash2, 
-  AlertTriangle, 
   Sparkles, 
-  MessageSquare, 
-  ThumbsDown,
-  FileText
+  FileText,
+  ChevronDown,
+  ChevronUp,
+  AlertCircle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -39,6 +39,7 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
   const [activeTab, setActiveTab] = useState<'innovations' | 'reviews'>('innovations');
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -63,9 +64,13 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
     addToast('Status inovasi diubah menjadi Perlu Revisi / Ditolak.', 'info');
   };
 
+  const toggleExpand = (id: string) => {
+    setExpandedId((prev) => (prev === id ? null : id));
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '820px' }} onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '840px' }} onClick={(e) => e.stopPropagation()}>
         
         {/* Header */}
         <div className="modal-header" style={{ background: '#F0FDF4', borderBottom: '2px solid #A7F3D0' }}>
@@ -87,11 +92,11 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
                 Dashboard Moderasi Admin & Kurator
               </h2>
               <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                Tinjau pengajuan ide inovasi baru dan moderasi konten komunitas
+                Tinjau kelayakan blueprint SOP inovasi baru dan moderasi ulasan komunitas
               </div>
             </div>
           </div>
-          <button onClick={onClose} style={{ padding: '0.35rem' }}>
+          <button onClick={onClose} aria-label="Tutup panel admin" style={{ padding: '0.35rem', background: 'transparent', border: 'none', cursor: 'pointer' }}>
             <X size={18} />
           </button>
         </div>
@@ -112,7 +117,9 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
               fontSize: '0.82rem',
               fontWeight: activeTab === 'innovations' ? 700 : 500,
               background: activeTab === 'innovations' ? '#10B981' : 'transparent',
-              color: activeTab === 'innovations' ? '#FFFFFF' : 'var(--text-muted)'
+              color: activeTab === 'innovations' ? '#FFFFFF' : 'var(--text-muted)',
+              border: 'none',
+              cursor: 'pointer'
             }}
           >
             Antrean Inovasi ({pendingInnovations.length})
@@ -126,7 +133,9 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
               fontSize: '0.82rem',
               fontWeight: activeTab === 'reviews' ? 700 : 500,
               background: activeTab === 'reviews' ? '#10B981' : 'transparent',
-              color: activeTab === 'reviews' ? '#FFFFFF' : 'var(--text-muted)'
+              color: activeTab === 'reviews' ? '#FFFFFF' : 'var(--text-muted)',
+              border: 'none',
+              cursor: 'pointer'
             }}
           >
             Laporan Ulasan ({reportedReviews.length})
@@ -150,14 +159,14 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    margin: '0 auto'
+                    margin: '0 auto 1rem auto'
                   }}>
                     <Check size={28} />
                   </div>
                   <h3 style={{ fontSize: '1.15rem', color: 'var(--leaf-deep)' }}>
                     Semua Inovasi Telah Diverifikasi!
                   </h3>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.86rem', maxWidth: '440px' }}>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.86rem', maxWidth: '440px', margin: '0 auto 1rem auto' }}>
                     Tidak ada ide inovasi yang menunggu persetujuan saat ini. Anda dapat membuat contoh pengajuan uji coba untuk menguji workflow.
                   </p>
                   
@@ -185,7 +194,7 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
                         boxShadow: 'var(--shadow-sm)'
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', marginBottom: '0.5rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.25rem' }}>
                             <span className="badge-sector">{item.category}</span>
@@ -213,7 +222,7 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
                             className="btn-primary btn-sm"
                           >
                             <Check size={15} />
-                            <span>Setujui</span>
+                            <span>Setujui & Terbitkan</span>
                           </button>
                         </div>
                       </div>
@@ -235,8 +244,103 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
                         <div><strong>Bahan Limbah:</strong> {item.wasteSource}</div>
                         <div><strong>Tingkat Kesulitan:</strong> {item.difficulty}</div>
                         <div><strong>Estimasi Modal:</strong> {item.estimatedCost}</div>
+                        <div><strong>Waktu Pembuatan:</strong> {item.estimatedTime}</div>
                         <div><strong>Diajukan Oleh:</strong> {item.submittedBy} ({item.submissionDate})</div>
+                        {item.economicValue && (
+                          <div style={{ gridColumn: '1 / -1' }}><strong>Potensi Nilai Jual:</strong> {item.economicValue}</div>
+                        )}
                       </div>
+
+                      {/* Blueprint Detail Expander */}
+                      <button
+                        type="button"
+                        onClick={() => toggleExpand(item.id)}
+                        className="btn-outline btn-sm"
+                        style={{ width: '100%', justifyContent: 'center', marginBottom: '0.5rem', fontSize: '0.8rem' }}
+                      >
+                        <FileText size={14} />
+                        <span>{expandedId === item.id ? 'Tutup Detail Blueprint' : 'Tinjau Rincian Blueprint & Langkah SOP'}</span>
+                        {expandedId === item.id ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      </button>
+
+                      {expandedId === item.id && (
+                        <div style={{
+                          padding: '0.9rem',
+                          background: '#F1F5F9',
+                          borderRadius: 'var(--radius-md)',
+                          fontSize: '0.82rem',
+                          marginBottom: '0.75rem',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '0.65rem'
+                        }}>
+                          {/* Materials */}
+                          <div>
+                            <strong style={{ color: 'var(--leaf-deep)', display: 'block', marginBottom: '0.2rem' }}>
+                              Daftar Bahan:
+                            </strong>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                              {item.materials?.map((m, idx) => (
+                                <span key={idx} style={{ background: '#FFFFFF', padding: '2px 8px', borderRadius: '4px', border: '1px solid #CBD5E1' }}>
+                                  {m.name} ({m.amount})
+                                </span>
+                              )) || 'Tidak ada data bahan'}
+                            </div>
+                          </div>
+
+                          {/* Tools */}
+                          <div>
+                            <strong style={{ color: 'var(--leaf-deep)', display: 'block', marginBottom: '0.2rem' }}>
+                              Peralatan yang Digunakan:
+                            </strong>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                              {item.tools?.map((tool, idx) => (
+                                <span key={idx} style={{ background: '#FFFFFF', padding: '2px 8px', borderRadius: '4px', border: '1px solid #CBD5E1' }}>
+                                  {tool}
+                                </span>
+                              )) || 'Tidak ada data peralatan'}
+                            </div>
+                          </div>
+
+                          {/* Steps */}
+                          <div>
+                            <strong style={{ color: 'var(--leaf-deep)', display: 'block', marginBottom: '0.3rem' }}>
+                              Langkah SOP Pembuatan ({item.steps?.length || 0} Langkah):
+                            </strong>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+                              {item.steps?.map((st) => (
+                                <div key={st.stepNumber} style={{ background: '#FFFFFF', padding: '0.5rem 0.75rem', borderRadius: '4px', border: '1px solid #CBD5E1' }}>
+                                  <div style={{ fontWeight: 600, color: 'var(--leaf-dark)' }}>
+                                    Langkah {st.stepNumber}: {st.title}
+                                  </div>
+                                  <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '2px' }}>
+                                    {st.description}
+                                  </div>
+                                  {st.tip && (
+                                    <div style={{ color: '#D97706', fontSize: '0.74rem', marginTop: '2px' }}>
+                                      💡 Tip: {st.tip}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Safety Tips */}
+                          {item.safetyTips && item.safetyTips.length > 0 && (
+                            <div>
+                              <strong style={{ color: '#991B1B', display: 'block', marginBottom: '0.2rem' }}>
+                                Panduan Keselamatan (K3):
+                              </strong>
+                              <ul style={{ paddingLeft: '1.2rem', margin: 0, color: '#7F1D1D' }}>
+                                {item.safetyTips.map((tip, idx) => (
+                                  <li key={idx}>{tip}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       {/* Rejection input box */}
                       {rejectingId === item.id && (
@@ -302,7 +406,7 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
                       border: '1px solid #FECACA',
                       borderRadius: 'var(--radius-md)'
                     }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                         <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#991B1B' }}>
                           Laporan Masalah pada Ulasan: {rev.innovationTitle}
                         </span>

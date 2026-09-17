@@ -134,9 +134,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             padding: '0.85rem',
             marginBottom: '1.25rem'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 700, color: '#065F46', marginBottom: '0.5rem' }}>
-              <Sparkles size={14} color="#10B981" />
-              <span>Demo Cepat: Masuk sebagai Peran Khusus (1-Klik)</span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.3rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 700, color: '#065F46' }}>
+                <Sparkles size={14} color="#10B981" />
+                <span>Simulasi Peran Demo (1-Klik):</span>
+              </div>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', background: '#FFFFFF', padding: '1px 6px', borderRadius: '4px', border: '1px solid #CBD5E1' }}>
+                Mode Demo Prototype
+              </span>
             </div>
             
             <div className="grid-2-col" style={{ gap: '0.4rem' }}>

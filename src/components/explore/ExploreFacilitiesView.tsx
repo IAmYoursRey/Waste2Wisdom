@@ -1,36 +1,123 @@
-import React, { useState } from 'react';
-import { initialFacilitiesData } from '../../data/facilitiesData';
-import { FacilityItem } from '../../types';
-import { Compass, Factory, Cog, Calendar, MapPin, Phone, User, CheckCircle2, ArrowRight, X, ShieldCheck } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { FacilityItem, FacilityBookingRecord } from '../../types';
+import { api } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { 
+  Factory, 
+  Cog, 
+  Calendar, 
+  MapPin, 
+  X, 
+  CheckCircle2, 
+  FileText, 
+  Clock, 
+  Users, 
+  Sparkles,
+  ChevronRight
+} from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export const ExploreFacilitiesView: React.FC = () => {
+  const { user, isGuest } = useAuth();
+  const { addToast } = useToast();
+
+  const [facilities, setFacilities] = useState<FacilityItem[]>([]);
+  const [bookings, setBookings] = useState<FacilityBookingRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [selectedFacility, setSelectedFacility] = useState<FacilityItem | null>(null);
   const [bookingModalFacility, setBookingModalFacility] = useState<FacilityItem | null>(null);
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [isSubmittingBooking, setIsSubmittingBooking] = useState(false);
 
   // Form states
-  const [visitorName, setVisitorName] = useState('');
+  const [visitorName, setVisitorName] = useState(user?.name || '');
   const [institution, setInstitution] = useState('');
   const [visitDate, setVisitDate] = useState('');
   const [participantCount, setParticipantCount] = useState('10');
-  const [purpose, setPurpose] = useState('Study Tour SMK / Mahasiswa');
+  const [purpose, setPurpose] = useState('Study Tour SMK / Mahasiswa (Kurikulum Merdeka 5M)');
 
-  const handleBookingSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setBookingSuccess(true);
-    confetti({
-      particleCount: 80,
-      spread: 60,
-      origin: { y: 0.6 }
-    });
-    setTimeout(() => {
-      setBookingSuccess(false);
-      setBookingModalFacility(null);
-      setVisitorName('');
-      setInstitution('');
-    }, 2800);
+  const [activeTab, setActiveTab] = useState<'facilities' | 'bookings'>('facilities');
+
+  // Load facilities & bookings via API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const [facList, bookList] = await Promise.all([
+          api.facilities.getAll(),
+          api.facilities.getBookings()
+        ]);
+        setFacilities(facList);
+        setBookings(bookList);
+      } catch (err) {
+        console.error('Failed loading facility data:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleOpenBookingModal = (fac: FacilityItem) => {
+    setBookingModalFacility(fac);
+    setBookingSuccess(false);
+    setVisitorName(isGuest ? '' : user?.name || '');
+    setInstitution('');
+    setVisitDate('');
+    setParticipantCount('10');
+    setPurpose('Study Tour SMK / Mahasiswa (Kurikulum Merdeka 5M)');
   };
+
+  const handleBookingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bookingModalFacility) return;
+
+    if (!visitDate) {
+      addToast('Harap pilih tanggal rencana kunjungan.', 'warning');
+      return;
+    }
+
+    try {
+      setIsSubmittingBooking(true);
+      const newBooking = await api.facilities.createBooking({
+        facilityId: bookingModalFacility.id,
+        facilityName: bookingModalFacility.name,
+        visitorName: visitorName.trim() || (isGuest ? 'Pengguna Tamu' : user.name),
+        institution: institution.trim() || 'Umum / Mandiri',
+        visitDate,
+        participantCount: parseInt(participantCount, 10) || 1,
+        purpose,
+        requestedBy: user.id
+      });
+
+      setBookings((prev) => [newBooking, ...prev]);
+      setBookingSuccess(true);
+      confetti({
+        particleCount: 80,
+        spread: 60,
+        origin: { y: 0.6 }
+      });
+      addToast('Permohonan simulasi kunjungan berhasil disimpan!', 'success');
+
+      setTimeout(() => {
+        setBookingSuccess(false);
+        setBookingModalFacility(null);
+        setVisitorName('');
+        setInstitution('');
+        setVisitDate('');
+        setParticipantCount('10');
+        setPurpose('Study Tour SMK / Mahasiswa (Kurikulum Merdeka 5M)');
+      }, 2400);
+    } catch (err: any) {
+      addToast(err?.message || 'Gagal mengirim permohonan kunjungan.', 'error');
+    } finally {
+      setIsSubmittingBooking(false);
+    }
+  };
+
+  const userBookings = bookings.filter((b) => b.requestedBy === user.id);
 
   return (
     <section style={{ padding: '2.5rem 0' }}>
@@ -53,199 +140,327 @@ export const ExploreFacilitiesView: React.FC = () => {
           <p style={{ color: 'var(--text-muted)', maxWidth: '820px', fontSize: '0.98rem' }}>
             Lihat langsung operasional pemilahan dan teknologi daur ulang di sentra <strong>Tempat PengNIP (Pengolahan Non-B3 Industri Terpadu)</strong>, TPST 3R kawasan industri, dan laboratorium biokonversi. Pelajari mesin-mesin industri dan jadwalkan kunjungan edukatif.
           </p>
-        </div>
 
-        {/* Facilities Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
-          gap: '1.5rem',
-          marginBottom: '3rem'
-        }}>
-          {initialFacilitiesData.map((fac) => (
-            <div
-              key={fac.id}
-              className="glass-card"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                padding: '1.5rem',
-                borderLeft: '5px solid #10B981'
-              }}
-            >
-              <div>
-                
-                {/* Badge Type & City */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                    <span style={{
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      padding: '0.25rem 0.65rem',
-                      borderRadius: 'var(--radius-full)',
-                      background: '#ECFDF5',
-                      color: '#065F46',
-                      border: '1px solid #A7F3D0'
-                    }}>
-                      {fac.type}
-                    </span>
-                    <span style={{
-                      fontSize: '0.65rem',
-                      fontWeight: 700,
-                      padding: '0.25rem 0.5rem',
-                      borderRadius: 'var(--radius-full)',
-                      background: '#FEF3C7',
-                      color: '#B45309',
-                      border: '1px solid #FDE68A'
-                    }} title="Data ini adalah simulasi (belum diverifikasi admin)">
-                      Data Demo
-                    </span>
-                  </div>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                    <MapPin size={14} color="#059669" />
-                    <span>{fac.city}, {fac.province}</span>
-                  </span>
-                </div>
-
-                {/* Name */}
-                <h3 style={{ fontSize: '1.25rem', color: 'var(--leaf-deep)', marginBottom: '0.6rem' }}>
-                  {fac.name}
-                </h3>
-
-                {/* Description */}
-                <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '1rem' }}>
-                  {fac.description}
-                </p>
-
-                {/* Capacity & Featured Output Box */}
-                <div style={{
-                  background: '#F8FAFC',
-                  padding: '0.85rem',
-                  borderRadius: 'var(--radius-md)',
-                  border: '1px solid var(--border-light)',
-                  marginBottom: '1rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.4rem'
-                }}>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>
-                    <strong>Kapasitas Pengolahan:</strong> {fac.capacity}
-                  </div>
-                  <div style={{ fontSize: '0.78rem', color: '#065F46' }}>
-                    <strong>Output Unggulan:</strong> {fac.featuredOutput}
-                  </div>
-                </div>
-
-                {/* Technology Tags */}
-                <div style={{ marginBottom: '1rem' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-light)', marginBottom: '0.35rem' }}>
-                    Teknologi & Fasilitas Utama:
-                  </div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-                    {fac.technologies.slice(0, 3).map((tech, tIdx) => (
-                      <span key={tIdx} style={{
-                        fontSize: '0.72rem',
-                        background: '#FFFFFF',
-                        color: '#334155',
-                        padding: '0.2rem 0.55rem',
-                        borderRadius: 'var(--radius-sm)',
-                        border: '1px solid #CBD5E1'
-                      }}>
-                        ⚙️ {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-              </div>
-
-              {/* Action Buttons */}
-              <div style={{
-                paddingTop: '1rem',
-                borderTop: '1px solid var(--border-light)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '0.5rem'
-              }}>
-                <button
-                  onClick={() => setSelectedFacility(fac)}
-                  className="btn-outline"
-                  style={{ fontSize: '0.82rem', padding: '0.45rem 0.9rem' }}
-                >
-                  <Cog size={15} color="#059669" />
-                  <span>Bedah Mesin & Alur</span>
-                </button>
-
-                <button
-                  onClick={() => setBookingModalFacility(fac)}
-                  className="btn-primary"
-                  style={{ fontSize: '0.82rem', padding: '0.45rem 0.95rem' }}
-                >
-                  <Calendar size={15} />
-                  <span>Ajukan Kunjungan</span>
-                </button>
-              </div>
-
-            </div>
-          ))}
-        </div>
-
-        {/* Industrial Machines Education Section */}
-        <div className="glass-card" style={{ padding: '2rem', border: '1.5px solid var(--border-leaf)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <Cog size={22} color="#10B981" />
-            <h3 style={{ fontSize: '1.35rem', color: 'var(--leaf-deep)' }}>
-              Edukasi Mesin Industri Pengolah Limbah
-            </h3>
-          </div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem', maxWidth: '750px' }}>
-            Pemahaman mengenai jenis mesin mekanikal yang digunakan dalam sentra pengolahan untuk mengubah limbah mentah menjadi material terstandarisasi industri sirkular.
-          </p>
-
+          {/* Sub Navigation Bar */}
           <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '1rem'
+            display: 'flex',
+            gap: '0.65rem',
+            marginTop: '1.25rem',
+            borderBottom: '1px solid var(--border-light)',
+            paddingBottom: '0.75rem'
           }}>
-            <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
-              <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.3rem' }}>
-                1. Mesin Dual-Shaft Shredder
-              </div>
-              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
-                Mencacah limbah keras berukuran besar (palet kayu, drum HDPE, wadah logam non-B3) menjadi serpihan homogen menggunakan dua poros pisau baja torsi tinggi.
-              </div>
-            </div>
+            <button
+              onClick={() => setActiveTab('facilities')}
+              className={activeTab === 'facilities' ? 'btn-primary btn-sm' : 'btn-outline btn-sm'}
+            >
+              <Factory size={15} />
+              <span>Daftar Sentra Fasilitas ({facilities.length})</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('bookings')}
+              className={activeTab === 'bookings' ? 'btn-primary btn-sm' : 'btn-outline btn-sm'}
+            >
+              <FileText size={15} />
+              <span>Jadwal Kunjungan Saya ({userBookings.length})</span>
+            </button>
+          </div>
+        </div>
 
-            <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
-              <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.3rem' }}>
-                2. Extrusion Pelletizer
-              </div>
-              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
-                Melelehkan serpihan plastik termoplastik bersih dengan suhu terkontrol (180-220°C), lalu mencetaknya melalui cetakan bulat menjadi biji pelet plastik daur ulang siap jual.
-              </div>
-            </div>
+        {/* TAB 1: FACILITIES */}
+        {activeTab === 'facilities' && (
+          <div>
+            {isLoading ? (
+              <div style={{ textAlign: 'center', padding: '3rem' }}>Memuat sentra fasilitas...</div>
+            ) : (
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
+                gap: '1.5rem',
+                marginBottom: '3rem'
+              }}>
+                {facilities.map((fac) => (
+                  <div
+                    key={fac.id}
+                    className="glass-card"
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      padding: '1.5rem',
+                      borderLeft: '5px solid #10B981'
+                    }}
+                  >
+                    <div>
+                      {/* Badge Type & City */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.4rem' }}>
+                        <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                          <span style={{
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            padding: '0.25rem 0.65rem',
+                            borderRadius: 'var(--radius-full)',
+                            background: '#ECFDF5',
+                            color: '#065F46',
+                            border: '1px solid #A7F3D0'
+                          }}>
+                            {fac.type}
+                          </span>
+                          <span style={{
+                            fontSize: '0.65rem',
+                            fontWeight: 700,
+                            padding: '0.25rem 0.5rem',
+                            borderRadius: 'var(--radius-full)',
+                            background: '#FEF3C7',
+                            color: '#B45309',
+                            border: '1px solid #FDE68A'
+                          }} title="Data fasilitas ini adalah data simulasi demo prototype">
+                            Data Demo
+                          </span>
+                        </div>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                          <MapPin size={14} color="#059669" />
+                          <span>{fac.city}, {fac.province}</span>
+                        </span>
+                      </div>
 
-            <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
-              <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.3rem' }}>
-                3. Mesin Press Hidrolik Paving
-              </div>
-              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
-                Memadatkan agregat campuran fly ash batubara dan semen dengan tekanan hingga 150-200 kg/cm2 ditambah vibrasi intensif untuk menghasilkan paving block mutu K-300 SNI.
-              </div>
-            </div>
+                      {/* Name */}
+                      <h3 style={{ fontSize: '1.25rem', color: 'var(--leaf-deep)', marginBottom: '0.6rem' }}>
+                        {fac.name}
+                      </h3>
 
-            <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
-              <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.3rem' }}>
-                4. Mesin Garnetting Tekstil
+                      {/* Description */}
+                      <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '1rem' }}>
+                        {fac.description}
+                      </p>
+
+                      {/* Capacity & Featured Output Box */}
+                      <div style={{
+                        background: '#F8FAFC',
+                        padding: '0.85rem',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--border-light)',
+                        marginBottom: '1rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.4rem'
+                      }}>
+                        <div style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>
+                          <strong>Kapasitas Pengolahan:</strong> {fac.capacity}
+                        </div>
+                        <div style={{ fontSize: '0.78rem', color: '#065F46' }}>
+                          <strong>Output Unggulan:</strong> {fac.featuredOutput}
+                        </div>
+                      </div>
+
+                      {/* Technology Tags */}
+                      <div style={{ marginBottom: '1rem' }}>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-light)', marginBottom: '0.35rem' }}>
+                          Teknologi & Fasilitas Utama:
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                          {fac.technologies.slice(0, 3).map((tech, tIdx) => (
+                            <span key={tIdx} style={{
+                              fontSize: '0.72rem',
+                              background: '#FFFFFF',
+                              color: '#334155',
+                              padding: '0.2rem 0.55rem',
+                              borderRadius: 'var(--radius-sm)',
+                              border: '1px solid #CBD5E1'
+                            }}>
+                              ⚙️ {tech}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div style={{
+                      paddingTop: '1rem',
+                      borderTop: '1px solid var(--border-light)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '0.5rem',
+                      flexWrap: 'wrap'
+                    }}>
+                      <button
+                        onClick={() => setSelectedFacility(fac)}
+                        className="btn-outline"
+                        style={{ fontSize: '0.82rem', padding: '0.45rem 0.9rem' }}
+                      >
+                        <Cog size={15} color="#059669" />
+                        <span>Bedah Mesin & Alur</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleOpenBookingModal(fac)}
+                        className="btn-primary"
+                        style={{ fontSize: '0.82rem', padding: '0.45rem 0.95rem' }}
+                      >
+                        <Calendar size={15} />
+                        <span>Ajukan Kunjungan</span>
+                      </button>
+                    </div>
+
+                  </div>
+                ))}
               </div>
-              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
-                Membuka kembali jalinan benang pada kain perca garmen melalui silinder bergigi halus, mengembalikannya menjadi serat kapas atau wol sekunder (rag pulling).
+            )}
+
+            {/* Industrial Machines Education Section */}
+            <div className="glass-card" style={{ padding: '2rem', border: '1.5px solid var(--border-leaf)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <Cog size={22} color="#10B981" />
+                <h3 style={{ fontSize: '1.35rem', color: 'var(--leaf-deep)' }}>
+                  Edukasi Mesin Industri Pengolah Limbah
+                </h3>
+              </div>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem', maxWidth: '750px' }}>
+                Pemahaman mengenai jenis mesin mekanikal yang digunakan dalam sentra pengolahan untuk mengubah limbah mentah menjadi material terstandarisasi industri sirkular.
+              </p>
+
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gap: '1rem'
+              }}>
+                <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.3rem' }}>
+                    1. Mesin Dual-Shaft Shredder
+                  </div>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
+                    Mencacah limbah keras berukuran besar (palet kayu, drum HDPE, wadah logam non-B3) menjadi serpihan homogen menggunakan dua poros pisau baja torsi tinggi.
+                  </div>
+                </div>
+
+                <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.3rem' }}>
+                    2. Extrusion Pelletizer
+                  </div>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
+                    Melelehkan serpihan plastik termoplastik bersih dengan suhu terkontrol (180-220°C), lalu mencetaknya melalui cetakan bulat menjadi biji pelet plastik daur ulang siap jual.
+                  </div>
+                </div>
+
+                <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.3rem' }}>
+                    3. Mesin Press Hidrolik Paving
+                  </div>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
+                    Memadatkan agregat campuran fly ash batubara dan semen dengan tekanan hingga 150-200 kg/cm2 ditambah vibrasi intensif untuk menghasilkan paving block mutu K-300 SNI.
+                  </div>
+                </div>
+
+                <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.3rem' }}>
+                    4. Mesin Garnetting Tekstil
+                  </div>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
+                    Membuka kembali jalinan benang pada kain perca garmen melalui silinder bergigi halus, mengembalikannya menjadi serat kapas atau wol sekunder (rag pulling).
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* TAB 2: BOOKINGS LIST */}
+        {activeTab === 'bookings' && (
+          <div style={{ marginBottom: '3rem' }}>
+            <div style={{
+              background: '#ECFDF5',
+              padding: '1rem',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid #A7F3D0',
+              marginBottom: '1.5rem',
+              fontSize: '0.85rem',
+              color: '#065F46'
+            }}>
+              <strong>Simulasi Pengajuan Kunjungan:</strong> Seluruh permohonan kunjungan tersimpan secara persisten di penyimpanan browser lokal Anda (localStorage) untuk simulasi prototipe.
+            </div>
+
+            {userBookings.length === 0 ? (
+              <div className="empty-state">
+                <Calendar size={36} color="#059669" style={{ margin: '0 auto 0.75rem auto' }} />
+                <h3 style={{ fontSize: '1.15rem', color: 'var(--leaf-deep)' }}>
+                  Belum Ada Jadwal Kunjungan yang Diajukan
+                </h3>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.86rem', maxWidth: '420px', margin: '0 auto 1rem auto' }}>
+                  Pilih salah satu sentra Tempat PengNIP di atas untuk menjadwalkan kunjungan belajar atau survei bahan baku industri.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('facilities')}
+                  className="btn-primary btn-sm"
+                >
+                  Lihat Daftar Sentra Fasilitas
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {userBookings.map((b) => (
+                  <div
+                    key={b.id}
+                    style={{
+                      background: '#FFFFFF',
+                      padding: '1.25rem',
+                      borderRadius: 'var(--radius-md)',
+                      border: '1.5px solid #E2E8F0',
+                      boxShadow: 'var(--shadow-sm)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
+                          <span style={{ fontSize: '0.72rem', background: '#FEF3C7', color: '#92400E', padding: '2px 8px', borderRadius: '10px', fontWeight: 700 }}>
+                            {b.status === 'pending' ? 'Menunggu Konfirmasi Sentra' : b.status}
+                          </span>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                            ID: {b.id}
+                          </span>
+                        </div>
+                        <h4 style={{ fontSize: '1.15rem', color: 'var(--leaf-deep)' }}>
+                          {b.facilityName}
+                        </h4>
+                      </div>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                        Diajukan: {b.createdAt}
+                      </span>
+                    </div>
+
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                      gap: '0.75rem',
+                      background: '#F8FAFC',
+                      padding: '0.85rem',
+                      borderRadius: 'var(--radius-sm)',
+                      fontSize: '0.82rem'
+                    }}>
+                      <div>
+                        <strong>Pemohon:</strong> {b.visitorName}
+                      </div>
+                      <div>
+                        <strong>Instansi:</strong> {b.institution}
+                      </div>
+                      <div>
+                        <strong>Tanggal Kunjungan:</strong> {b.visitDate}
+                      </div>
+                      <div>
+                        <strong>Jumlah Peserta:</strong> {b.participantCount} Orang
+                      </div>
+                      <div style={{ gridColumn: '1 / -1' }}>
+                        <strong>Tujuan:</strong> {b.purpose}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
       </div>
 
@@ -262,11 +477,13 @@ export const ExploreFacilitiesView: React.FC = () => {
               </div>
               <button 
                 onClick={() => setSelectedFacility(null)}
+                aria-label="Tutup detail fasilitas"
                 style={{
                   padding: '0.4rem',
                   borderRadius: '50%',
                   background: '#FFFFFF',
-                  border: '1px solid var(--border-light)'
+                  border: '1px solid var(--border-light)',
+                  cursor: 'pointer'
                 }}
               >
                 <X size={20} />
@@ -338,7 +555,7 @@ export const ExploreFacilitiesView: React.FC = () => {
               </button>
               <button 
                 onClick={() => {
-                  setBookingModalFacility(selectedFacility);
+                  handleOpenBookingModal(selectedFacility);
                   setSelectedFacility(null);
                 }} 
                 className="btn-primary"
@@ -354,17 +571,17 @@ export const ExploreFacilitiesView: React.FC = () => {
       {/* Booking Modal */}
       {bookingModalFacility && (
         <div className="modal-overlay" onClick={() => setBookingModalFacility(null)}>
-          <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '560px' }} onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '580px' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div>
-                <h3 style={{ fontSize: '1.25rem', color: 'var(--leaf-deep)' }}>
-                  Formulir Pengajuan Kunjungan Edukasi
-                </h3>
-                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                  {bookingModalFacility.name}
+                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#059669', marginBottom: '0.2rem' }}>
+                  SIMULASI PENGAJUAN KUNJUNGAN EDUKASI (PROTOTYPE)
                 </div>
+                <h3 style={{ fontSize: '1.25rem', color: 'var(--leaf-deep)' }}>
+                  Jadwalkan Kunjungan ke {bookingModalFacility.name}
+                </h3>
               </div>
-              <button onClick={() => setBookingModalFacility(null)} style={{ padding: '0.3rem' }}>
+              <button onClick={() => setBookingModalFacility(null)} aria-label="Tutup formulir kunjungan" style={{ padding: '0.3rem', background: 'transparent', border: 'none', cursor: 'pointer' }}>
                 <X size={20} />
               </button>
             </div>
@@ -373,15 +590,28 @@ export const ExploreFacilitiesView: React.FC = () => {
               <div style={{ padding: '2.5rem 1.5rem', textAlign: 'center' }}>
                 <CheckCircle2 size={54} color="#10B981" style={{ margin: '0 auto 1rem auto' }} />
                 <h3 style={{ fontSize: '1.3rem', color: 'var(--leaf-deep)', marginBottom: '0.5rem' }}>
-                  Pengajuan Kunjungan Berhasil Terkirim!
+                  Permohonan Kunjungan Berhasil Disimpan!
                 </h3>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                  Pihak pengelola Tempat PengNIP akan menghubungi narahubung Anda untuk konfirmasi izin masuk dan briefing keselamatan kerja (K3).
+                  Permohonan simulasi telah tersimpan ke dalam riwayat akun Anda. Pihak pengelola Tempat PengNIP akan mengonfirmasi slot kunjungan dan briefing keselamatan K3.
                 </p>
               </div>
             ) : (
               <form onSubmit={handleBookingSubmit}>
-                <div className="modal-body">
+                <div className="modal-body" style={{ maxHeight: '68vh', overflowY: 'auto' }}>
+                  
+                  <div style={{
+                    background: '#FEF3C7',
+                    padding: '0.75rem 1rem',
+                    borderRadius: 'var(--radius-sm)',
+                    border: '1px solid #FDE68A',
+                    fontSize: '0.8rem',
+                    color: '#92400E',
+                    marginBottom: '1rem'
+                  }}>
+                    Formulir ini bekerja dalam mode <strong>Simulasi Prototype</strong> dan tersimpan ke penyimpanan browser lokal Anda (localStorage).
+                  </div>
+
                   <div className="form-group">
                     <label className="form-label">Nama Pemohon / Penanggung Jawab *</label>
                     <input
@@ -406,8 +636,8 @@ export const ExploreFacilitiesView: React.FC = () => {
                     />
                   </div>
 
-                  <div className="grid-2-col">
-                    <div className="form-group">
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
                       <label className="form-label">Rencana Tanggal Kunjungan *</label>
                       <input
                         type="date"
@@ -417,7 +647,7 @@ export const ExploreFacilitiesView: React.FC = () => {
                         className="form-input"
                       />
                     </div>
-                    <div className="form-group">
+                    <div className="form-group" style={{ marginBottom: 0 }}>
                       <label className="form-label">Perkiraan Jumlah Peserta</label>
                       <input
                         type="number"
@@ -437,7 +667,7 @@ export const ExploreFacilitiesView: React.FC = () => {
                       onChange={(e) => setPurpose(e.target.value)}
                       className="form-select"
                     >
-                      <option value="Study Tour SMK / Mahasiswa">Study Tour SMK / Mahasiswa (Kurikulum Merdeka 5M)</option>
+                      <option value="Study Tour SMK / Mahasiswa (Kurikulum Merdeka 5M)">Study Tour SMK / Mahasiswa (Kurikulum Merdeka 5M)</option>
                       <option value="Riset Pengambilan Sampel Limbah">Riset Pengambilan Sampel Limbah</option>
                       <option value="Penjajakan Pasokan Bahan Baku UMKM">Penjajakan Pasokan Bahan Baku UMKM</option>
                       <option value="Pelatihan Daur Ulang Mandiri">Pelatihan Daur Ulang Mandiri</option>
@@ -449,8 +679,8 @@ export const ExploreFacilitiesView: React.FC = () => {
                   <button type="button" onClick={() => setBookingModalFacility(null)} className="btn-secondary">
                     Batal
                   </button>
-                  <button type="submit" className="btn-primary">
-                    Kirim Permohonan Kunjungan
+                  <button type="submit" disabled={isSubmittingBooking} className="btn-primary">
+                    {isSubmittingBooking ? 'Menyimpan...' : 'Kirim Permohonan Kunjungan'}
                   </button>
                 </div>
               </form>

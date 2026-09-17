@@ -1,6 +1,6 @@
 import React from 'react';
 import { WasteItem } from '../../types';
-import { X, ShieldAlert, CheckCircle2, AlertTriangle, FileText, HardHat, Sparkles, Scale } from 'lucide-react';
+import { X, ShieldAlert, CheckCircle2, AlertTriangle, FileText, HardHat, Sparkles, Scale, AlertCircle } from 'lucide-react';
 
 interface WasteDetailModalProps {
   waste: WasteItem | null;
@@ -16,6 +16,11 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
   if (!waste) return null;
 
   const isB3 = waste.category === 'b3';
+  const isCaution = waste.safetyRating === 'caution';
+
+  const headerBg = isB3 ? '#FEF2F2' : isCaution ? '#FFFBEB' : '#F0FDF4';
+  const headerBorder = isB3 ? '2px solid #FECACA' : isCaution ? '2px solid #FDE68A' : '2px solid #A7F3D0';
+  const headerTextColor = isB3 ? '#991B1B' : isCaution ? '#92400E' : '#065F46';
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -23,22 +28,30 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
         
         {/* Header */}
         <div className="modal-header" style={{
-          borderBottom: isB3 ? '2px solid #FECACA' : '2px solid #A7F3D0',
-          background: isB3 ? '#FEF2F2' : '#F0FDF4'
+          borderBottom: headerBorder,
+          background: headerBg
         }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-              <span className={`badge-national ${isB3 ? 'badge-danger' : 'badge-safe'}`}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', flexWrap: 'wrap' }}>
+              <span className={`badge-national ${isB3 ? 'badge-danger' : isCaution ? 'badge-caution' : 'badge-safe'}`} style={{
+                background: isB3 ? '#FEE2E2' : isCaution ? '#FEF3C7' : '#DCFCE7',
+                color: isB3 ? '#991B1B' : isCaution ? '#92400E' : '#166534',
+                padding: '2px 8px',
+                borderRadius: '6px',
+                fontWeight: 700,
+                fontSize: '0.75rem'
+              }}>
                 {waste.categoryLabel}
               </span>
               <span className="badge-sector">{waste.industrialSector}</span>
             </div>
-            <h2 style={{ fontSize: '1.4rem', color: isB3 ? '#991B1B' : '#065F46' }}>
+            <h2 style={{ fontSize: '1.4rem', color: headerTextColor }}>
               {waste.name}
             </h2>
           </div>
           <button 
             onClick={onClose}
+            aria-label="Tutup modal detail limbah"
             style={{
               padding: '0.4rem',
               borderRadius: '50%',
@@ -47,7 +60,8 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'var(--text-muted)'
+              color: 'var(--text-muted)',
+              cursor: 'pointer'
             }}
           >
             <X size={20} />
@@ -61,21 +75,36 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
           <div style={{
             padding: '1rem',
             borderRadius: 'var(--radius-md)',
-            background: isB3 ? '#FFF1F2' : '#F0FDF4',
-            border: isB3 ? '1.5px solid #FDA4AF' : '1.5px solid #86EFAC',
+            background: isB3 ? '#FFF1F2' : isCaution ? '#FFFBEB' : '#F0FDF4',
+            border: isB3 ? '1.5px solid #FDA4AF' : isCaution ? '1.5px solid #FCD34D' : '1.5px solid #86EFAC',
             display: 'flex',
             gap: '0.85rem'
           }}>
             {isB3 ? (
               <ShieldAlert size={26} color="#E11D48" style={{ flexShrink: 0, marginTop: '2px' }} />
+            ) : isCaution ? (
+              <AlertCircle size={26} color="#D97706" style={{ flexShrink: 0, marginTop: '2px' }} />
             ) : (
               <CheckCircle2 size={26} color="#059669" style={{ flexShrink: 0, marginTop: '2px' }} />
             )}
             <div>
-              <div style={{ fontWeight: 700, fontSize: '0.95rem', color: isB3 ? '#9F1239' : '#065F46' }}>
-                {isB3 ? 'Peringatan Keselamatan: Kategori Limbah B3' : 'Kategori Aman: Dapat Diolah Mandiri / Komunitas'}
+              <div style={{
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                color: isB3 ? '#9F1239' : isCaution ? '#B45309' : '#065F46'
+              }}>
+                {isB3
+                  ? 'Peringatan Regulasi: Kategori Limbah B3 Berbahaya'
+                  : isCaution
+                  ? 'Perhatian & Kehati-hatian: Non-B3 dengan Kondisi & SOP Khusus'
+                  : 'Kategori Non-B3: Dapat Dimanfaatkan Mandiri / Komunitas'}
               </div>
-              <div style={{ fontSize: '0.85rem', color: isB3 ? '#881337' : '#047857', marginTop: '0.2rem', lineHeight: 1.5 }}>
+              <div style={{
+                fontSize: '0.85rem',
+                color: isB3 ? '#881337' : isCaution ? '#78350F' : '#047857',
+                marginTop: '0.2rem',
+                lineHeight: 1.5
+              }}>
                 {waste.safetyDescription}
               </div>
             </div>
@@ -95,7 +124,7 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>
                 <Scale size={15} color="#059669" />
-                <span>DASAR HUKUM NASIONAL</span>
+                <span>DASAR HUKUM & STATUS REGULASI</span>
               </div>
               <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '0.25rem' }}>
                 {waste.legalCode}
@@ -110,34 +139,39 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>
                 <FileText size={15} color="#059669" />
-                <span>SUMBER PROSES INDUSTRI</span>
+                <span>SUMBER ALIRAN PROSES INDUSTRI</span>
               </div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-main)', marginTop: '0.25rem' }}>
+              <div style={{ fontSize: '0.84rem', color: 'var(--text-main)', marginTop: '0.25rem', lineHeight: 1.4 }}>
                 {waste.source}
               </div>
             </div>
           </div>
 
-          {/* Characteristics & Physical Form */}
-          <div>
-            <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-              Wujud Fisik & Karakteristik:
+          {/* Physical Form & Characteristics */}
+          <div style={{
+            padding: '1rem',
+            background: '#F8FAFC',
+            borderRadius: 'var(--radius-md)',
+            border: '1px solid var(--border-light)'
+          }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.4rem' }}>
+              Bentuk Fisik & Karakteristik Bahan:
             </div>
-            <p style={{ fontSize: '0.88rem', color: 'var(--text-main)', marginBottom: '0.5rem' }}>
+            <p style={{ fontSize: '0.84rem', color: 'var(--text-muted)', marginBottom: '0.6rem' }}>
               {waste.physicalForm}
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
               {waste.characteristics.map((char, idx) => (
                 <span key={idx} style={{
                   fontSize: '0.75rem',
-                  fontWeight: 600,
-                  padding: '0.2rem 0.6rem',
-                  background: '#ECFDF5',
-                  color: '#065F46',
-                  borderRadius: 'var(--radius-full)',
-                  border: '1px solid #A7F3D0'
+                  background: '#FFFFFF',
+                  color: 'var(--text-main)',
+                  padding: '0.25rem 0.6rem',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid #CBD5E1',
+                  fontWeight: 500
                 }}>
-                  {char}
+                  • {char}
                 </span>
               ))}
             </div>
@@ -145,28 +179,25 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
 
           {/* Required PPE (APD) */}
           <div style={{
-            background: '#F8FAFC',
             padding: '1rem',
             borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--border-light)'
+            background: '#F1F5F9',
+            border: '1px solid #CBD5E1'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, fontSize: '0.88rem', color: 'var(--text-main)', marginBottom: '0.6rem' }}>
-              <HardHat size={17} color="#059669" />
-              <span>Standar Alat Pelindung Diri (APD) Wajib:</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-main)', marginBottom: '0.5rem' }}>
+              <HardHat size={16} color="#059669" />
+              <span>Alat Pelindung Diri (APD) Minimal Wajib:</span>
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
               {waste.requiredPPE.map((ppe, idx) => (
                 <span key={idx} style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.35rem',
-                  fontSize: '0.8rem',
+                  fontSize: '0.78rem',
                   fontWeight: 600,
-                  padding: '0.35rem 0.75rem',
                   background: '#FFFFFF',
-                  borderRadius: 'var(--radius-md)',
-                  border: '1.5px solid var(--border-light)',
-                  color: 'var(--text-main)'
+                  color: 'var(--leaf-deep)',
+                  padding: '0.3rem 0.75rem',
+                  borderRadius: 'var(--radius-full)',
+                  border: '1px solid #A7F3D0'
                 }}>
                   🛡️ {ppe}
                 </span>
@@ -174,9 +205,8 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
             </div>
           </div>
 
-          {/* Handling Guidelines & Prohibitions */}
+          {/* Guidelines vs Prohibitions */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-            
             {/* Guidelines */}
             <div style={{
               background: '#F0FDF4',
@@ -186,7 +216,7 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, fontSize: '0.85rem', color: '#166534', marginBottom: '0.5rem' }}>
                 <CheckCircle2 size={16} color="#16A34A" />
-                <span>SOP Penanganan yang Dianjurkan:</span>
+                <span>Panduan Penanganan yang Dianjurkan (SOP):</span>
               </div>
               <ul style={{ paddingLeft: '1.2rem', fontSize: '0.82rem', color: '#14532D', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                 {waste.handlingGuidelines.map((guide, idx) => (
@@ -195,7 +225,7 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
               </ul>
             </div>
 
-            {/* Prohibitions */}
+            {/* Prohibited */}
             <div style={{
               background: '#FFF1F2',
               padding: '1rem',
@@ -230,7 +260,7 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
             </p>
 
             <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#065F46', marginBottom: '0.4rem' }}>
-              Rekomendasi Kreasi Inovasi di Katalog:
+              Rekomendasi Kreasi Inovasi di Marketplace / Katalog:
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
               {waste.recommendedInnovations.map((item, idx) => (
@@ -244,14 +274,15 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '0.3rem',
-                    padding: '0.3rem 0.75rem',
+                    padding: '0.35rem 0.85rem',
                     background: '#FFFFFF',
                     border: '1.5px solid #34D399',
                     borderRadius: 'var(--radius-full)',
-                    fontSize: '0.78rem',
+                    fontSize: '0.8rem',
                     fontWeight: 700,
                     color: '#047857',
                     boxShadow: 'var(--shadow-sm)',
+                    cursor: 'pointer',
                     transition: 'all var(--transition-fast)'
                   }}
                   onMouseEnter={(e) => {

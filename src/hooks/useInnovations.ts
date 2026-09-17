@@ -40,27 +40,52 @@ export function useInnovations() {
     }
   };
 
+  const handleInnovationUpdate = async (updatedItem: InnovationItem) => {
+    try {
+      const updated = await api.innovations.update(updatedItem.id, {
+        ...updatedItem,
+        status: 'pending' // Re-submit for review
+      });
+      setInnovations((prev) => prev.map((item) => (item.id === updatedItem.id ? updated : item)));
+      addToast('Perbaikan inovasi berhasil dikirim ulang untuk ditinjau admin/kurator!', 'success');
+    } catch {
+      addToast('Gagal memperbarui inovasi', 'error');
+    }
+  };
+
   const handleAdminApprove = async (id: string) => {
+    if (user.role !== 'admin') {
+      addToast('Akses ditolak: Hanya admin kurator yang berhak memverifikasi inovasi.', 'error');
+      return;
+    }
     try {
       const approved = await api.innovations.approve(id);
       setInnovations((prev) => prev.map((item) => (item.id === id ? approved : item)));
-      addToast('Inovasi disetujui.', 'success');
+      addToast('Inovasi disetujui & diterbitkan ke marketplace!', 'success');
     } catch {
       addToast('Gagal menyetujui inovasi', 'error');
     }
   };
 
   const handleAdminReject = async (id: string, reason: string) => {
+    if (user.role !== 'admin') {
+      addToast('Akses ditolak: Hanya admin kurator yang berhak menolak inovasi.', 'error');
+      return;
+    }
     try {
       const rejected = await api.innovations.reject(id, reason);
       setInnovations((prev) => prev.map((item) => (item.id === id ? rejected : item)));
-      addToast('Inovasi ditolak.', 'info');
+      addToast('Inovasi ditolak/diminta revisi.', 'info');
     } catch {
       addToast('Gagal menolak inovasi', 'error');
     }
   };
 
   const handleSeedMockPending = async () => {
+    if (user.role !== 'admin') {
+      addToast('Akses demo hanya untuk mode admin.', 'warning');
+      return;
+    }
     try {
       const sample = await api.innovations.create({
         title: 'Paving Block Ramah Lingkungan Campuran Serat Karung Goni',
@@ -97,6 +122,7 @@ export function useInnovations() {
     isLoadingInnovations,
     loadInnovations,
     handleInnovationSubmit,
+    handleInnovationUpdate,
     handleAdminApprove,
     handleAdminReject,
     handleSeedMockPending

@@ -1,19 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { InnovationItem, InnovationStep } from '../../types';
 import { X, Plus, Trash2, CheckCircle2, Sparkles, AlertCircle } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import confetti from 'canvas-confetti';
 
 interface SubmitInnovationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmitSuccess: (newInnovation: InnovationItem) => void;
+  initialData?: InnovationItem | null;
+  onUpdateSuccess?: (updatedInnovation: InnovationItem) => void;
 }
 
 export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
   isOpen,
   onClose,
-  onSubmitSuccess
+  onSubmitSuccess,
+  initialData,
+  onUpdateSuccess
 }) => {
+  const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [tagline, setTagline] = useState('');
   const [wasteSource, setWasteSource] = useState('Ampas Tebu');
@@ -24,9 +30,8 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
   const [economicValue, setEconomicValue] = useState('Dapat dijual Rp 50.000 ke pasar cinderamata');
   const [submittedBy, setSubmittedBy] = useState('');
 
-  // Materials
+  // Materials & Tools
   const [materialsText, setMaterialsText] = useState('Bahan limbah (1 kg), Lem perekat (200 gr), Air (500 ml)');
-  // Tools
   const [toolsText, setToolsText] = useState('Gunting, Wadah pencampur, Cetakan kayu');
   
   // Steps
@@ -37,6 +42,52 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
   ]);
 
   const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    if (initialData) {
+      setTitle(initialData.title || '');
+      setTagline(initialData.tagline || '');
+      setWasteSource(initialData.wasteSource || '');
+      setCategory(initialData.category || 'Kerajinan Kreatif');
+      setDifficulty(initialData.difficulty || 'Mudah');
+      setEstimatedTime(initialData.estimatedTime || '1 - 2 Hari');
+      setEstimatedCost(initialData.estimatedCost || 'Rp 20.000 / produk');
+      setEconomicValue(initialData.economicValue || '');
+      setSubmittedBy(initialData.submittedBy || user?.name || '');
+      setMaterialsText(
+        initialData.materials && initialData.materials.length > 0
+          ? initialData.materials.map((m) => `${m.name} (${m.amount})`).join(', ')
+          : ''
+      );
+      setToolsText(initialData.tools?.join(', ') || '');
+      setSteps(
+        initialData.steps && initialData.steps.length > 0
+          ? initialData.steps
+          : [
+              { stepNumber: 1, title: 'Persiapan Bahan', description: 'Bersihkan limbah secara menyeluruh.', tip: '' },
+              { stepNumber: 2, title: 'Pengolahan Utama', description: 'Lakukan proses formulasi dan pencetakan.', tip: '' }
+            ]
+      );
+    } else if (isOpen) {
+      setTitle('');
+      setTagline('');
+      setWasteSource('Ampas Tebu');
+      setCategory('Kerajinan Kreatif');
+      setDifficulty('Mudah');
+      setEstimatedTime('1 - 2 Hari');
+      setEstimatedCost('Rp 20.000 / produk');
+      setEconomicValue('Dapat dijual Rp 50.000 ke pasar cinderamata');
+      setSubmittedBy(user?.name || '');
+      setMaterialsText('Bahan limbah (1 kg), Lem perekat (200 gr), Air (500 ml)');
+      setToolsText('Gunting, Wadah pencampur, Cetakan kayu');
+      setSteps([
+        { stepNumber: 1, title: 'Persiapan Bahan & Pembersihan', description: 'Bersihkan dan keringkan limbah dari kotoran asing.', tip: 'Jemur hingga kering sempurna.' },
+        { stepNumber: 2, title: 'Pencampuran & Pembentukan', description: 'Campurkan bahan limbah dengan perekat hingga homogen, lalu cetak.', tip: 'Beri tekanan merata.' },
+        { stepNumber: 3, title: 'Pengeringan & Finishing', description: 'Biarkan mengering dan berikan lapisan akhir ramah lingkungan.', tip: 'Gunakan pernis waterbased.' }
+      ]);
+    }
+    setIsSuccess(false);
+  }, [isOpen, initialData, user]);
 
   if (!isOpen) return null;
 
@@ -77,6 +128,42 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
 
     const parsedTools = toolsText.split(',').map((t) => t.trim()).filter(Boolean);
 
+    if (initialData && onUpdateSuccess) {
+      const updatedInnovation: InnovationItem = {
+        ...initialData,
+        title,
+        tagline,
+        wasteSource,
+        category,
+        difficulty,
+        estimatedTime,
+        estimatedCost,
+        economicValue,
+        materials: parsedMaterials,
+        tools: parsedTools,
+        steps,
+        status: 'pending',
+        submittedBy: submittedBy || user?.name || 'Inovator Komunitas',
+        authorId: initialData.authorId || user?.id,
+        submissionDate: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+      };
+
+      confetti({
+        particleCount: 90,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+
+      setIsSuccess(true);
+      onUpdateSuccess(updatedInnovation);
+
+      setTimeout(() => {
+        setIsSuccess(false);
+        onClose();
+      }, 2000);
+      return;
+    }
+
     const newInnovation: InnovationItem = {
       id: `inv-${Date.now()}`,
       title,
@@ -87,15 +174,16 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
       estimatedTime,
       estimatedCost,
       economicValue,
-      rating: 5.0,
+      rating: 0,
       reviewCount: 0,
-      successRate: 95,
+      successRate: null as any,
       materials: parsedMaterials,
       tools: parsedTools,
       steps,
       safetyTips: ['Gunakan masker dan sarung tangan kerja saat pengolahan bahan.'],
-      status: 'pending', // Marked as pending for Admin verification!
-      submittedBy: submittedBy || 'Inovator Komunitas',
+      status: 'pending',
+      submittedBy: submittedBy || user?.name || 'Inovator Komunitas',
+      authorId: user?.id,
       submissionDate: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
     };
 
@@ -111,12 +199,12 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
     setTimeout(() => {
       setIsSuccess(false);
       onClose();
-    }, 2500);
+    }, 2000);
   };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '720px' }} onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '740px' }} onClick={(e) => e.stopPropagation()}>
         
         <div className="modal-header">
           <div>
@@ -125,10 +213,10 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
               <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Kurikulum Merdeka 5M</span>
             </div>
             <h2 style={{ fontSize: '1.35rem', color: 'var(--leaf-deep)' }}>
-              Ajukan Ide Inovasi Produk ke Katalog Web
+              {initialData ? 'Revisi & Kirim Ulang Inovasi' : 'Ajukan Ide Inovasi Produk ke Katalog Web'}
             </h2>
           </div>
-          <button onClick={onClose} style={{ padding: '0.4rem' }}>
+          <button onClick={onClose} aria-label="Tutup form pengajuan inovasi" style={{ padding: '0.4rem' }}>
             <X size={20} />
           </button>
         </div>
@@ -137,16 +225,36 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
           <div style={{ padding: '3rem 1.5rem', textAlign: 'center' }}>
             <CheckCircle2 size={60} color="#10B981" style={{ margin: '0 auto 1rem auto' }} />
             <h3 style={{ fontSize: '1.4rem', color: 'var(--leaf-deep)', marginBottom: '0.6rem' }}>
-              Inovasi Anda Berhasil Diajukan!
+              {initialData ? 'Inovasi Berhasil Direvisi & Diajukan Ulang!' : 'Inovasi Anda Berhasil Diajukan!'}
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', maxWidth: '500px', margin: '0 auto 1.5rem auto' }}>
-              Inovasi baru Anda telah masuk ke <strong>Antrean Verifikasi Admin</strong>. Anda dapat mengklik tombol <strong>"Verifikasi"</strong> di navigasi atas untuk menyetujuinya agar langsung tayang di marketplace.
+              Inovasi Anda telah masuk kembali ke <strong>Antrean Verifikasi Admin</strong> dengan status pending untuk ditinjau kelayakan blueprint-nya.
             </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
             <div className="modal-body" style={{ maxHeight: '68vh', overflowY: 'auto' }}>
               
+              {initialData?.rejectionReason && (
+                <div style={{
+                  background: '#FEF2F2',
+                  padding: '0.85rem 1rem',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid #FECACA',
+                  marginBottom: '1.25rem',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '0.6rem'
+                }}>
+                  <AlertCircle size={18} color="#DC2626" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <div style={{ fontSize: '0.84rem', color: '#991B1B', lineHeight: 1.45 }}>
+                    <strong>Catatan Penolakan / Revisi Sebelumnya:</strong>
+                    <div style={{ marginTop: '0.25rem', fontStyle: 'italic' }}>"{initialData.rejectionReason}"</div>
+                    <div style={{ marginTop: '0.35rem', fontSize: '0.78rem' }}>Perbaiki uraian langkah atau bahan di bawah, lalu kirim ulang permohonan.</div>
+                  </div>
+                </div>
+              )}
+
               {/* Notice */}
               <div style={{
                 background: '#ECFDF5',
@@ -160,7 +268,7 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
               }}>
                 <Sparkles size={18} color="#059669" style={{ flexShrink: 0, marginTop: '2px' }} />
                 <div style={{ fontSize: '0.82rem', color: '#065F46', lineHeight: 1.45 }}>
-                  <strong>Prinsip 5M (Menginovasi):</strong> Jika produk yang ingin Anda buat belum ada di contoh web, ajukan rancangan inovasi Anda di sini. Ide akan ditinjau oleh kurator/admin sebelum tampil untuk seluruh pengguna.
+                  <strong>Prinsip 5M (Menginovasi):</strong> Produk yang baru diajukan belum memiliki rating/ulasan (0 ulasan) sampai dicoba dan dinilai oleh komunitas pada tahapan 5M (Menguji & Mengulas).
                 </div>
               </div>
 
@@ -190,8 +298,8 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
               </div>
 
               {/* Waste Source & Category */}
-              <div className="grid-2-col">
-                <div className="form-group">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                <div className="form-group" style={{ marginBottom: 0 }}>
                   <label className="form-label">Sumber Limbah Industri *</label>
                   <input
                     type="text"
@@ -203,7 +311,7 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group" style={{ marginBottom: 0 }}>
                   <label className="form-label">Kategori Inovasi</label>
                   <select
                     value={category}
@@ -220,8 +328,8 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
               </div>
 
               {/* Difficulty & Cost */}
-              <div className="grid-3-col">
-                <div className="form-group">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                <div className="form-group" style={{ marginBottom: 0 }}>
                   <label className="form-label">Tingkat Kesulitan</label>
                   <select
                     value={difficulty}
@@ -234,7 +342,7 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
                   </select>
                 </div>
 
-                <div className="form-group">
+                <div className="form-group" style={{ marginBottom: 0 }}>
                   <label className="form-label">Estimasi Waktu</label>
                   <input
                     type="text"
@@ -245,7 +353,7 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group" style={{ marginBottom: 0 }}>
                   <label className="form-label">Estimasi Modal</label>
                   <input
                     type="text"
@@ -325,7 +433,8 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
                           <button
                             type="button"
                             onClick={() => handleRemoveStep(idx)}
-                            style={{ color: '#EF4444', padding: '2px' }}
+                            aria-label={`Hapus langkah ${step.stepNumber}`}
+                            style={{ color: '#EF4444', padding: '2px', background: 'transparent', border: 'none', cursor: 'pointer' }}
                           >
                             <Trash2 size={15} />
                           </button>
@@ -384,7 +493,7 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
                 Batal
               </button>
               <button type="submit" className="btn-primary">
-                Ajukan ke Katalog Web
+                {initialData ? 'Kirim Ulang Inovasi (Pending Verifikasi)' : 'Ajukan ke Katalog Web'}
               </button>
             </div>
           </form>

@@ -58,16 +58,17 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '72px' }}>
         
         {/* Brand Logo & Motto */}
-        <div 
+        <button 
           onClick={() => setActiveTab('dictionary')}
-          style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
+          aria-label="Beranda Waste2Wisdom"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
         >
           <img 
             src="./logo-waste2wisdom.svg" 
             alt="Waste2Wisdom Logo" 
             style={{ height: '42px', width: 'auto' }}
           />
-        </div>
+        </button>
 
         {/* Desktop Nav Items (5M Navigation) */}
         <nav style={{ display: 'none', alignItems: 'center', gap: '0.35rem' }} className="desktop-nav">
@@ -258,9 +259,23 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <Icon size={18} color={isActive ? '#10B981' : '#64748B'} />
                   <span>{item.label}</span>
                 </div>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#059669' }}>
-                  {item.mLabel}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  {item.badge && item.badge > 0 ? (
+                    <span style={{
+                      fontSize: '0.65rem',
+                      background: '#0284C7',
+                      color: '#fff',
+                      padding: '1px 6px',
+                      borderRadius: '10px',
+                      fontWeight: 700
+                    }}>
+                      {item.badge}
+                    </span>
+                  ) : null}
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#059669' }}>
+                    {item.mLabel}
+                  </span>
+                </div>
               </button>
             );
           })}

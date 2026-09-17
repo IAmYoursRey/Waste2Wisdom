@@ -8,11 +8,13 @@ import { api } from '../../services/api';
 interface SupplyRequestModalProps {
   partner: MatchmakingItem | null;
   onClose: () => void;
+  onRequestSuccess?: () => void;
 }
 
 export const SupplyRequestModal: React.FC<SupplyRequestModalProps> = ({
   partner,
-  onClose
+  onClose,
+  onRequestSuccess
 }) => {
   const { user } = useAuth();
   
@@ -29,6 +31,16 @@ export const SupplyRequestModal: React.FC<SupplyRequestModalProps> = ({
   if (!partner) return null;
 
   const isSupplier = partner.type === 'industry_supplier';
+
+  const resetForm = () => {
+    setApplicantName(user.name || '');
+    setOrganizationName(user.organization || '');
+    setPhone(user.phone || '');
+    setEmail(user.email || '');
+    setRequestedVolume('200 kg / Bulan');
+    setIntendedProduct('');
+    setPickupMethod('Ambil Langsung dengan Armada Sendiri');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +63,10 @@ export const SupplyRequestModal: React.FC<SupplyRequestModalProps> = ({
       });
       
       setIsSuccess(true);
+      if (onRequestSuccess) {
+        onRequestSuccess();
+      }
+
       confetti({
         particleCount: 80,
         spread: 70,
@@ -58,8 +74,9 @@ export const SupplyRequestModal: React.FC<SupplyRequestModalProps> = ({
       });
       setTimeout(() => {
         setIsSuccess(false);
+        resetForm();
         onClose();
-      }, 2800);
+      }, 2400);
     } catch (error) {
       console.error('Failed to submit request', error);
       alert('Gagal mengirim pengajuan.');

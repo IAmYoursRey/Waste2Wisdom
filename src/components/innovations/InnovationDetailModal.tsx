@@ -7,8 +7,6 @@ import {
   Clock, 
   DollarSign, 
   TrendingUp, 
-  CheckCircle2, 
-  AlertTriangle, 
   Lightbulb, 
   Play, 
   Pause, 
@@ -47,12 +45,18 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
     fetchProgress();
   }, [innovation, user.id]);
 
-  // Video playback timer
+  // Video playback timer - stops at 270 seconds (04:30)
   useEffect(() => {
     let interval: any;
     if (isPlayingVideo) {
       interval = setInterval(() => {
-        setVideoTime((prev) => (prev >= 270 ? 0 : prev + 1));
+        setVideoTime((prev) => {
+          if (prev >= 270) {
+            setIsPlayingVideo(false);
+            return 270;
+          }
+          return prev + 1;
+        });
       }, 1000);
     }
     return () => clearInterval(interval);
@@ -101,11 +105,13 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
           </div>
           <button 
             onClick={onClose}
+            aria-label="Tutup detail inovasi"
             style={{
               padding: '0.4rem',
               borderRadius: '50%',
               background: '#FFFFFF',
-              border: '1px solid var(--border-light)'
+              border: '1px solid var(--border-light)',
+              cursor: 'pointer'
             }}
           >
             <X size={20} />
@@ -162,7 +168,9 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
                 <span>TINGKAT KEBERHASILAN</span>
               </div>
               <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#059669', marginTop: '0.2rem' }}>
-                {innovation.successRate}% Sukses Komunitas
+                {innovation.successRate !== null && innovation.successRate !== undefined
+                  ? `${innovation.successRate}% Sukses Komunitas`
+                  : 'Belum Ada Evaluasi'}
               </div>
             </div>
           </div>
@@ -203,7 +211,7 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
             )}
           </div>
 
-          {/* Video Player Simulation with real timing */}
+          {/* Video Player Simulation */}
           <div style={{
             position: 'relative',
             background: '#0F172A',
@@ -217,6 +225,24 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
             justifyContent: 'center',
             color: '#FFFFFF'
           }}>
+            {/* Top Badge Indicating Prototype Video Simulation */}
+            <div style={{
+              position: 'absolute',
+              top: '12px',
+              right: '12px',
+              zIndex: 3,
+              background: 'rgba(15, 23, 42, 0.85)',
+              border: '1px solid rgba(16, 185, 129, 0.4)',
+              color: '#A7F3D0',
+              padding: '3px 10px',
+              borderRadius: '20px',
+              fontSize: '0.72rem',
+              fontWeight: 600,
+              backdropFilter: 'blur(4px)'
+            }}>
+              Simulasi Tutorial Video (Prototype)
+            </div>
+
             <div style={{
               position: 'absolute',
               inset: 0,
@@ -226,6 +252,7 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
             <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', padding: '1.5rem', width: '100%' }}>
               <button
                 onClick={() => setIsPlayingVideo(!isPlayingVideo)}
+                aria-label={isPlayingVideo ? 'Jeda simulasi video' : 'Putar simulasi video tutorial'}
                 style={{
                   width: '64px',
                   height: '64px',
@@ -237,6 +264,8 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
                   justifyContent: 'center',
                   boxShadow: '0 0 25px rgba(16, 185, 129, 0.6)',
                   marginBottom: '0.75rem',
+                  border: 'none',
+                  cursor: 'pointer',
                   transition: 'transform 0.2s ease'
                 }}
               >
@@ -244,13 +273,13 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
               </button>
 
               <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.3rem' }}>
-                {isPlayingVideo ? `Video Tutorial Praktik: ${innovation.title}` : `Video Panduan Visual & Infografis`}
+                {isPlayingVideo ? `Simulasi Video Praktik: ${innovation.title}` : `Video Panduan Visual & Infografis`}
               </div>
               
               <div style={{ fontSize: '0.8rem', color: '#A7F3D0', marginBottom: '0.75rem' }}>
                 {isPlayingVideo
                   ? `Durasi Berjalan: ${Math.floor(videoTime / 60)}:${String(videoTime % 60).padStart(2, '0')} / 04:30`
-                  : 'Klik tombol putar untuk menyimak demonstrasi video pengolahan'}
+                  : 'Klik tombol putar untuk menyimak simulasi alur langkah video pengolahan'}
               </div>
 
               {/* Video Timeline bar */}
@@ -368,7 +397,8 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
                           e.stopPropagation();
                           handleToggleStep(step.stepNumber);
                         }}
-                        style={{ padding: '2px', color: isStepCompleted ? '#10B981' : '#94A3B8', marginTop: '2px' }}
+                        aria-label={isStepCompleted ? `Tandai langkah ${step.stepNumber} belum selesai` : `Tandai langkah ${step.stepNumber} selesai`}
+                        style={{ padding: '2px', color: isStepCompleted ? '#10B981' : '#94A3B8', marginTop: '2px', background: 'transparent', border: 'none', cursor: 'pointer' }}
                         title={isStepCompleted ? 'Tandai belum selesai' : 'Tandai langkah sudah selesai'}
                       >
                         {isStepCompleted ? <CheckSquare size={22} color="#10B981" /> : <Square size={22} />}

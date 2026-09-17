@@ -24,6 +24,7 @@ interface InnovationCatalogViewProps {
   activeWasteFilter?: { id: string, name: string };
   onClearWasteFilter?: () => void;
   onOpenSubmitModal: () => void;
+  onEditRejectedInnovation?: (innovation: InnovationItem) => void;
   onOpenReviewModal: (innovation: InnovationItem) => void;
 }
 
@@ -33,6 +34,7 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
   activeWasteFilter,
   onClearWasteFilter,
   onOpenSubmitModal,
+  onEditRejectedInnovation,
   onOpenReviewModal
 }) => {
   const { user } = useAuth();
@@ -48,22 +50,22 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
     return Array.from(set);
   }, [innovations]);
 
-  // Filter logic
+  // Filter logic (Point 16: strictly authorId === user.id)
   const filteredInnovations = useMemo(() => {
     return innovations.filter((item) => {
       // My innovations tab
       if (activeTabFilter === 'my') {
-        const isAuthor = item.authorId === user.id || item.submittedBy?.toLowerCase().includes(user.name.toLowerCase());
+        const isAuthor = item.authorId === user.id;
         if (!isAuthor) return false;
       } else {
-        // In "all" tab, show verified items, or pending/rejected items if created by the current user
+        // In "all" tab, show verified items, or pending/rejected items if created by current user or admin
         const isOwn = item.authorId === user.id;
         if (item.status !== 'verified' && !isOwn && user.role !== 'admin') {
           return false;
         }
       }
 
-      // Deep linked waste filter from Kamus
+      // Deep linked waste filter from Kamus (Point 5, 15)
       if (activeWasteFilter) {
         if (item.wasteId !== activeWasteFilter.id) return false;
       }
@@ -83,7 +85,7 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
     });
   }, [innovations, activeTabFilter, activeWasteFilter, searchQuery, selectedCategory, selectedDifficulty, user]);
 
-  const myCount = innovations.filter((i) => i.authorId === user.id || i.submittedBy?.toLowerCase().includes(user.name.toLowerCase())).length;
+  const myCount = innovations.filter((i) => i.authorId === user.id).length;
 
   return (
     <section style={{ padding: '2.5rem 0' }}>
@@ -262,16 +264,17 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
           </div>
         )}
 
-        {/* Innovation Grid */}
+        {/* Innovation Grid (Point 17 & 55: responsive minmax) */}
         {!isLoading && (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))',
             gap: '1.5rem'
           }}>
             {filteredInnovations.map((inv) => {
               const isPending = inv.status === 'pending';
               const isRejected = inv.status === 'rejected';
+              const isOwn = inv.authorId === user.id;
 
               return (
                 <div
@@ -374,15 +377,19 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
                       </div>
                     </div>
 
-                    {/* Rating and success */}
+                    {/* Rating and success (Points 6, 7, 8: dynamic & null checks) */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '0.5rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#D97706', fontWeight: 700 }}>
-                        <Star size={15} fill="#F59E0B" color="#F59E0B" />
-                        <span>{inv.rating} ({inv.reviewCount} ulasan)</span>
+                        <Star size={15} fill={inv.reviewCount > 0 ? "#F59E0B" : "none"} color="#F59E0B" />
+                        <span>
+                          {inv.reviewCount > 0 ? `${inv.rating} (${inv.reviewCount} ulasan)` : 'Belum ada ulasan'}
+                        </span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#059669', fontWeight: 700 }}>
                         <TrendingUp size={15} />
-                        <span>{inv.successRate}% Berhasil</span>
+                        <span>
+                          {inv.successRate !== null && inv.successRate !== undefined ? `${inv.successRate}% Berhasil` : 'Belum ada data uji'}
+                        </span>
                       </div>
                     </div>
 
@@ -394,15 +401,30 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
                     borderTop: '1px solid var(--border-light)',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
+                    gap: '0.4rem',
+                    flexWrap: 'wrap'
                   }}>
-                    <button
-                      onClick={() => onOpenReviewModal(inv)}
-                      className="btn-outline btn-sm"
-                    >
-                      <Star size={13} color="#F59E0B" />
-                      <span>Ulas</span>
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.4rem' }}>
+                      <button
+                        onClick={() => onOpenReviewModal(inv)}
+                        className="btn-outline btn-sm"
+                      >
+                        <Star size={13} color="#F59E0B" />
+                        <span>Ulas</span>
+                      </button>
+
+                      {/* Re-submit / Revise button for rejected items (Point 21) */}
+                      {isRejected && isOwn && onEditRejectedInnovation && (
+                        <button
+                          onClick={() => onEditRejectedInnovation(inv)}
+                          className="btn-outline btn-sm"
+                          style={{ color: '#059669', borderColor: '#34D399', background: '#ECFDF5' }}
+                        >
+                          <span>Revisi & Ajukan</span>
+                        </button>
+                      )}
+                    </div>
 
                     <button
                       onClick={() => setSelectedInnovation(inv)}

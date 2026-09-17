@@ -17,26 +17,72 @@ import { InnovationItem } from './types';
 import { useInnovations } from './hooks/useInnovations';
 import { useReviews } from './hooks/useReviews';
 
+import { api } from './services/api';
+
 const Waste2WisdomMain: React.FC = () => {
   const { user } = useAuth();
   const { addToast } = useToast();
 
-  const [activeTab, setActiveTab] = useState<string>('dictionary');
+  const getInitialTab = () => {
+    const hash = window.location.hash.replace('#', '').trim();
+    const validTabs = ['dictionary', 'explore', 'innovations', 'matchmaking', 'evaluation'];
+    return validTabs.includes(hash) ? hash : 'dictionary';
+  };
+
+  const [activeTab, setActiveTabState] = useState<string>(getInitialTab);
+  const setActiveTab = (tab: string) => {
+    setActiveTabState(tab);
+    window.location.hash = tab;
+  };
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '').trim();
+      const validTabs = ['dictionary', 'explore', 'innovations', 'matchmaking', 'evaluation'];
+      if (validTabs.includes(hash)) {
+        setActiveTabState(hash);
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
   // Deep linked waste filter (from Kamus -> Marketplace)
   const [activeWasteFilter, setActiveWasteFilter] = useState<{ id: string, name: string } | undefined>(undefined);
 
   // Modals
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+  const [editingInnovation, setEditingInnovation] = useState<InnovationItem | null>(null);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [preSelectedReviewInnovation, setPreSelectedReviewInnovation] = useState<InnovationItem | null>(null);
+
+  // Pending supply requests count for 4M Matchmaking navbar badge (Point 2, 4)
+  const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
+
+  const loadPendingSupplyRequests = async () => {
+    try {
+      const reqs = await api.matchmaking.getSupplyRequests();
+      const count = reqs.filter((r) => r.status === 'pending').length;
+      setPendingRequestsCount(count);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    loadPendingSupplyRequests();
+    const interval = setInterval(loadPendingSupplyRequests, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const {
     innovations,
     isLoadingInnovations,
     loadInnovations,
     handleInnovationSubmit,
+    handleInnovationUpdate,
     handleAdminApprove,
     handleAdminReject,
     handleSeedMockPending
@@ -69,7 +115,11 @@ const Waste2WisdomMain: React.FC = () => {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         pendingCount={pendingInnovations.length}
-        onOpenSubmitModal={() => setIsSubmitModalOpen(true)}
+        pendingRequestsCount={pendingRequestsCount}
+        onOpenSubmitModal={() => {
+          setEditingInnovation(null);
+          setIsSubmitModalOpen(true);
+        }}
         onOpenAdminModal={() => setIsAdminModalOpen(true)}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
       />
@@ -96,7 +146,14 @@ const Waste2WisdomMain: React.FC = () => {
             isLoading={isLoadingInnovations}
             activeWasteFilter={activeWasteFilter}
             onClearWasteFilter={() => setActiveWasteFilter(undefined)}
-            onOpenSubmitModal={() => setIsSubmitModalOpen(true)}
+            onOpenSubmitModal={() => {
+              setEditingInnovation(null);
+              setIsSubmitModalOpen(true);
+            }}
+            onEditRejectedInnovation={(inv) => {
+              setEditingInnovation(inv);
+              setIsSubmitModalOpen(true);
+            }}
             onOpenReviewModal={(inv) => {
               setPreSelectedReviewInnovation(inv);
               setIsReviewModalOpen(true);
@@ -128,8 +185,13 @@ const Waste2WisdomMain: React.FC = () => {
       {/* Modals */}
       <SubmitInnovationModal
         isOpen={isSubmitModalOpen}
-        onClose={() => setIsSubmitModalOpen(false)}
+        onClose={() => {
+          setIsSubmitModalOpen(false);
+          setEditingInnovation(null);
+        }}
+        initialData={editingInnovation}
         onSubmitSuccess={handleInnovationSubmit}
+        onUpdateSuccess={handleInnovationUpdate}
       />
 
       <AdminVerificationModal

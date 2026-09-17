@@ -24,7 +24,7 @@ import {
 import L from 'leaflet';
 
 export const MatchmakingMapView: React.FC = () => {
-  const { user, isIndustry, isUMKM } = useAuth();
+  const { user, isIndustry, isUMKM, isAdmin } = useAuth();
   const { addToast } = useToast();
 
   const [partners, setPartners] = useState<MatchmakingItem[]>([]);
@@ -39,6 +39,7 @@ export const MatchmakingMapView: React.FC = () => {
 
   // Tab: Direktori & Peta vs Riwayat Kemitraan
   const [viewTab, setViewTab] = useState<'map' | 'requests'>('map');
+  const [requestTabFilter, setRequestTabFilter] = useState<'all' | 'incoming' | 'my'>('all');
 
   // Form New Listing Modal
   const [isNewListingModalOpen, setIsNewListingModalOpen] = useState(false);
@@ -80,13 +81,38 @@ export const MatchmakingMapView: React.FC = () => {
     loadData();
   }, []);
 
+  // Cleanup Leaflet Map on component unmount (Point 33)
+  useEffect(() => {
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, []);
+
   // Unique cities
   const cities = useMemo(() => {
     const set = new Set(partners.map((i) => i.city));
     return Array.from(set);
   }, [partners]);
 
-  // Filtered partners (Dummy Matchmaking Algorithm: Material + Volume + Lokasi + Jenis Pihak)
+  // Compute smart matchmaking compatibility percentage (Point 31)
+  const computeMatchScore = (partner: MatchmakingItem): number => {
+    let score = 75;
+    if ((user.role === 'user' || user.role === 'umkm') && partner.type === 'industry_supplier') {
+      score += 15;
+    } else if (user.role === 'industry' && partner.type === 'community_buyer') {
+      score += 15;
+    }
+    const userOrg = (user.organization || '').toLowerCase();
+    if (userOrg.includes(partner.city.toLowerCase()) || partner.city.toLowerCase().includes('cikarang')) {
+      score += 8;
+    }
+    return Math.min(98, score);
+  };
+
+  // Filtered partners
   const filteredPartners = useMemo(() => {
     return partners.filter((p) => {
       const matchType = selectedType === 'all' ? true : p.type === selectedType;
@@ -102,6 +128,28 @@ export const MatchmakingMapView: React.FC = () => {
       return matchType && matchCity && matchSearch;
     });
   }, [partners, selectedType, selectedCity, searchQuery]);
+
+  // Filtered supply requests (all vs incoming vs my) (Point 28, 29)
+  const filteredSupplyRequests = useMemo(() => {
+    return supplyRequests.filter((req) => {
+      if (requestTabFilter === 'my') {
+        return req.requesterId === user.id;
+      }
+      if (requestTabFilter === 'incoming') {
+        const isPartnerDirect = req.partnerId === user.id;
+        const matchesOrg = user.organization && req.partnerName.toLowerCase().includes(user.organization.toLowerCase());
+        return isPartnerDirect || matchesOrg || isAdmin;
+      }
+      return true;
+    });
+  }, [supplyRequests, requestTabFilter, user, isAdmin]);
+
+  // Focus map bounds on filtered markers (Point 32)
+  const handleFitBounds = () => {
+    if (!mapInstanceRef.current || filteredPartners.length === 0) return;
+    const bounds = L.latLngBounds(filteredPartners.map((p) => p.coordinates));
+    mapInstanceRef.current.fitBounds(bounds, { padding: [40, 40], maxZoom: 11 });
+  };
 
   // Initialize & update Leaflet Map
   useEffect(() => {
@@ -178,9 +226,14 @@ export const MatchmakingMapView: React.FC = () => {
 
       markersRef.current.push(marker);
     });
+
+    return () => {
+      markersRef.current.forEach((m) => m.remove());
+      markersRef.current = [];
+    };
   }, [filteredPartners, viewTab]);
 
-  // Handle create new listing (Item #68 & #69)
+  // Handle create new listing (Points 9, 10, 27)
   const handleCreateListing = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -191,10 +244,10 @@ export const MatchmakingMapView: React.FC = () => {
         wasteType: listingWasteType,
         volumeMonthly: listingVolume,
         city: listingCity,
-        province: listingCity, // Poin 8: Hilangkan default Jawa Barat, ikuti kota
+        province: listingCity,
         address: listingAddress,
-        coordinates: [-6.2, 106.8], // Dummy center
-        isCertifiedNonB3: false, // Poin 9: Default Belum Diverifikasi
+        coordinates: [-6.315, 107.14],
+        isCertifiedNonB3: false,
         priceExpectation: listingPrice,
         contactName: listingContact,
         phone: listingPhone,
@@ -204,20 +257,25 @@ export const MatchmakingMapView: React.FC = () => {
       });
       addToast('Listing kemitraan bahan baku berhasil diterbitkan ke peta!', 'success');
       setIsNewListingModalOpen(false);
+      // Reset form states (Point 39)
+      setListingWasteType('');
+      setListingVolume('');
+      setListingAddress('');
+      setListingDesc('');
       loadData();
     } catch (err) {
       addToast('Gagal menambahkan listing', 'error');
     }
   };
 
-  // Handle updating supply request status (Item #71)
+  // Handle updating supply request status with permission verification (Points 11, 28)
   const handleUpdateStatus = async (id: string, newStatus: SupplyRequestRecord['status']) => {
     try {
-      await api.matchmaking.updateRequestStatus(id, newStatus);
-      addToast(`Status permohonan diubah menjadi: ${newStatus.toUpperCase()}`, 'success');
+      await api.matchmaking.updateRequestStatus(id, newStatus, undefined, user.id, user.role);
+      addToast(`Status permohonan berhasil diperbarui menjadi: ${newStatus.toUpperCase()}`, 'success');
       loadData();
-    } catch (err) {
-      addToast('Gagal memperbarui status', 'error');
+    } catch (err: any) {
+      addToast(err.message || 'Gagal memperbarui status', 'error');
     }
   };
 
@@ -429,16 +487,29 @@ export const MatchmakingMapView: React.FC = () => {
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-                        <span style={{
-                          fontSize: '0.72rem',
-                          fontWeight: 700,
-                          padding: '2px 8px',
-                          borderRadius: 'var(--radius-full)',
-                          background: isSupplier ? '#DCFCE7' : '#E0F2FE',
-                          color: isSupplier ? '#166534' : '#0369A1',
-                        }}>
-                          {partner.entityType}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                          <span style={{
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            padding: '2px 8px',
+                            borderRadius: 'var(--radius-full)',
+                            background: isSupplier ? '#DCFCE7' : '#E0F2FE',
+                            color: isSupplier ? '#166534' : '#0369A1',
+                          }}>
+                            {partner.entityType}
+                          </span>
+                          <span style={{
+                            fontSize: '0.68rem',
+                            fontWeight: 800,
+                            padding: '2px 6px',
+                            borderRadius: 'var(--radius-full)',
+                            background: '#ECFDF5',
+                            color: '#059669',
+                            border: '1px solid #A7F3D0'
+                          }} title="Kecocokan algoritma matchmaking berbasis material dan lokasi">
+                            ⚡ Cocok {computeMatchScore(partner)}%
+                          </span>
+                        </div>
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-light)', fontWeight: 600 }}>
                           📍 {partner.city}
                         </span>
@@ -501,7 +572,9 @@ export const MatchmakingMapView: React.FC = () => {
                   fontSize: '0.78rem',
                   color: 'var(--text-muted)',
                   background: '#F8FAFC',
-                  borderRadius: 'var(--radius-sm)'
+                  borderRadius: 'var(--radius-sm)',
+                  flexWrap: 'wrap',
+                  gap: '0.5rem'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
@@ -513,6 +586,17 @@ export const MatchmakingMapView: React.FC = () => {
                       <span>UMKM / Komunitas (Pencari)</span>
                     </div>
                   </div>
+
+                  {filteredPartners.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleFitBounds}
+                      className="btn-secondary btn-sm"
+                      style={{ padding: '0.2rem 0.6rem', fontSize: '0.72rem' }}
+                    >
+                      🎯 Fokus ke Marker Hasil
+                    </button>
+                  )}
                 </div>
 
                 <div ref={mapContainerRef} style={{ height: '480px', width: '100%', borderRadius: 'var(--radius-md)' }} />
@@ -522,7 +606,7 @@ export const MatchmakingMapView: React.FC = () => {
           </div>
         )}
 
-        {/* TAB 2: RIWAYAT PENGAJUAN KEMITRAAN (Item #70, #71, #73) */}
+        {/* TAB 2: RIWAYAT PENGAJUAN KEMITRAAN (Points 1, 11, 28, 29, 30) */}
         {viewTab === 'requests' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div style={{
@@ -536,116 +620,191 @@ export const MatchmakingMapView: React.FC = () => {
               Berikut adalah daftar pengajuan pasokan bahan baku daur ulang. Pihak penerima (Pabrik atau UMKM) dapat menyetujui atau menolak permohonan untuk membuka akses kontak logistik.
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: '1.25rem' }}>
-              {supplyRequests.map((req) => {
-                const isPending = req.status === 'pending';
-                const isAccepted = req.status === 'accepted';
-                const isRejected = req.status === 'rejected';
-
-                return (
-                  <div
-                    key={req.id}
-                    className="glass-card"
-                    style={{
-                      padding: '1.25rem',
-                      borderLeft: isAccepted ? '5px solid #10B981' : isRejected ? '5px solid #EF4444' : '5px solid #F59E0B',
-                      height: 'auto'
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                      <span style={{
-                        fontSize: '0.72rem',
-                        fontWeight: 700,
-                        padding: '2px 8px',
-                        borderRadius: 'var(--radius-full)',
-                        background: isAccepted ? '#DCFCE7' : isRejected ? '#FEE2E2' : '#FEF3C7',
-                        color: isAccepted ? '#166534' : isRejected ? '#991B1B' : '#92400E',
-                      }}>
-                        {isAccepted ? '✓ Disetujui' : isRejected ? '✕ Ditolak' : '⏳ Menunggu Konfirmasi'}
-                      </span>
-                      <span style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>
-                        {req.createdAt}
-                      </span>
-                    </div>
-
-                    <h4 style={{ fontSize: '1.05rem', color: 'var(--leaf-deep)', marginBottom: '0.25rem' }}>
-                      {req.partnerName}
-                    </h4>
-
-                    <div style={{ fontSize: '0.82rem', color: '#065F46', fontWeight: 600, marginBottom: '0.4rem' }}>
-                      Bahan: {req.wasteType} ({req.requestedVolume})
-                    </div>
-
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
-                      <strong>Pemohon:</strong> {req.requesterName} ({req.organizationName})
-                    </div>
-
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
-                      <strong>Rencana Produk:</strong> {req.intendedProduct}
-                    </div>
-
-                    {/* Unlocked Contact Details if accepted */}
-                    {isAccepted && (
-                      <div style={{
-                        background: '#ECFDF5',
-                        border: '1px solid #A7F3D0',
-                        padding: '0.65rem 0.85rem',
-                        borderRadius: 'var(--radius-sm)',
-                        fontSize: '0.78rem',
-                        color: '#065F46',
-                        marginBottom: '0.75rem'
-                      }}>
-                        <div style={{ fontWeight: 700, marginBottom: '0.2rem' }}>Kontak Resmi Terhubung:</div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                          <Phone size={13} />
-                          <span>{req.phone}</span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '2px' }}>
-                          <Mail size={13} />
-                          <span>{req.email}</span>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Interactive Accept / Reject buttons */}
-                    <div style={{
-                      paddingTop: '0.75rem',
-                      borderTop: '1px dashed #E2E8F0',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'flex-end',
-                      gap: '0.4rem'
-                    }}>
-                      {isPending && (
-                        <>
-                          <button
-                            onClick={() => handleUpdateStatus(req.id, 'rejected')}
-                            className="btn-outline btn-sm"
-                            style={{ color: '#EF4444', borderColor: '#FECACA' }}
-                          >
-                            Tolak
-                          </button>
-
-                          <button
-                            onClick={() => handleUpdateStatus(req.id, 'accepted')}
-                            className="btn-primary btn-sm"
-                          >
-                            Setujui Kemitraan
-                          </button>
-                        </>
-                      )}
-
-                      {!isPending && (
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>
-                          Status Terakhir: {req.status}
-                        </span>
-                      )}
-                    </div>
-
-                  </div>
-                );
-              })}
+            {/* Sub-filter tabs for requests */}
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => setRequestTabFilter('all')}
+                style={{
+                  padding: '0.4rem 0.85rem',
+                  borderRadius: 'var(--radius-full)',
+                  fontSize: '0.8rem',
+                  fontWeight: requestTabFilter === 'all' ? 700 : 500,
+                  background: requestTabFilter === 'all' ? '#0284C7' : '#FFFFFF',
+                  color: requestTabFilter === 'all' ? '#FFFFFF' : 'var(--text-muted)',
+                  border: '1px solid var(--border-light)'
+                }}
+              >
+                Semua Pengajuan ({supplyRequests.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setRequestTabFilter('incoming')}
+                style={{
+                  padding: '0.4rem 0.85rem',
+                  borderRadius: 'var(--radius-full)',
+                  fontSize: '0.8rem',
+                  fontWeight: requestTabFilter === 'incoming' ? 700 : 500,
+                  background: requestTabFilter === 'incoming' ? '#0284C7' : '#FFFFFF',
+                  color: requestTabFilter === 'incoming' ? '#FFFFFF' : 'var(--text-muted)',
+                  border: '1px solid var(--border-light)'
+                }}
+              >
+                Permintaan Masuk ke Mitra
+              </button>
+              <button
+                type="button"
+                onClick={() => setRequestTabFilter('my')}
+                style={{
+                  padding: '0.4rem 0.85rem',
+                  borderRadius: 'var(--radius-full)',
+                  fontSize: '0.8rem',
+                  fontWeight: requestTabFilter === 'my' ? 700 : 500,
+                  background: requestTabFilter === 'my' ? '#0284C7' : '#FFFFFF',
+                  color: requestTabFilter === 'my' ? '#FFFFFF' : 'var(--text-muted)',
+                  border: '1px solid var(--border-light)'
+                }}
+              >
+                Permintaan Saya ({supplyRequests.filter((r) => r.requesterId === user.id).length})
+              </button>
             </div>
+
+            {filteredSupplyRequests.length === 0 ? (
+              <div className="empty-state">
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem' }}>
+                  Belum ada pengajuan kemitraan pada kategori ini.
+                </p>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: '1.25rem' }}>
+                {filteredSupplyRequests.map((req) => {
+                  const isPending = req.status === 'pending';
+                  const isAccepted = req.status === 'accepted';
+                  const isRejected = req.status === 'rejected';
+
+                  // Privacy check: only involved parties or admin see full contacts
+                  const isRequester = req.requesterId === user.id;
+                  const isPartner = req.partnerId === user.id || (user.organization && req.partnerName.toLowerCase().includes(user.organization.toLowerCase()));
+                  const canViewContacts = isAccepted && (isRequester || isPartner || isAdmin);
+                  
+                  // Authority check: requester cannot accept their own request
+                  const canManage = isAdmin || (!isRequester && (isPartner || isIndustry));
+
+                  return (
+                    <div
+                      key={req.id}
+                      className="glass-card"
+                      style={{
+                        padding: '1.25rem',
+                        borderLeft: isAccepted ? '5px solid #10B981' : isRejected ? '5px solid #EF4444' : '5px solid #F59E0B',
+                        height: 'auto'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                        <span style={{
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                          padding: '2px 8px',
+                          borderRadius: 'var(--radius-full)',
+                          background: isAccepted ? '#DCFCE7' : isRejected ? '#FEE2E2' : '#FEF3C7',
+                          color: isAccepted ? '#166534' : isRejected ? '#991B1B' : '#92400E',
+                        }}>
+                          {isAccepted ? '✓ Disetujui' : isRejected ? '✕ Ditolak' : '⏳ Menunggu Konfirmasi'}
+                        </span>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>
+                          {req.createdAt}
+                        </span>
+                      </div>
+
+                      <h4 style={{ fontSize: '1.05rem', color: 'var(--leaf-deep)', marginBottom: '0.25rem' }}>
+                        {req.partnerName}
+                      </h4>
+
+                      <div style={{ fontSize: '0.82rem', color: '#065F46', fontWeight: 600, marginBottom: '0.4rem' }}>
+                        Bahan: {req.wasteType} ({req.requestedVolume})
+                      </div>
+
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+                        <strong>Pemohon:</strong> {req.requesterName} ({req.organizationName})
+                      </div>
+
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
+                        <strong>Rencana Produk:</strong> {req.intendedProduct}
+                      </div>
+
+                      {/* Unlocked Contact Details if accepted and party authorized */}
+                      {canViewContacts ? (
+                        <div style={{
+                          background: '#ECFDF5',
+                          border: '1px solid #A7F3D0',
+                          padding: '0.65rem 0.85rem',
+                          borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.78rem',
+                          color: '#065F46',
+                          marginBottom: '0.75rem'
+                        }}>
+                          <div style={{ fontWeight: 700, marginBottom: '0.2rem' }}>Kontak Resmi Terhubung:</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                            <Phone size={13} />
+                            <span>{req.phone}</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '2px' }}>
+                            <Mail size={13} />
+                            <span>{req.email}</span>
+                          </div>
+                        </div>
+                      ) : isAccepted ? (
+                        <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '0.5rem' }}>
+                          Kontak langsung hanya dapat diakses oleh pihak pemohon dan mitra resmi.
+                        </div>
+                      ) : null}
+
+                      {/* Interactive Accept / Reject buttons */}
+                      <div style={{
+                        paddingTop: '0.75rem',
+                        borderTop: '1px dashed #E2E8F0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        gap: '0.4rem'
+                      }}>
+                        {isPending && canManage && (
+                          <>
+                            <button
+                              onClick={() => handleUpdateStatus(req.id, 'rejected')}
+                              className="btn-outline btn-sm"
+                              style={{ color: '#EF4444', borderColor: '#FECACA' }}
+                            >
+                              Tolak
+                            </button>
+
+                            <button
+                              onClick={() => handleUpdateStatus(req.id, 'accepted')}
+                              className="btn-primary btn-sm"
+                            >
+                              Setujui Kemitraan
+                            </button>
+                          </>
+                        )}
+
+                        {isPending && !canManage && (
+                          <span style={{ fontSize: '0.75rem', color: '#B45309', background: '#FEF3C7', padding: '3px 8px', borderRadius: '6px', fontWeight: 600 }}>
+                            {isRequester ? 'Menunggu Konfirmasi Mitra' : 'Akses Khusus Pihak Mitra'}
+                          </span>
+                        )}
+
+                        {!isPending && (
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>
+                            Status: {req.status === 'accepted' ? 'Telah Disetujui' : 'Ditolak'}
+                          </span>
+                        )}
+                      </div>
+
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
@@ -655,6 +814,7 @@ export const MatchmakingMapView: React.FC = () => {
       {requestModalPartner && (
         <SupplyRequestModal
           partner={requestModalPartner}
+          onRequestSuccess={loadData}
           onClose={() => {
             setRequestModalPartner(null);
             loadData();

@@ -7,7 +7,8 @@ import {
   SupplyRequestRecord, 
   ReviewItem, 
   TutorialProgress,
-  FacilityItem 
+  FacilityItem,
+  FacilityBookingRecord
 } from '../types';
 import { initialWasteData } from '../data/wasteDictionary';
 import { initialInnovationData } from '../data/innovationCatalog';
@@ -26,19 +27,20 @@ const KEYS = {
   REVIEWS: 'w2w_reviews_v2',
   TUTORIAL_PROGRESS: 'w2w_tutorial_progress_v2',
   FACILITIES: 'w2w_facilities_v2',
+  FACILITY_BOOKINGS: 'w2w_facility_bookings_v2',
 };
 
 export const guestUser: UserProfile = {
   id: 'guest',
   name: 'Pengunjung (Tamu)',
-  email: '-',
+  email: '',
   role: 'user',
   roleLabel: 'Guest / Belum Login',
-  organization: '-',
-  phone: '-'
+  organization: 'Pengunjung Umum',
+  phone: ''
 };
 
-// Initial default user profiles for quick testing
+// Initial default user profiles for demo testing
 const defaultUsers: UserProfile[] = [
   {
     id: 'user-pelajar-1',
@@ -77,6 +79,38 @@ const defaultUsers: UserProfile[] = [
     phone: '0812-0000-9999',
   }
 ];
+
+// Indonesian City Coordinates Dictionary for reliable geocoding
+export const INDONESIA_CITIES: Record<string, { coords: [number, number]; province: string }> = {
+  'cikarang': { coords: [-6.315, 107.14], province: 'Jawa Barat' },
+  'bekasi': { coords: [-6.2383, 106.9756], province: 'Jawa Barat' },
+  'jakarta': { coords: [-6.2088, 106.8456], province: 'DKI Jakarta' },
+  'tangerang': { coords: [-6.1783, 106.6319], province: 'Banten' },
+  'bandung': { coords: [-6.9175, 107.6191], province: 'Jawa Barat' },
+  'surabaya': { coords: [-7.2575, 112.7521], province: 'Jawa Timur' },
+  'sidoarjo': { coords: [-7.4478, 112.7183], province: 'Jawa Timur' },
+  'gresik': { coords: [-7.1566, 112.6555], province: 'Jawa Timur' },
+  'semarang': { coords: [-6.9667, 110.4167], province: 'Jawa Tengah' },
+  'solo': { coords: [-7.5755, 110.8243], province: 'Jawa Tengah' },
+  'surakarta': { coords: [-7.5755, 110.8243], province: 'Jawa Tengah' },
+  'yogyakarta': { coords: [-7.7956, 110.3695], province: 'DI Yogyakarta' },
+  'sleman': { coords: [-7.7167, 110.3556], province: 'DI Yogyakarta' },
+  'ungaran': { coords: [-7.1395, 110.4045], province: 'Jawa Tengah' },
+  'medan': { coords: [3.5952, 98.6722], province: 'Sumatera Utara' },
+  'palembang': { coords: [-2.9761, 104.7754], province: 'Sumatera Selatan' },
+  'makassar': { coords: [-5.1477, 119.4327], province: 'Sulawesi Selatan' },
+  'denpasar': { coords: [-8.6705, 115.2126], province: 'Bali' }
+};
+
+export function resolveCityLocation(cityName: string): { coords: [number, number]; province: string } {
+  const query = cityName.trim().toLowerCase();
+  for (const [key, val] of Object.entries(INDONESIA_CITIES)) {
+    if (query.includes(key) || key.includes(query)) {
+      return val;
+    }
+  }
+  return { coords: [-6.9175, 107.6191], province: cityName.trim() || 'Jawa Barat' };
+}
 
 // Initial default supply requests
 const defaultSupplyRequests: SupplyRequestRecord[] = [
@@ -120,7 +154,7 @@ const defaultSupplyRequests: SupplyRequestRecord[] = [
 ];
 
 // Helper to delay execution (simulates network latency)
-const delay = (ms = 180) => new Promise((resolve) => setTimeout(resolve, ms));
+const delay = (ms = 120) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Helper for localStorage get & set with defaults
 function getStorage<T>(key: string, defaultValue: T): T {
@@ -144,6 +178,38 @@ function setStorage<T>(key: string, value: T): void {
   }
 }
 
+// Compute dynamic metrics for innovations from reviews
+function computeInnovationMetrics(inv: InnovationItem, reviews: ReviewItem[]): InnovationItem {
+  const invReviews = reviews.filter((r) => r.innovationId === inv.id);
+  const reviewCount = invReviews.length;
+
+  if (reviewCount === 0) {
+    return {
+      ...inv,
+      rating: 0,
+      reviewCount: 0,
+      successRate: null
+    };
+  }
+
+  const rating = Number((invReviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount).toFixed(1));
+  
+  const scoreMap: Record<string, number> = {
+    'Berhasil 100%': 100,
+    'Berhasil dengan Modifikasi': 80,
+    'Gagal / Perlu Coba Lagi': 25
+  };
+  const totalSuccessScore = invReviews.reduce((sum, r) => sum + (scoreMap[r.isSuccessful] ?? 75), 0);
+  const successRate = Math.round(totalSuccessScore / reviewCount);
+
+  return {
+    ...inv,
+    rating,
+    reviewCount,
+    successRate
+  };
+}
+
 // -------------------------------------------------------------
 // CENTRAL SERVICE & API MODULE
 // -------------------------------------------------------------
@@ -152,29 +218,27 @@ export const api = {
   // AUTH SERVICE
   auth: {
     async getCurrentUser(): Promise<UserProfile> {
-      await delay(100);
-      const user = getStorage<UserProfile>(KEYS.CURRENT_USER, guestUser);
-      return user;
+      await delay(80);
+      return getStorage<UserProfile>(KEYS.CURRENT_USER, guestUser);
     },
 
     async setCurrentUser(user: UserProfile): Promise<UserProfile> {
-      await delay(120);
+      await delay(100);
       setStorage(KEYS.CURRENT_USER, user);
       return user;
     },
 
     async getDemoUsers(): Promise<UserProfile[]> {
-      await delay(80);
+      await delay(60);
       return getStorage<UserProfile[]>(KEYS.USERS, defaultUsers);
     },
 
     async login(email: string, role?: UserRole): Promise<UserProfile> {
-      await delay(200);
+      await delay(150);
       const users = getStorage<UserProfile[]>(KEYS.USERS, defaultUsers);
       let matched = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
 
       if (!matched) {
-        // Auto-create for demo convenience if email is new
         const roleLabel = role === 'industry' ? 'Pabrik Industri' : role === 'umkm' ? 'Pengrajin UMKM' : role === 'admin' ? 'Admin Kurator' : 'Siswa / Mahasiswa';
         matched = {
           id: `user-${Date.now()}`,
@@ -183,6 +247,7 @@ export const api = {
           role: role || 'user',
           roleLabel,
           organization: 'Komunitas Penggiat Daur Ulang Mandiri',
+          phone: '0812-0000-1234'
         };
         const updatedUsers = [...users, matched];
         setStorage(KEYS.USERS, updatedUsers);
@@ -193,9 +258,15 @@ export const api = {
     },
 
     async register(name: string, email: string, role: UserRole, organization: string, phone: string): Promise<UserProfile> {
-      await delay(250);
+      await delay(180);
       const users = getStorage<UserProfile[]>(KEYS.USERS, defaultUsers);
       
+      // Email uniqueness check
+      const existing = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+      if (existing) {
+        throw new Error(`Email "${email}" sudah terdaftar dalam sistem. Silakan masuk atau gunakan email lain.`);
+      }
+
       const roleLabel = role === 'industry' ? 'Pabrik Industri' : role === 'umkm' ? 'Pengrajin UMKM' : role === 'admin' ? 'Admin' : 'Siswa / Mahasiswa';
 
       const newUser: UserProfile = {
@@ -215,8 +286,8 @@ export const api = {
     },
 
     async updateProfile(profile: Partial<UserProfile>): Promise<UserProfile> {
-      await delay(180);
-      const current = getStorage<UserProfile>(KEYS.CURRENT_USER, defaultUsers[0]);
+      await delay(120);
+      const current = getStorage<UserProfile>(KEYS.CURRENT_USER, guestUser);
       const updated = { ...current, ...profile };
       setStorage(KEYS.CURRENT_USER, updated);
 
@@ -228,8 +299,8 @@ export const api = {
     },
 
     async logout(): Promise<void> {
-      await delay(100);
-      // Reset to default guest user
+      await delay(80);
+      // Strictly reset to clean guest identity (not reverting to default user)
       setStorage(KEYS.CURRENT_USER, guestUser);
     }
   },
@@ -237,18 +308,18 @@ export const api = {
   // WASTE DICTIONARY SERVICE
   waste: {
     async getAll(): Promise<WasteItem[]> {
-      await delay(150);
+      await delay(100);
       return getStorage<WasteItem[]>(KEYS.WASTE, initialWasteData);
     },
 
     async getById(id: string): Promise<WasteItem | null> {
-      await delay(100);
+      await delay(80);
       const list = getStorage<WasteItem[]>(KEYS.WASTE, initialWasteData);
       return list.find((w) => w.id === id) || null;
     },
 
     async create(item: Omit<WasteItem, 'id'>): Promise<WasteItem> {
-      await delay(200);
+      await delay(150);
       const list = getStorage<WasteItem[]>(KEYS.WASTE, initialWasteData);
       const newItem: WasteItem = {
         ...item,
@@ -260,7 +331,7 @@ export const api = {
     },
 
     async delete(id: string): Promise<void> {
-      await delay(150);
+      await delay(100);
       const list = getStorage<WasteItem[]>(KEYS.WASTE, initialWasteData);
       const updated = list.filter((w) => w.id !== id);
       setStorage(KEYS.WASTE, updated);
@@ -270,37 +341,25 @@ export const api = {
   // INNOVATION MARKETPLACE SERVICE
   innovations: {
     async getAll(): Promise<InnovationItem[]> {
-      await delay(150);
+      await delay(120);
       const innovations = getStorage<InnovationItem[]>(KEYS.INNOVATIONS, initialInnovationData);
       const reviews = getStorage<ReviewItem[]>(KEYS.REVIEWS, initialReviewsData);
       
-      return innovations.map(inv => {
-        const invReviews = reviews.filter(r => r.innovationId === inv.id);
-        const reviewCount = invReviews.length;
-        const rating = reviewCount > 0 
-          ? Number((invReviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount).toFixed(1)) 
-          : 0;
-        return { ...inv, rating, reviewCount };
-      });
+      return innovations.map((inv) => computeInnovationMetrics(inv, reviews));
     },
 
     async getById(id: string): Promise<InnovationItem | null> {
-      await delay(100);
+      await delay(80);
       const list = getStorage<InnovationItem[]>(KEYS.INNOVATIONS, initialInnovationData);
       const reviews = getStorage<ReviewItem[]>(KEYS.REVIEWS, initialReviewsData);
       const inv = list.find((i) => i.id === id);
       if (!inv) return null;
 
-      const invReviews = reviews.filter(r => r.innovationId === inv.id);
-      const reviewCount = invReviews.length;
-      const rating = reviewCount > 0 
-        ? Number((invReviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount).toFixed(1)) 
-        : 0;
-      return { ...inv, rating, reviewCount };
+      return computeInnovationMetrics(inv, reviews);
     },
 
     async create(item: Omit<InnovationItem, 'id' | 'status' | 'rating' | 'reviewCount' | 'successRate'>): Promise<InnovationItem> {
-      await delay(220);
+      await delay(160);
       const list = getStorage<InnovationItem[]>(KEYS.INNOVATIONS, initialInnovationData);
       const newItem: InnovationItem = {
         ...item,
@@ -308,7 +367,7 @@ export const api = {
         status: 'pending',
         rating: 0,
         reviewCount: 0,
-        successRate: null,
+        successRate: null, // Initialized as null until community tests and reviews it
         submissionDate: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
       };
       const updated = [newItem, ...list];
@@ -316,8 +375,33 @@ export const api = {
       return newItem;
     },
 
+    async update(id: string, updates: Partial<InnovationItem>): Promise<InnovationItem> {
+      await delay(140);
+      const list = getStorage<InnovationItem[]>(KEYS.INNOVATIONS, initialInnovationData);
+      let target: InnovationItem | null = null;
+
+      const updated = list.map((item) => {
+        if (item.id === id) {
+          target = { 
+            ...item, 
+            ...updates,
+            // If resubmitting a rejected item, reset status to pending
+            status: updates.status || 'pending',
+            rejectionReason: updates.status === 'pending' ? undefined : item.rejectionReason,
+            submissionDate: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+          };
+          return target;
+        }
+        return item;
+      });
+
+      if (!target) throw new Error('Innovation not found');
+      setStorage(KEYS.INNOVATIONS, updated);
+      return target;
+    },
+
     async approve(id: string): Promise<InnovationItem> {
-      await delay(180);
+      await delay(140);
       const list = getStorage<InnovationItem[]>(KEYS.INNOVATIONS, initialInnovationData);
       let target: InnovationItem | null = null;
 
@@ -326,6 +410,7 @@ export const api = {
           target = { 
             ...item, 
             status: 'verified' as const, 
+            rejectionReason: undefined,
             moderationDate: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
           };
           return target;
@@ -339,7 +424,7 @@ export const api = {
     },
 
     async reject(id: string, reason: string): Promise<InnovationItem> {
-      await delay(180);
+      await delay(140);
       const list = getStorage<InnovationItem[]>(KEYS.INNOVATIONS, initialInnovationData);
       let target: InnovationItem | null = null;
 
@@ -362,7 +447,7 @@ export const api = {
     },
 
     async delete(id: string): Promise<void> {
-      await delay(150);
+      await delay(100);
       const list = getStorage<InnovationItem[]>(KEYS.INNOVATIONS, initialInnovationData);
       const updated = list.filter((item) => item.id !== id);
       setStorage(KEYS.INNOVATIONS, updated);
@@ -392,16 +477,23 @@ export const api = {
   // MATCHMAKING & SUPPLY REQUEST SERVICE
   matchmaking: {
     async getPartners(): Promise<MatchmakingItem[]> {
-      await delay(150);
+      await delay(120);
       return getStorage<MatchmakingItem[]>(KEYS.MATCHMAKING, initialMatchmakingData);
     },
 
     async createListing(item: Omit<MatchmakingItem, 'id'>): Promise<MatchmakingItem> {
-      await delay(200);
+      await delay(160);
       const list = getStorage<MatchmakingItem[]>(KEYS.MATCHMAKING, initialMatchmakingData);
+      
+      // Resolve city location dynamically to avoid hardcoded coords and province
+      const location = resolveCityLocation(item.city);
+
       const newItem: MatchmakingItem = {
         ...item,
-        id: `match-${Date.now()}`
+        id: `match-${Date.now()}`,
+        province: location.province,
+        coordinates: location.coords,
+        isCertifiedNonB3: false // Default to unverified on newly submitted listings
       };
       const updated = [newItem, ...list];
       setStorage(KEYS.MATCHMAKING, updated);
@@ -409,12 +501,12 @@ export const api = {
     },
 
     async getSupplyRequests(): Promise<SupplyRequestRecord[]> {
-      await delay(150);
+      await delay(100);
       return getStorage<SupplyRequestRecord[]>(KEYS.SUPPLY_REQUESTS, defaultSupplyRequests);
     },
 
     async sendSupplyRequest(req: Omit<SupplyRequestRecord, 'id' | 'status' | 'createdAt'>): Promise<SupplyRequestRecord> {
-      await delay(220);
+      await delay(180);
       const list = getStorage<SupplyRequestRecord[]>(KEYS.SUPPLY_REQUESTS, defaultSupplyRequests);
       const newRecord: SupplyRequestRecord = {
         ...req,
@@ -427,13 +519,28 @@ export const api = {
       return newRecord;
     },
 
-    async updateRequestStatus(id: string, status: SupplyRequestRecord['status'], note?: string): Promise<SupplyRequestRecord> {
-      await delay(180);
+    async updateRequestStatus(
+      id: string, 
+      status: SupplyRequestRecord['status'], 
+      note?: string,
+      userId?: string,
+      userRole?: string
+    ): Promise<SupplyRequestRecord> {
+      await delay(140);
       const list = getStorage<SupplyRequestRecord[]>(KEYS.SUPPLY_REQUESTS, defaultSupplyRequests);
       let target: SupplyRequestRecord | null = null;
 
       const updated = list.map((item) => {
         if (item.id === id) {
+          // Verify authority: requester cannot accept their own request
+          if (userId && (status === 'accepted' || status === 'rejected')) {
+            const isRequester = item.requesterId === userId;
+            const isAdmin = userRole === 'admin';
+            if (isRequester && !isAdmin) {
+              throw new Error('Hanya pihak penyedia/mitra tujuan yang berhak menyetujui atau menolak permohonan.');
+            }
+          }
+
           target = { 
             ...item, 
             status, 
@@ -454,25 +561,36 @@ export const api = {
   // EVALUATION & REVIEWS SERVICE
   reviews: {
     async getAll(): Promise<ReviewItem[]> {
-      await delay(150);
+      await delay(100);
       return getStorage<ReviewItem[]>(KEYS.REVIEWS, initialReviewsData);
     },
 
-    async create(review: Omit<ReviewItem, 'id' | 'createdAt' | 'likes'>): Promise<ReviewItem> {
-      await delay(200);
+    async create(review: Omit<ReviewItem, 'id' | 'createdAt' | 'likes' | 'likedByUsers'>): Promise<ReviewItem> {
+      await delay(160);
       const list = getStorage<ReviewItem[]>(KEYS.REVIEWS, initialReviewsData);
 
+      // Verify innovation exists
+      const innovations = getStorage<InnovationItem[]>(KEYS.INNOVATIONS, initialInnovationData);
+      const validInv = innovations.find((i) => i.id === review.innovationId);
+      if (!validInv) {
+        throw new Error('Produk inovasi tidak valid atau tidak ditemukan dalam katalog.');
+      }
+
       // Check if user already reviewed this product (prevent duplicate spam)
-      const existing = list.find((r) => r.userId === review.userId && r.innovationId === review.innovationId);
-      if (existing) {
-        throw new Error('Anda sudah memberikan evaluasi untuk produk inovasi ini. Anda dapat menyunting atau memperbarui ulasan Anda.');
+      if (review.userId && review.userId !== 'guest') {
+        const existing = list.find((r) => r.userId === review.userId && r.innovationId === review.innovationId);
+        if (existing) {
+          throw new Error('Anda sudah memberikan ulasan evaluasi untuk produk ini sebelumnya.');
+        }
       }
 
       const newReview: ReviewItem = {
         ...review,
         id: `rev-${Date.now()}`,
+        innovationTitle: validInv.title,
         createdAt: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
-        likes: 1
+        likes: 0,
+        likedByUsers: []
       };
 
       const updated = [newReview, ...list];
@@ -480,13 +598,27 @@ export const api = {
       return newReview;
     },
 
-    async like(id: string): Promise<ReviewItem> {
+    async like(id: string, userId: string = 'guest'): Promise<ReviewItem> {
       const list = getStorage<ReviewItem[]>(KEYS.REVIEWS, initialReviewsData);
       let target: ReviewItem | null = null;
 
       const updated = list.map((item) => {
         if (item.id === id) {
-          target = { ...item, likes: item.likes + 1 };
+          const likedBy = item.likedByUsers || [];
+          const hasLiked = likedBy.includes(userId);
+          
+          // Toggle like to prevent infinite like-spamming
+          const newLikedBy = hasLiked
+            ? likedBy.filter((u) => u !== userId)
+            : [...likedBy, userId];
+          
+          const newLikes = hasLiked ? Math.max(0, item.likes - 1) : item.likes + 1;
+
+          target = { 
+            ...item, 
+            likes: newLikes,
+            likedByUsers: newLikedBy
+          };
           return target;
         }
         return item;
@@ -498,7 +630,7 @@ export const api = {
     },
 
     async report(id: string, reason: string): Promise<ReviewItem> {
-      await delay(150);
+      await delay(120);
       const list = getStorage<ReviewItem[]>(KEYS.REVIEWS, initialReviewsData);
       let target: ReviewItem | null = null;
 
@@ -516,18 +648,37 @@ export const api = {
     },
 
     async delete(id: string): Promise<void> {
-      await delay(150);
+      await delay(100);
       const list = getStorage<ReviewItem[]>(KEYS.REVIEWS, initialReviewsData);
       const updated = list.filter((r) => r.id !== id);
       setStorage(KEYS.REVIEWS, updated);
     }
   },
 
-  // FACILITIES SERVICE
+  // FACILITIES & STUDY TOUR BOOKINGS SERVICE
   facilities: {
     async getAll(): Promise<FacilityItem[]> {
-      await delay(120);
+      await delay(100);
       return getStorage<FacilityItem[]>(KEYS.FACILITIES, initialFacilitiesData);
+    },
+
+    async getBookings(): Promise<FacilityBookingRecord[]> {
+      await delay(90);
+      return getStorage<FacilityBookingRecord[]>(KEYS.FACILITY_BOOKINGS, []);
+    },
+
+    async createBooking(booking: Omit<FacilityBookingRecord, 'id' | 'status' | 'createdAt'>): Promise<FacilityBookingRecord> {
+      await delay(160);
+      const list = getStorage<FacilityBookingRecord[]>(KEYS.FACILITY_BOOKINGS, []);
+      const newBooking: FacilityBookingRecord = {
+        ...booking,
+        id: `book-${Date.now()}`,
+        status: 'pending',
+        createdAt: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+      };
+      const updated = [newBooking, ...list];
+      setStorage(KEYS.FACILITY_BOOKINGS, updated);
+      return newBooking;
     }
   }
 };

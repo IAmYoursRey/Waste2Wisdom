@@ -29,6 +29,7 @@ export interface WasteItem {
   handlingGuidelines: string[];
   prohibitedActions: string[];
   recommendedInnovations: string[];
+  recommendedInnovationIds?: string[];
   characteristics: string[];
 }
 
@@ -89,6 +90,21 @@ export interface FacilityItem {
   phone: string;
   coordinates: [number, number];
   featuredOutput: string;
+  isDemo?: boolean;
+}
+
+export interface FacilityBookingRecord {
+  id: string;
+  facilityId: string;
+  facilityName: string;
+  visitorName: string;
+  institution: string;
+  visitDate: string;
+  participantCount: string | number;
+  purpose: string;
+  requestedBy?: string;
+  status: 'pending' | 'confirmed';
+  createdAt: string;
 }
 
 export interface MatchmakingItem {
@@ -109,6 +125,7 @@ export interface MatchmakingItem {
   email: string;
   description: string;
   authorId?: string;
+  compatibilityScore?: number;
 }
 
 export type SupplyRequestStatus = 'pending' | 'accepted' | 'rejected' | 'completed';
@@ -147,6 +164,7 @@ export interface ReviewItem {
   troubleshootingTip?: string;
   createdAt: string;
   likes: number;
+  likedByUsers?: string[];
   isReported?: boolean;
   reportReason?: string;
 }
@@ -157,3 +175,4 @@ export interface TutorialProgress {
   isFinished: boolean;
   updatedAt: string;
 }
+
