@@ -1,0 +1,452 @@
+import React, { useState } from 'react';
+import { initialFacilitiesData } from '../../data/facilitiesData';
+import { FacilityItem } from '../../types';
+import { Compass, Factory, Cog, Calendar, MapPin, Phone, User, CheckCircle2, ArrowRight, X, ShieldCheck } from 'lucide-react';
+import confetti from 'canvas-confetti';
+
+export const ExploreFacilitiesView: React.FC = () => {
+  const [selectedFacility, setSelectedFacility] = useState<FacilityItem | null>(null);
+  const [bookingModalFacility, setBookingModalFacility] = useState<FacilityItem | null>(null);
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+
+  // Form states
+  const [visitorName, setVisitorName] = useState('');
+  const [institution, setInstitution] = useState('');
+  const [visitDate, setVisitDate] = useState('');
+  const [participantCount, setParticipantCount] = useState('10');
+  const [purpose, setPurpose] = useState('Study Tour SMK / Mahasiswa');
+
+  const handleBookingSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setBookingSuccess(true);
+    confetti({
+      particleCount: 80,
+      spread: 60,
+      origin: { y: 0.6 }
+    });
+    setTimeout(() => {
+      setBookingSuccess(false);
+      setBookingModalFacility(null);
+      setVisitorName('');
+      setInstitution('');
+    }, 2800);
+  };
+
+  return (
+    <section style={{ padding: '2.5rem 0' }}>
+      <div className="container">
+        
+        {/* Section Header */}
+        <div style={{ marginBottom: '2rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <span className="badge-5m">
+              🏭 2M: MENGEKSPLORASI
+            </span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+              Fasilitas Tempat PengNIP & Sentra Pengolahan Terdaftar
+            </span>
+          </div>
+
+          <h2 style={{ fontSize: 'clamp(1.6rem, 3vw, 2.3rem)', color: 'var(--leaf-deep)', marginBottom: '0.5rem' }}>
+            Eksplorasi Sentra Pengolahan Limbah Industri (Tempat PengNIP)
+          </h2>
+          <p style={{ color: 'var(--text-muted)', maxWidth: '820px', fontSize: '0.98rem' }}>
+            Lihat langsung operasional pemilahan dan teknologi daur ulang di sentra <strong>Tempat PengNIP (Pengolahan Non-B3 Industri Terpadu)</strong>, TPST 3R kawasan industri, dan laboratorium biokonversi. Pelajari mesin-mesin industri dan jadwalkan kunjungan edukatif.
+          </p>
+        </div>
+
+        {/* Facilities Grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+          gap: '1.5rem',
+          marginBottom: '3rem'
+        }}>
+          {initialFacilitiesData.map((fac) => (
+            <div
+              key={fac.id}
+              className="glass-card"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                padding: '1.5rem',
+                borderLeft: '5px solid #10B981'
+              }}
+            >
+              <div>
+                
+                {/* Badge Type & City */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                  <span style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    padding: '0.25rem 0.65rem',
+                    borderRadius: 'var(--radius-full)',
+                    background: '#ECFDF5',
+                    color: '#065F46',
+                    border: '1px solid #A7F3D0'
+                  }}>
+                    {fac.type}
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                    <MapPin size={14} color="#059669" />
+                    <span>{fac.city}, {fac.province}</span>
+                  </span>
+                </div>
+
+                {/* Name */}
+                <h3 style={{ fontSize: '1.25rem', color: 'var(--leaf-deep)', marginBottom: '0.6rem' }}>
+                  {fac.name}
+                </h3>
+
+                {/* Description */}
+                <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '1rem' }}>
+                  {fac.description}
+                </p>
+
+                {/* Capacity & Featured Output Box */}
+                <div style={{
+                  background: '#F8FAFC',
+                  padding: '0.85rem',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--border-light)',
+                  marginBottom: '1rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.4rem'
+                }}>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>
+                    <strong>Kapasitas Pengolahan:</strong> {fac.capacity}
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: '#065F46' }}>
+                    <strong>Output Unggulan:</strong> {fac.featuredOutput}
+                  </div>
+                </div>
+
+                {/* Technology Tags */}
+                <div style={{ marginBottom: '1rem' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-light)', marginBottom: '0.35rem' }}>
+                    Teknologi & Fasilitas Utama:
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                    {fac.technologies.slice(0, 3).map((tech, tIdx) => (
+                      <span key={tIdx} style={{
+                        fontSize: '0.72rem',
+                        background: '#FFFFFF',
+                        color: '#334155',
+                        padding: '0.2rem 0.55rem',
+                        borderRadius: 'var(--radius-sm)',
+                        border: '1px solid #CBD5E1'
+                      }}>
+                        ⚙️ {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{
+                paddingTop: '1rem',
+                borderTop: '1px solid var(--border-light)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '0.5rem'
+              }}>
+                <button
+                  onClick={() => setSelectedFacility(fac)}
+                  className="btn-outline"
+                  style={{ fontSize: '0.82rem', padding: '0.45rem 0.9rem' }}
+                >
+                  <Cog size={15} color="#059669" />
+                  <span>Bedah Mesin & Alur</span>
+                </button>
+
+                <button
+                  onClick={() => setBookingModalFacility(fac)}
+                  className="btn-primary"
+                  style={{ fontSize: '0.82rem', padding: '0.45rem 0.95rem' }}
+                >
+                  <Calendar size={15} />
+                  <span>Ajukan Kunjungan</span>
+                </button>
+              </div>
+
+            </div>
+          ))}
+        </div>
+
+        {/* Industrial Machines Education Section */}
+        <div className="glass-card" style={{ padding: '2rem', border: '1.5px solid var(--border-leaf)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <Cog size={22} color="#10B981" />
+            <h3 style={{ fontSize: '1.35rem', color: 'var(--leaf-deep)' }}>
+              Edukasi Mesin Industri Pengolah Limbah
+            </h3>
+          </div>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem', maxWidth: '750px' }}>
+            Pemahaman mengenai jenis mesin mekanikal yang digunakan dalam sentra pengolahan untuk mengubah limbah mentah menjadi material terstandarisasi industri sirkular.
+          </p>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '1rem'
+          }}>
+            <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
+              <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.3rem' }}>
+                1. Mesin Dual-Shaft Shredder
+              </div>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
+                Mencacah limbah keras berukuran besar (palet kayu, drum HDPE, wadah logam non-B3) menjadi serpihan homogen menggunakan dua poros pisau baja torsi tinggi.
+              </div>
+            </div>
+
+            <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
+              <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.3rem' }}>
+                2. Extrusion Pelletizer
+              </div>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
+                Melelehkan serpihan plastik termoplastik bersih dengan suhu terkontrol (180-220°C), lalu mencetaknya melalui cetakan bulat menjadi biji pelet plastik daur ulang siap jual.
+              </div>
+            </div>
+
+            <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
+              <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.3rem' }}>
+                3. Mesin Press Hidrolik Paving
+              </div>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
+                Memadatkan agregat campuran fly ash batubara dan semen dengan tekanan hingga 150-200 kg/cm2 ditambah vibrasi intensif untuk menghasilkan paving block mutu K-300 SNI.
+              </div>
+            </div>
+
+            <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
+              <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.3rem' }}>
+                4. Mesin Garnetting Tekstil
+              </div>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
+                Membuka kembali jalinan benang pada kain perca garmen melalui silinder bergigi halus, mengembalikannya menjadi serat kapas atau wol sekunder (rag pulling).
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Facility Detail / Machine Explorer Modal */}
+      {selectedFacility && (
+        <div className="modal-overlay" onClick={() => setSelectedFacility(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div>
+                <span className="badge-sector">{selectedFacility.type}</span>
+                <h2 style={{ fontSize: '1.35rem', color: 'var(--leaf-deep)', marginTop: '0.2rem' }}>
+                  {selectedFacility.name}
+                </h2>
+              </div>
+              <button 
+                onClick={() => setSelectedFacility(null)}
+                style={{
+                  padding: '0.4rem',
+                  borderRadius: '50%',
+                  background: '#FFFFFF',
+                  border: '1px solid var(--border-light)'
+                }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <div>
+                <h4 style={{ fontSize: '0.95rem', color: 'var(--text-main)', marginBottom: '0.4rem' }}>
+                  Profil Sentra PengNIP:
+                </h4>
+                <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                  {selectedFacility.description}
+                </p>
+              </div>
+
+              {/* Machines installed */}
+              <div>
+                <h4 style={{ fontSize: '0.95rem', color: 'var(--text-main)', marginBottom: '0.6rem' }}>
+                  Mesin & Fasilitas Pengolah Terpasang:
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {selectedFacility.machines.map((m, idx) => (
+                    <div key={idx} style={{
+                      padding: '0.85rem 1rem',
+                      background: '#F8FAFC',
+                      borderRadius: 'var(--radius-md)',
+                      border: '1.5px solid var(--border-light)'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                        <div style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--leaf-deep)' }}>
+                          ⚙️ {m.name}
+                        </div>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 600, background: '#E2E8F0', padding: '2px 8px', borderRadius: 'var(--radius-full)' }}>
+                          {m.capacity}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                        {m.function}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Visit Guidelines */}
+              <div style={{
+                background: '#ECFDF5',
+                padding: '1rem',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid #A7F3D0'
+              }}>
+                <div style={{ fontWeight: 700, fontSize: '0.88rem', color: '#065F46', marginBottom: '0.25rem' }}>
+                  Jadwal Kunjungan Edukasi Langsung:
+                </div>
+                <div style={{ fontSize: '0.84rem', color: '#047857' }}>
+                  {selectedFacility.visitSchedule}
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#047857', marginTop: '0.5rem' }}>
+                  <strong>Narahubung:</strong> {selectedFacility.contactPerson} ({selectedFacility.phone})
+                </div>
+              </div>
+
+            </div>
+
+            <div className="modal-footer">
+              <button onClick={() => setSelectedFacility(null)} className="btn-secondary">
+                Tutup
+              </button>
+              <button 
+                onClick={() => {
+                  setBookingModalFacility(selectedFacility);
+                  setSelectedFacility(null);
+                }} 
+                className="btn-primary"
+              >
+                <Calendar size={16} />
+                <span>Jadwalkan Kunjungan</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Booking Modal */}
+      {bookingModalFacility && (
+        <div className="modal-overlay" onClick={() => setBookingModalFacility(null)}>
+          <div className="modal-content" style={{ maxWidth: '560px' }} onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div>
+                <h3 style={{ fontSize: '1.25rem', color: 'var(--leaf-deep)' }}>
+                  Formulir Pengajuan Kunjungan Edukasi
+                </h3>
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                  {bookingModalFacility.name}
+                </div>
+              </div>
+              <button onClick={() => setBookingModalFacility(null)} style={{ padding: '0.3rem' }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            {bookingSuccess ? (
+              <div style={{ padding: '2.5rem 1.5rem', textAlign: 'center' }}>
+                <CheckCircle2 size={54} color="#10B981" style={{ margin: '0 auto 1rem auto' }} />
+                <h3 style={{ fontSize: '1.3rem', color: 'var(--leaf-deep)', marginBottom: '0.5rem' }}>
+                  Pengajuan Kunjungan Berhasil Terkirim!
+                </h3>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                  Pihak pengelola Tempat PengNIP akan menghubungi narahubung Anda untuk konfirmasi izin masuk dan briefing keselamatan kerja (K3).
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleBookingSubmit}>
+                <div className="modal-body">
+                  <div className="form-group">
+                    <label className="form-label">Nama Pemohon / Penanggung Jawab *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Contoh: Muhammad Raihan / Ibu Siti"
+                      value={visitorName}
+                      onChange={(e) => setVisitorName(e.target.value)}
+                      className="form-input"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Nama Instansi / Sekolah / Komunitas *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Contoh: SMKN 1 Cikarang / Komunitas Pengrajin"
+                      value={institution}
+                      onChange={(e) => setInstitution(e.target.value)}
+                      className="form-input"
+                    />
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                    <div className="form-group">
+                      <label className="form-label">Rencana Tanggal Kunjungan *</label>
+                      <input
+                        type="date"
+                        required
+                        value={visitDate}
+                        onChange={(e) => setVisitDate(e.target.value)}
+                        className="form-input"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">Perkiraan Jumlah Peserta</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="50"
+                        value={participantCount}
+                        onChange={(e) => setParticipantCount(e.target.value)}
+                        className="form-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Tujuan Kunjungan Edukasi</label>
+                    <select
+                      value={purpose}
+                      onChange={(e) => setPurpose(e.target.value)}
+                      className="form-select"
+                    >
+                      <option value="Study Tour SMK / Mahasiswa">Study Tour SMK / Mahasiswa (Kurikulum Merdeka 5M)</option>
+                      <option value="Riset Pengambilan Sampel Limbah">Riset Pengambilan Sampel Limbah</option>
+                      <option value="Penjajakan Pasokan Bahan Baku UMKM">Penjajakan Pasokan Bahan Baku UMKM</option>
+                      <option value="Pelatihan Daur Ulang Mandiri">Pelatihan Daur Ulang Mandiri</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="modal-footer">
+                  <button type="button" onClick={() => setBookingModalFacility(null)} className="btn-secondary">
+                    Batal
+                  </button>
+                  <button type="submit" className="btn-primary">
+                    Kirim Permohonan Kunjungan
+                  </button>
+                </div>
+              </form>
+            )}
+
+          </div>
+        </div>
+      )}
+
+    </section>
+  );
+};
