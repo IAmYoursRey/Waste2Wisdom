@@ -13,18 +13,15 @@ import { SubmitInnovationModal } from './components/innovations/SubmitInnovation
 import { AdminVerificationModal } from './components/innovations/AdminVerificationModal';
 import { AddReviewModal } from './components/evaluation/AddReviewModal';
 import { AuthModal } from './components/common/AuthModal';
-import { InnovationItem, ReviewItem } from './types';
-import { api } from './services/api';
+import { InnovationItem } from './types';
+import { useInnovations } from './hooks/useInnovations';
+import { useReviews } from './hooks/useReviews';
 
 const Waste2WisdomMain: React.FC = () => {
   const { user } = useAuth();
   const { addToast } = useToast();
 
   const [activeTab, setActiveTab] = useState<string>('dictionary');
-  const [innovations, setInnovations] = useState<InnovationItem[]>([]);
-  const [reviews, setReviews] = useState<ReviewItem[]>([]);
-  const [isLoadingInnovations, setIsLoadingInnovations] = useState(true);
-
   // Deep linked waste filter (from Kamus -> Marketplace)
   const [activeWasteFilter, setActiveWasteFilter] = useState<string | undefined>(undefined);
 
@@ -35,32 +32,23 @@ const Waste2WisdomMain: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [preSelectedReviewInnovation, setPreSelectedReviewInnovation] = useState<InnovationItem | null>(null);
 
-  // Fetch innovations & reviews via API
-  const loadInnovations = async () => {
-    setIsLoadingInnovations(true);
-    try {
-      const data = await api.innovations.getAll();
-      setInnovations(data);
-    } catch {
-      addToast('Gagal memuat katalog inovasi', 'error');
-    } finally {
-      setIsLoadingInnovations(false);
-    }
-  };
+  const {
+    innovations,
+    isLoadingInnovations,
+    loadInnovations,
+    handleInnovationSubmit,
+    handleAdminApprove,
+    handleAdminReject,
+    handleSeedMockPending
+  } = useInnovations();
 
-  const loadReviews = async () => {
-    try {
-      const data = await api.reviews.getAll();
-      setReviews(data);
-    } catch {
-      addToast('Gagal memuat ulasan', 'error');
-    }
-  };
-
-  useEffect(() => {
-    loadInnovations();
-    loadReviews();
-  }, []);
+  const {
+    reviews,
+    handleReviewSubmit,
+    handleLikeReview,
+    handleReportReview,
+    handleDeleteReportedReview
+  } = useReviews(loadInnovations);
 
   // Pending innovations count for admin badge
   const pendingInnovations = innovations.filter((i) => i.status === 'pending');
@@ -71,110 +59,6 @@ const Waste2WisdomMain: React.FC = () => {
     setActiveWasteFilter(wasteName);
     setActiveTab('innovations');
     addToast(`Menampilkan tutorial inovasi berbahan: ${wasteName}`, 'info');
-  };
-
-  // Handle user submitting innovation
-  const handleInnovationSubmit = async (newInv: InnovationItem) => {
-    try {
-      const created = await api.innovations.create({
-        ...newInv,
-        authorId: user.id
-      });
-      setInnovations((prev) => [created, ...prev]);
-      addToast('Inovasi Anda berhasil diajukan! Menunggu tinjauan admin/kurator.', 'success');
-    } catch {
-      addToast('Gagal mengajukan inovasi', 'error');
-    }
-  };
-
-  // Handle admin approve
-  const handleAdminApprove = async (id: string) => {
-    try {
-      const approved = await api.innovations.approve(id);
-      setInnovations((prev) => prev.map((item) => (item.id === id ? approved : item)));
-    } catch {
-      addToast('Gagal menyetujui inovasi', 'error');
-    }
-  };
-
-  // Handle admin reject with reason
-  const handleAdminReject = async (id: string, reason: string) => {
-    try {
-      const rejected = await api.innovations.reject(id, reason);
-      setInnovations((prev) => prev.map((item) => (item.id === id ? rejected : item)));
-    } catch {
-      addToast('Gagal menolak inovasi', 'error');
-    }
-  };
-
-  // Handle review submit
-  const handleReviewSubmit = async (newRev: ReviewItem) => {
-    try {
-      const saved = await api.reviews.create(newRev);
-      setReviews((prev) => [saved, ...prev]);
-      // Reload innovations to get updated review counts
-      loadInnovations();
-    } catch (err: any) {
-      addToast(err.message || 'Gagal menyimpan ulasan', 'error');
-    }
-  };
-
-  // Handle like review
-  const handleLikeReview = async (reviewId: string) => {
-    try {
-      const updated = await api.reviews.like(reviewId);
-      setReviews((prev) => prev.map((r) => (r.id === reviewId ? updated : r)));
-    } catch {
-      addToast('Gagal menyukai ulasan', 'error');
-    }
-  };
-
-  // Handle report review
-  const handleReportReview = async (reviewId: string, reason: string) => {
-    setReviews((prev) =>
-      prev.map((r) => (r.id === reviewId ? { ...r, isReported: true, reportReason: reason } : r))
-    );
-  };
-
-  // Handle delete reported review
-  const handleDeleteReportedReview = async (reviewId: string) => {
-    try {
-      await api.reviews.delete(reviewId);
-      setReviews((prev) => prev.filter((r) => r.id !== reviewId));
-      addToast('Ulasan bermasalah berhasil dihapus.', 'info');
-    } catch {
-      addToast('Gagal menghapus ulasan', 'error');
-    }
-  };
-
-  // Seed mock pending for demo
-  const handleSeedMockPending = async () => {
-    const sample = await api.innovations.create({
-      title: 'Paving Block Ramah Lingkungan Campuran Serat Karung Goni',
-      tagline: 'Inovasi batako ringan dengan perkuatan serat limbah karung goni industri beras',
-      wasteSource: 'Serat Karung Goni',
-      category: 'Material Bangunan Alternatif',
-      difficulty: 'Menengah',
-      estimatedTime: '3 Hari',
-      estimatedCost: 'Rp 18.000 / buah',
-      economicValue: 'Dapat menggantikan batako konvensional dengan bobot lebih ringan 25%',
-      materials: [
-        { name: 'Serat goni dicacah 2 cm', amount: '500 gram' },
-        { name: 'Semen portland komposit', amount: '2 kg' },
-        { name: 'Pasir halus terayak', amount: '4 kg' }
-      ],
-      tools: ['Cetakan batako manual', 'Pengaduk semen', 'Ember takar'],
-      steps: [
-        { stepNumber: 1, title: 'Pemotongan Serat', description: 'Cacah karung goni menjadi serat 2-3 cm dan rendam air kapur 1 jam.', tip: 'Air kapur meningkatkan daya lekat semen.' },
-        { stepNumber: 2, title: 'Pencampuran & Cetak', description: 'Campur semen, pasir, dan serat goni basah lalu cetak padat.', tip: 'Tumbuk hingga rongga udara hilang.' }
-      ],
-      safetyTips: ['Gunakan sarung tangan tebal dan masker debu.'],
-      submittedBy: 'Tim Riset SMKN 2 Pertanian',
-      authorId: 'user-pelajar-1'
-    });
-
-    setInnovations((prev) => [sample, ...prev]);
-    addToast('Contoh pengajuan baru telah ditambahkan ke antrean verifikasi admin!', 'success');
   };
 
   return (
