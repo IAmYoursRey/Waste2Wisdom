@@ -1,5 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { ReviewItem, InnovationItem } from '../../types';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { api } from '../../services/api';
 import { 
   Star, 
   CheckCircle2, 
@@ -8,10 +11,10 @@ import {
   PlusCircle, 
   Filter, 
   Search, 
-  TrendingUp, 
-  Award,
-  Sparkles,
-  Smile
+  Smile,
+  Flag,
+  ArrowUpDown,
+  X
 } from 'lucide-react';
 
 interface EvaluationReviewViewProps {
@@ -19,17 +22,27 @@ interface EvaluationReviewViewProps {
   innovations: InnovationItem[];
   onOpenAddReviewModal: (preSelect?: InnovationItem | null) => void;
   onLikeReview: (reviewId: string) => void;
+  onReportReview?: (reviewId: string, reason: string) => void;
 }
 
 export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
   reviews,
   innovations,
   onOpenAddReviewModal,
-  onLikeReview
+  onLikeReview,
+  onReportReview
 }) => {
+  const { user } = useAuth();
+  const { addToast } = useToast();
+
   const [selectedInnovationFilter, setSelectedInnovationFilter] = useState('all');
   const [selectedSuccessFilter, setSelectedSuccessFilter] = useState('all');
+  const [sortBy, setSortBy] = useState<'latest' | 'highest' | 'lowest'>('latest');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Reporting modal state
+  const [reportingReviewId, setReportingReviewId] = useState<string | null>(null);
+  const [reportReason, setReportReason] = useState('Informasi keliru atau berbahaya');
 
   // Calculate statistics
   const stats = useMemo(() => {
@@ -51,9 +64,9 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
     return { avgRating, successPercent, easyPercent };
   }, [reviews]);
 
-  // Filtered reviews
-  const filteredReviews = useMemo(() => {
-    return reviews.filter((r) => {
+  // Filtered and sorted reviews
+  const processedReviews = useMemo(() => {
+    let result = reviews.filter((r) => {
       const matchInnovation =
         selectedInnovationFilter === 'all' ? true : r.innovationId === selectedInnovationFilter;
 
@@ -68,7 +81,27 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
 
       return matchInnovation && matchSuccess && matchSearch;
     });
-  }, [reviews, selectedInnovationFilter, selectedSuccessFilter, searchQuery]);
+
+    if (sortBy === 'highest') {
+      result = [...result].sort((a, b) => b.rating - a.rating);
+    } else if (sortBy === 'lowest') {
+      result = [...result].sort((a, b) => a.rating - b.rating);
+    }
+
+    return result;
+  }, [reviews, selectedInnovationFilter, selectedSuccessFilter, searchQuery, sortBy]);
+
+  const handleConfirmReport = async () => {
+    if (!reportingReviewId) return;
+    try {
+      await api.reviews.report(reportingReviewId, reportReason);
+      if (onReportReview) onReportReview(reportingReviewId, reportReason);
+      addToast('Laporan ulasan telah dikirim ke kurator untuk diperiksa.', 'info');
+      setReportingReviewId(null);
+    } catch {
+      addToast('Gagal mengirim laporan', 'error');
+    }
+  };
 
   return (
     <section style={{ padding: '2.5rem 0' }}>
@@ -158,11 +191,11 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
           </div>
         </div>
 
-        {/* Filter Bar */}
-        <div className="glass-card" style={{ padding: '1.25rem', marginBottom: '2rem' }}>
+        {/* Filter & Sort Bar (Item #59) */}
+        <div className="glass-card" style={{ padding: '1.25rem', marginBottom: '2rem', height: 'auto' }}>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
             gap: '1rem',
             alignItems: 'center'
           }}>
@@ -171,7 +204,7 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
               <Search size={18} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="text"
-                placeholder="Cari komentar atau tips troubleshooting..."
+                placeholder="Cari kata kunci atau tips..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="form-input"
@@ -179,7 +212,7 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
               />
             </div>
 
-            {/* Innovation Filter */}
+            {/* Product Filter */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Filter size={18} color="#059669" />
               <select
@@ -197,7 +230,7 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
             </div>
 
             {/* Success Status Filter */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div>
               <select
                 value={selectedSuccessFilter}
                 onChange={(e) => setSelectedSuccessFilter(e.target.value)}
@@ -209,6 +242,20 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
                 <option value="Gagal / Perlu Coba Lagi">Gagal / Perlu Coba Lagi</option>
               </select>
             </div>
+
+            {/* Sorting (Item #59) */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <ArrowUpDown size={16} color="#059669" />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="form-select"
+              >
+                <option value="latest">Urutkan: Terbaru</option>
+                <option value="highest">Urutkan: Rating Tertinggi</option>
+                <option value="lowest">Urutkan: Rating Terendah</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -218,14 +265,11 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
           gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
           gap: '1.25rem'
         }}>
-          {filteredReviews.map((rev) => (
+          {processedReviews.map((rev) => (
             <div
               key={rev.id}
               className="glass-card"
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
                 padding: '1.4rem'
               }}
             >
@@ -274,7 +318,7 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
                   🛠️ Produk: {rev.innovationTitle}
                 </div>
 
-                {/* 5M Evaluation Answers Badges */}
+                {/* 5M Evaluation Badges */}
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.85rem' }}>
                   <span style={{
                     fontSize: '0.75rem',
@@ -328,25 +372,34 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
 
               </div>
 
-              {/* Review Footer */}
+              {/* Review Footer with Help & Report Button (Item #57) */}
               <div style={{
                 paddingTop: '0.75rem',
                 borderTop: '1px solid var(--border-light)',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'flex-end'
+                justifyContent: 'space-between'
               }}>
                 <button
-                  onClick={() => onLikeReview(rev.id)}
-                  className="btn-outline"
+                  onClick={() => setReportingReviewId(rev.id)}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '0.35rem',
-                    padding: '0.25rem 0.65rem',
-                    fontSize: '0.75rem',
-                    borderRadius: 'var(--radius-full)'
+                    gap: '0.3rem',
+                    color: 'var(--text-light)',
+                    fontSize: '0.74rem',
+                    cursor: 'pointer'
                   }}
+                  title="Laporkan ulasan bermasalah ke admin"
+                >
+                  <Flag size={12} />
+                  <span>Laporkan</span>
+                </button>
+
+                <button
+                  onClick={() => onLikeReview(rev.id)}
+                  className="btn-outline btn-sm"
+                  style={{ borderRadius: 'var(--radius-full)' }}
                 >
                   <ThumbsUp size={13} color="#059669" />
                   <span>Membantu ({rev.likes})</span>
@@ -357,15 +410,9 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
           ))}
         </div>
 
-        {filteredReviews.length === 0 && (
-          <div style={{
-            textAlign: 'center',
-            padding: '3rem 1.5rem',
-            background: '#FFFFFF',
-            borderRadius: 'var(--radius-lg)',
-            border: '1.5px dashed var(--border-light)'
-          }}>
-            <p style={{ fontSize: '1rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
+        {processedReviews.length === 0 && (
+          <div className="empty-state">
+            <p style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>
               Belum ada ulasan untuk kriteria pencarian ini.
             </p>
             <button
@@ -378,6 +425,47 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
         )}
 
       </div>
+
+      {/* Report Review Modal (Item #57) */}
+      {reportingReviewId && (
+        <div className="modal-overlay" onClick={() => setReportingReviewId(null)}>
+          <div className="modal-content" style={{ maxWidth: '480px' }} onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 style={{ fontSize: '1.2rem', color: '#991B1B' }}>Laporkan Ulasan Ini</h3>
+              <button onClick={() => setReportingReviewId(null)} style={{ padding: '0.3rem' }}>
+                <X size={18} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+                Bantu kurator menjaga kualitas data dan keselamatan kerja komunitas. Mengapa ulasan ini perlu ditinjau?
+              </p>
+              <div className="form-group">
+                <label className="form-label">Alasan Pelaporan</label>
+                <select
+                  value={reportReason}
+                  onChange={(e) => setReportReason(e.target.value)}
+                  className="form-select"
+                >
+                  <option value="Informasi keliru atau berbahaya">Informasi keliru atau berbahaya bagi keselamatan kerja</option>
+                  <option value="Ulasan spam atau promosi">Ulasan spam / iklan / promosi komersial</option>
+                  <option value="Kata-kata tidak pantas">Kata-kata kasar atau tidak pantas</option>
+                  <option value="Tidak relevan dengan produk">Tidak relevan dengan produk tutorial</option>
+                </select>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button onClick={() => setReportingReviewId(null)} className="btn-secondary">
+                Batal
+              </button>
+              <button onClick={handleConfirmReport} className="btn-danger btn-sm">
+                Kirim Laporan ke Kurator
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </section>
   );
 };

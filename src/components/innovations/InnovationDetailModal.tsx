@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { InnovationItem } from '../../types';
+import { useAuth } from '../../context/AuthContext';
+import { api } from '../../services/api';
 import { 
   X, 
   Clock, 
@@ -12,9 +14,11 @@ import {
   Pause, 
   ShieldAlert, 
   Star,
-  ChevronRight,
+  CheckSquare,
+  Square,
   Sparkles
 } from 'lucide-react';
+import confetti from 'canvas-confetti';
 
 interface InnovationDetailModalProps {
   innovation: InnovationItem | null;
@@ -27,10 +31,49 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
   onClose,
   onOpenReviewModal
 }) => {
+  const { user } = useAuth();
   const [activeStep, setActiveStep] = useState(0);
   const [isPlayingVideo, setIsPlayingVideo] = useState(false);
+  const [videoTime, setVideoTime] = useState(0);
+  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+
+  // Load user step progress
+  useEffect(() => {
+    if (!innovation) return;
+    const fetchProgress = async () => {
+      const progress = await api.innovations.getProgress(user.id, innovation.id);
+      setCompletedSteps(progress);
+    };
+    fetchProgress();
+  }, [innovation, user.id]);
+
+  // Video playback timer
+  useEffect(() => {
+    let interval: any;
+    if (isPlayingVideo) {
+      interval = setInterval(() => {
+        setVideoTime((prev) => (prev >= 270 ? 0 : prev + 1));
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isPlayingVideo]);
 
   if (!innovation) return null;
+
+  const handleToggleStep = async (stepNumber: number) => {
+    const updated = await api.innovations.toggleStep(user.id, innovation.id, stepNumber);
+    setCompletedSteps(updated);
+
+    if (updated.length === innovation.steps.length) {
+      confetti({
+        particleCount: 100,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+    }
+  };
+
+  const isAllStepsFinished = completedSteps.length === innovation.steps.length;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -124,22 +167,43 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
             </div>
           </div>
 
-          {/* Economic Value */}
+          {/* Progress Tracker Card */}
           <div style={{
-            background: 'linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%)',
-            padding: '0.85rem 1rem',
+            background: isAllStepsFinished ? '#ECFDF5' : '#F8FAFC',
+            border: isAllStepsFinished ? '2px solid #10B981' : '1px solid var(--border-light)',
+            padding: '0.85rem 1.1rem',
             borderRadius: 'var(--radius-md)',
-            border: '1.5px solid #6EE7B7'
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '0.75rem'
           }}>
-            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#065F46', textTransform: 'uppercase', marginBottom: '0.2rem' }}>
-              Nilai Ekonomi & Potensi Pasar:
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '0.88rem', color: isAllStepsFinished ? '#065F46' : 'var(--text-main)' }}>
+                {isAllStepsFinished ? '🎉 Semua Langkah Telah Selesai Dipraktikkan!' : `Progress Praktik: ${completedSteps.length} dari ${innovation.steps.length} langkah selesai`}
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                Centang setiap langkah setelah Anda berhasil mengerjakannya di bengkel / laboratorium
+              </div>
             </div>
-            <div style={{ fontSize: '0.86rem', color: '#047857', fontWeight: 600 }}>
-              {innovation.economicValue}
-            </div>
+
+            {isAllStepsFinished && (
+              <button
+                onClick={() => {
+                  onClose();
+                  onOpenReviewModal(innovation);
+                }}
+                className="btn-primary"
+                style={{ fontSize: '0.82rem', padding: '0.45rem 0.95rem' }}
+              >
+                <Sparkles size={15} />
+                <span>Uji & Evaluasi Hasil Anda (5M)</span>
+              </button>
+            )}
           </div>
 
-          {/* Video / Infographic Interactive Player Simulation */}
+          {/* Video Player Simulation with real timing */}
           <div style={{
             position: 'relative',
             background: '#0F172A',
@@ -153,14 +217,13 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
             justifyContent: 'center',
             color: '#FFFFFF'
           }}>
-            {/* Ambient Leaf Glow */}
             <div style={{
               position: 'absolute',
               inset: 0,
               background: 'radial-gradient(circle at center, rgba(16, 185, 129, 0.25) 0%, rgba(15, 23, 42, 0.95) 80%)'
             }} />
 
-            <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', padding: '1.5rem' }}>
+            <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', padding: '1.5rem', width: '100%' }}>
               <button
                 onClick={() => setIsPlayingVideo(!isPlayingVideo)}
                 style={{
@@ -173,33 +236,39 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
                   alignItems: 'center',
                   justifyContent: 'center',
                   boxShadow: '0 0 25px rgba(16, 185, 129, 0.6)',
-                  marginBottom: '1rem',
+                  marginBottom: '0.75rem',
                   transition: 'transform 0.2s ease'
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.08)')}
-                onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
               >
                 {isPlayingVideo ? <Pause size={28} /> : <Play size={28} style={{ marginLeft: '3px' }} />}
               </button>
 
               <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.3rem' }}>
-                {isPlayingVideo ? `Memutar Simulasi Video Panduan: ${innovation.title}` : `Video Panduan & Infografis Langkah`}
+                {isPlayingVideo ? `Video Tutorial Praktik: ${innovation.title}` : `Video Panduan Visual & Infografis`}
               </div>
-              <div style={{ fontSize: '0.8rem', color: '#A7F3D0' }}>
-                {isPlayingVideo ? "Durasi: 04:30 Menit • Format Visual Berstandar Kemendikbud" : "Klik untuk memutar video demonstrasi pembuatan"}
+              
+              <div style={{ fontSize: '0.8rem', color: '#A7F3D0', marginBottom: '0.75rem' }}>
+                {isPlayingVideo
+                  ? `Durasi Berjalan: ${Math.floor(videoTime / 60)}:${String(videoTime % 60).padStart(2, '0')} / 04:30`
+                  : 'Klik tombol putar untuk menyimak demonstrasi video pengolahan'}
               </div>
 
-              {/* Step indicator inside video */}
+              {/* Video Timeline bar */}
               <div style={{
-                marginTop: '1rem',
-                display: 'inline-flex',
-                gap: '0.4rem',
-                background: 'rgba(255, 255, 255, 0.1)',
-                padding: '4px 10px',
-                borderRadius: 'var(--radius-full)',
-                fontSize: '0.72rem'
+                width: '80%',
+                maxWidth: '420px',
+                height: '4px',
+                background: 'rgba(255, 255, 255, 0.2)',
+                borderRadius: '2px',
+                margin: '0 auto',
+                overflow: 'hidden'
               }}>
-                Langkah {activeStep + 1} dari {innovation.steps.length}: {innovation.steps[activeStep].title}
+                <div style={{
+                  width: `${(videoTime / 270) * 100}%`,
+                  height: '100%',
+                  background: '#10B981',
+                  transition: 'width 0.3s ease'
+                }} />
               </div>
             </div>
           </div>
@@ -262,80 +331,90 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
 
           </div>
 
-          {/* Interactive Step-by-Step Guide */}
+          {/* Interactive Step-by-Step Checklist */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
               <h3 style={{ fontSize: '1.15rem', color: 'var(--leaf-deep)' }}>
-                Panduan Langkah-demi-Langkah Pembuatan:
+                Panduan Langkah-demi-Langkah & Checklist Selesai:
               </h3>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                {innovation.steps.length} Langkah Terstruktur
+                {completedSteps.length} / {innovation.steps.length} Selesai
               </span>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-              {innovation.steps.map((step, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => setActiveStep(idx)}
-                  style={{
-                    padding: '1rem',
-                    borderRadius: 'var(--radius-md)',
-                    border: activeStep === idx ? '2px solid #10B981' : '1px solid var(--border-light)',
-                    background: activeStep === idx ? '#F0FDF4' : '#FFFFFF',
-                    cursor: 'pointer',
-                    transition: 'all var(--transition-fast)'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-                    <div style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      background: activeStep === idx ? '#10B981' : '#E2E8F0',
-                      color: activeStep === idx ? '#FFFFFF' : '#475569',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 800,
-                      fontSize: '0.88rem',
-                      flexShrink: 0
-                    }}>
-                      {step.stepNumber}
-                    </div>
+              {innovation.steps.map((step, idx) => {
+                const isStepCompleted = completedSteps.includes(step.stepNumber);
 
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-main)', marginBottom: '0.25rem' }}>
-                        {step.title}
-                      </div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                        {step.description}
-                      </div>
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => setActiveStep(idx)}
+                    style={{
+                      padding: '1rem',
+                      borderRadius: 'var(--radius-md)',
+                      border: activeStep === idx ? '2px solid #10B981' : '1px solid var(--border-light)',
+                      background: isStepCompleted ? '#F0FDF4' : '#FFFFFF',
+                      cursor: 'pointer',
+                      transition: 'all var(--transition-fast)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+                      
+                      {/* Checkbox */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleStep(step.stepNumber);
+                        }}
+                        style={{ padding: '2px', color: isStepCompleted ? '#10B981' : '#94A3B8', marginTop: '2px' }}
+                        title={isStepCompleted ? 'Tandai belum selesai' : 'Tandai langkah sudah selesai'}
+                      >
+                        {isStepCompleted ? <CheckSquare size={22} color="#10B981" /> : <Square size={22} />}
+                      </button>
 
-                      {step.tip && (
-                        <div style={{
-                          marginTop: '0.5rem',
-                          padding: '0.45rem 0.75rem',
-                          background: '#FEF3C7',
-                          borderRadius: 'var(--radius-sm)',
-                          fontSize: '0.78rem',
-                          color: '#92400E',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.4rem'
-                        }}>
-                          <Lightbulb size={14} color="#D97706" style={{ flexShrink: 0 }} />
-                          <span><strong>Tips Sukses:</strong> {step.tip}</span>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <div style={{ fontWeight: 700, fontSize: '0.95rem', color: isStepCompleted ? '#065F46' : 'var(--text-main)', marginBottom: '0.25rem' }}>
+                            Langkah {step.stepNumber}: {step.title}
+                          </div>
+                          {isStepCompleted && (
+                            <span style={{ fontSize: '0.72rem', color: '#166534', background: '#DCFCE7', padding: '1px 7px', borderRadius: '10px', fontWeight: 700 }}>
+                              Selesai ✓
+                            </span>
+                          )}
                         </div>
-                      )}
+
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                          {step.description}
+                        </div>
+
+                        {step.tip && (
+                          <div style={{
+                            marginTop: '0.5rem',
+                            padding: '0.45rem 0.75rem',
+                            background: '#FEF3C7',
+                            borderRadius: 'var(--radius-sm)',
+                            fontSize: '0.78rem',
+                            color: '#92400E',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.4rem'
+                          }}>
+                            <Lightbulb size={14} color="#D97706" style={{ flexShrink: 0 }} />
+                            <span><strong>Tips Sukses:</strong> {step.tip}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
-          {/* Safety Warning Tips */}
+          {/* Safety Warning */}
           <div style={{
             background: '#FEF2F2',
             padding: '1rem',
@@ -344,7 +423,7 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, fontSize: '0.85rem', color: '#991B1B', marginBottom: '0.4rem' }}>
               <ShieldAlert size={16} color="#DC2626" />
-              <span>Standar Keselamatan Kerja (K3) Selama Pembuatan:</span>
+              <span>Standar Keselamatan Kerja (K3):</span>
             </div>
             <ul style={{ paddingLeft: '1.2rem', fontSize: '0.82rem', color: '#7F1D1D', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
               {innovation.safetyTips.map((tip, idx) => (

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { ToastProvider, useToast } from './context/ToastContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/common/Navbar';
 import { HeroBanner } from './components/common/HeroBanner';
 import { Footer } from './components/common/Footer';
@@ -10,77 +12,155 @@ import { EvaluationReviewView } from './components/evaluation/EvaluationReviewVi
 import { SubmitInnovationModal } from './components/innovations/SubmitInnovationModal';
 import { AdminVerificationModal } from './components/innovations/AdminVerificationModal';
 import { AddReviewModal } from './components/evaluation/AddReviewModal';
+import { AuthModal } from './components/common/AuthModal';
 import { InnovationItem, ReviewItem } from './types';
-import { 
-  getStoredInnovations, 
-  saveInnovations, 
-  getStoredReviews, 
-  saveReviews 
-} from './utils/storage';
+import { api } from './services/api';
 
-export const App: React.FC = () => {
+const Waste2WisdomMain: React.FC = () => {
+  const { user } = useAuth();
+  const { addToast } = useToast();
+
   const [activeTab, setActiveTab] = useState<string>('dictionary');
   const [innovations, setInnovations] = useState<InnovationItem[]>([]);
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const [isLoadingInnovations, setIsLoadingInnovations] = useState(true);
+
+  // Deep linked waste filter (from Kamus -> Marketplace)
+  const [activeWasteFilter, setActiveWasteFilter] = useState<string | undefined>(undefined);
 
   // Modals
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [preSelectedReviewInnovation, setPreSelectedReviewInnovation] = useState<InnovationItem | null>(null);
 
-  // Initialize data from localStorage
+  // Fetch innovations & reviews via API
+  const loadInnovations = async () => {
+    setIsLoadingInnovations(true);
+    try {
+      const data = await api.innovations.getAll();
+      setInnovations(data);
+    } catch {
+      addToast('Gagal memuat katalog inovasi', 'error');
+    } finally {
+      setIsLoadingInnovations(false);
+    }
+  };
+
+  const loadReviews = async () => {
+    try {
+      const data = await api.reviews.getAll();
+      setReviews(data);
+    } catch {
+      addToast('Gagal memuat ulasan', 'error');
+    }
+  };
+
   useEffect(() => {
-    const loadedInnovations = getStoredInnovations();
-    const loadedReviews = getStoredReviews();
-    setInnovations(loadedInnovations);
-    setReviews(loadedReviews);
+    loadInnovations();
+    loadReviews();
   }, []);
 
-  // Pending innovations for admin verification
+  // Pending innovations count for admin badge
   const pendingInnovations = innovations.filter((i) => i.status === 'pending');
+  const reportedReviews = reviews.filter((r) => r.isReported);
 
-  // Handle user submitting new innovation
-  const handleInnovationSubmit = (newInv: InnovationItem) => {
-    const updated = [newInv, ...innovations];
-    setInnovations(updated);
-    saveInnovations(updated);
+  // Handle deep link from Kamus (1M) -> Marketplace (3M)
+  const handleSelectWasteForInnovation = (wasteName: string) => {
+    setActiveWasteFilter(wasteName);
+    setActiveTab('innovations');
+    addToast(`Menampilkan tutorial inovasi berbahan: ${wasteName}`, 'info');
   };
 
-  // Handle admin approving pending innovation
-  const handleAdminApprove = (id: string) => {
-    const updated = innovations.map((inv) =>
-      inv.id === id ? { ...inv, status: 'verified' as const } : inv
+  // Handle user submitting innovation
+  const handleInnovationSubmit = async (newInv: InnovationItem) => {
+    try {
+      const created = await api.innovations.create({
+        ...newInv,
+        authorId: user.id
+      });
+      setInnovations((prev) => [created, ...prev]);
+      addToast('Inovasi Anda berhasil diajukan! Menunggu tinjauan admin/kurator.', 'success');
+    } catch {
+      addToast('Gagal mengajukan inovasi', 'error');
+    }
+  };
+
+  // Handle admin approve
+  const handleAdminApprove = async (id: string) => {
+    try {
+      const approved = await api.innovations.approve(id);
+      setInnovations((prev) => prev.map((item) => (item.id === id ? approved : item)));
+    } catch {
+      addToast('Gagal menyetujui inovasi', 'error');
+    }
+  };
+
+  // Handle admin reject with reason
+  const handleAdminReject = async (id: string, reason: string) => {
+    try {
+      const rejected = await api.innovations.reject(id, reason);
+      setInnovations((prev) => prev.map((item) => (item.id === id ? rejected : item)));
+    } catch {
+      addToast('Gagal menolak inovasi', 'error');
+    }
+  };
+
+  // Handle review submit
+  const handleReviewSubmit = async (newRev: ReviewItem) => {
+    try {
+      const saved = await api.reviews.create(newRev);
+      setReviews((prev) => [saved, ...prev]);
+      // Reload innovations to get updated review counts
+      loadInnovations();
+    } catch (err: any) {
+      addToast(err.message || 'Gagal menyimpan ulasan', 'error');
+    }
+  };
+
+  // Handle like review
+  const handleLikeReview = async (reviewId: string) => {
+    try {
+      const updated = await api.reviews.like(reviewId);
+      setReviews((prev) => prev.map((r) => (r.id === reviewId ? updated : r)));
+    } catch {
+      addToast('Gagal menyukai ulasan', 'error');
+    }
+  };
+
+  // Handle report review
+  const handleReportReview = async (reviewId: string, reason: string) => {
+    setReviews((prev) =>
+      prev.map((r) => (r.id === reviewId ? { ...r, isReported: true, reportReason: reason } : r))
     );
-    setInnovations(updated);
-    saveInnovations(updated);
   };
 
-  // Handle admin rejecting pending innovation
-  const handleAdminReject = (id: string) => {
-    const updated = innovations.filter((inv) => inv.id !== id);
-    setInnovations(updated);
-    saveInnovations(updated);
+  // Handle delete reported review
+  const handleDeleteReportedReview = async (reviewId: string) => {
+    try {
+      await api.reviews.delete(reviewId);
+      setReviews((prev) => prev.filter((r) => r.id !== reviewId));
+      addToast('Ulasan bermasalah berhasil dihapus.', 'info');
+    } catch {
+      addToast('Gagal menghapus ulasan', 'error');
+    }
   };
 
-  // Handle adding sample pending innovation for demonstration
-  const handleSeedMockPending = () => {
-    const samplePending: InnovationItem = {
-      id: `inv-mock-${Date.now()}`,
-      title: 'Paving Block Campuran Serat Karung Goni & Pasir',
+  // Seed mock pending for demo
+  const handleSeedMockPending = async () => {
+    const sample = await api.innovations.create({
+      title: 'Paving Block Ramah Lingkungan Campuran Serat Karung Goni',
       tagline: 'Inovasi batako ringan dengan perkuatan serat limbah karung goni industri beras',
-      wasteSource: 'Serat Karung Goni Pertanian',
+      wasteSource: 'Serat Karung Goni',
       category: 'Material Bangunan Alternatif',
       difficulty: 'Menengah',
       estimatedTime: '3 Hari',
       estimatedCost: 'Rp 18.000 / buah',
-      economicValue: 'Dapat menggantikan batako merah dengan bobot lebih ringan 25%',
-      rating: 5.0,
-      reviewCount: 0,
-      successRate: 90,
+      economicValue: 'Dapat menggantikan batako konvensional dengan bobot lebih ringan 25%',
       materials: [
         { name: 'Serat goni dicacah 2 cm', amount: '500 gram' },
-        { name: 'Semen portland', amount: '2 kg' },
+        { name: 'Semen portland komposit', amount: '2 kg' },
         { name: 'Pasir halus terayak', amount: '4 kg' }
       ],
       tools: ['Cetakan batako manual', 'Pengaduk semen', 'Ember takar'],
@@ -89,45 +169,12 @@ export const App: React.FC = () => {
         { stepNumber: 2, title: 'Pencampuran & Cetak', description: 'Campur semen, pasir, dan serat goni basah lalu cetak padat.', tip: 'Tumbuk hingga rongga udara hilang.' }
       ],
       safetyTips: ['Gunakan sarung tangan tebal dan masker debu.'],
-      status: 'pending',
-      submittedBy: 'Tim Riset SMK Pertanian Sukabumi',
-      submissionDate: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
-    };
-
-    handleInnovationSubmit(samplePending);
-  };
-
-  // Handle adding new review
-  const handleReviewSubmit = (newRev: ReviewItem) => {
-    const updated = [newRev, ...reviews];
-    setReviews(updated);
-    saveReviews(updated);
-
-    // Also update review count on target innovation
-    const updatedInnovations = innovations.map((inv) => {
-      if (inv.id === newRev.innovationId) {
-        const newCount = inv.reviewCount + 1;
-        const newRating = Number(((inv.rating * inv.reviewCount + newRev.rating) / newCount).toFixed(1));
-        return { ...inv, reviewCount: newCount, rating: newRating };
-      }
-      return inv;
+      submittedBy: 'Tim Riset SMKN 2 Pertanian',
+      authorId: 'user-pelajar-1'
     });
-    setInnovations(updatedInnovations);
-    saveInnovations(updatedInnovations);
-  };
 
-  // Handle liking review
-  const handleLikeReview = (reviewId: string) => {
-    const updated = reviews.map((r) =>
-      r.id === reviewId ? { ...r, likes: r.likes + 1 } : r
-    );
-    setReviews(updated);
-    saveReviews(updated);
-  };
-
-  const handleOpenReviewModalWithProduct = (product?: InnovationItem | null) => {
-    setPreSelectedReviewInnovation(product || null);
-    setIsReviewModalOpen(true);
+    setInnovations((prev) => [sample, ...prev]);
+    addToast('Contoh pengajuan baru telah ditambahkan ke antrean verifikasi admin!', 'success');
   };
 
   return (
@@ -140,15 +187,19 @@ export const App: React.FC = () => {
         pendingCount={pendingInnovations.length}
         onOpenSubmitModal={() => setIsSubmitModalOpen(true)}
         onOpenAdminModal={() => setIsAdminModalOpen(true)}
+        onOpenAuthModal={() => setIsAuthModalOpen(true)}
       />
 
-      {/* Hero Banner with 5M quick selector */}
-      <HeroBanner onSelect5M={(tab) => setActiveTab(tab)} />
+      {/* Hero Banner */}
+      <HeroBanner onSelect5M={(tab) => {
+        setActiveWasteFilter(undefined);
+        setActiveTab(tab);
+      }} />
 
-      {/* Main Content Render by 5M Tab */}
+      {/* Main 5M Views */}
       <main style={{ flex: 1 }}>
         {activeTab === 'dictionary' && (
-          <WasteDictionaryView onSelectInnovationTab={() => setActiveTab('innovations')} />
+          <WasteDictionaryView onSelectWasteForInnovation={handleSelectWasteForInnovation} />
         )}
 
         {activeTab === 'explore' && (
@@ -158,8 +209,14 @@ export const App: React.FC = () => {
         {activeTab === 'innovations' && (
           <InnovationCatalogView
             innovations={innovations}
+            isLoading={isLoadingInnovations}
+            activeWasteFilter={activeWasteFilter}
+            onClearWasteFilter={() => setActiveWasteFilter(undefined)}
             onOpenSubmitModal={() => setIsSubmitModalOpen(true)}
-            onOpenReviewModal={(inv) => handleOpenReviewModalWithProduct(inv)}
+            onOpenReviewModal={(inv) => {
+              setPreSelectedReviewInnovation(inv);
+              setIsReviewModalOpen(true);
+            }}
           />
         )}
 
@@ -171,8 +228,12 @@ export const App: React.FC = () => {
           <EvaluationReviewView
             reviews={reviews}
             innovations={innovations.filter((i) => i.status === 'verified')}
-            onOpenAddReviewModal={(inv) => handleOpenReviewModalWithProduct(inv)}
+            onOpenAddReviewModal={(inv) => {
+              setPreSelectedReviewInnovation(inv || null);
+              setIsReviewModalOpen(true);
+            }}
             onLikeReview={handleLikeReview}
+            onReportReview={handleReportReview}
           />
         )}
       </main>
@@ -180,7 +241,7 @@ export const App: React.FC = () => {
       {/* Footer */}
       <Footer />
 
-      {/* Global Modals */}
+      {/* Modals */}
       <SubmitInnovationModal
         isOpen={isSubmitModalOpen}
         onClose={() => setIsSubmitModalOpen(false)}
@@ -191,8 +252,10 @@ export const App: React.FC = () => {
         isOpen={isAdminModalOpen}
         onClose={() => setIsAdminModalOpen(false)}
         pendingInnovations={pendingInnovations}
+        reportedReviews={reportedReviews}
         onApprove={handleAdminApprove}
         onReject={handleAdminReject}
+        onDeleteReportedReview={handleDeleteReportedReview}
         onSeedMockPending={handleSeedMockPending}
       />
 
@@ -207,7 +270,22 @@ export const App: React.FC = () => {
         onSubmitSuccess={handleReviewSubmit}
       />
 
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
+
     </div>
+  );
+};
+
+export const App: React.FC = () => {
+  return (
+    <ToastProvider>
+      <AuthProvider>
+        <Waste2WisdomMain />
+      </AuthProvider>
+    </ToastProvider>
   );
 };
 

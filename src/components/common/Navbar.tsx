@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { 
   BookOpen, 
   Compass, 
@@ -9,45 +10,38 @@ import {
   ShieldCheck, 
   Menu, 
   X, 
-  Wifi, 
-  HardDrive
+  User,
+  Bell
 } from 'lucide-react';
 
 interface NavbarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   pendingCount: number;
+  pendingRequestsCount?: number;
   onOpenSubmitModal: () => void;
   onOpenAdminModal: () => void;
+  onOpenAuthModal: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   setActiveTab,
   pendingCount,
+  pendingRequestsCount = 0,
   onOpenSubmitModal,
-  onOpenAdminModal
+  onOpenAdminModal,
+  onOpenAuthModal
 }) => {
+  const { user, isAdmin } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
-
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
 
   const navItems = [
-    { id: 'dictionary', label: 'Kamus & Literasi', mLabel: '1M: Mengenali', icon: BookOpen },
-    { id: 'explore', label: 'Tempat PengNIP', mLabel: '2M: Mengeksplorasi', icon: Compass },
-    { id: 'innovations', label: 'Marketplace Inovasi', mLabel: '3M: Menginovasi', icon: Lightbulb },
-    { id: 'matchmaking', label: 'Peta Penghubung', mLabel: '4M: Matchmaking', icon: MapPin },
-    { id: 'evaluation', label: 'Evaluasi & Ulasan', mLabel: '5M: Mengevaluasi', icon: Star },
+    { id: 'dictionary', label: 'Kamus & Literasi', mLabel: '1M', icon: BookOpen },
+    { id: 'explore', label: 'Tempat PengNIP', mLabel: '2M', icon: Compass },
+    { id: 'innovations', label: 'Marketplace Inovasi', mLabel: '3M', icon: Lightbulb },
+    { id: 'matchmaking', label: 'Peta Penghubung', mLabel: '4M', icon: MapPin, badge: pendingRequestsCount },
+    { id: 'evaluation', label: 'Evaluasi & Ulasan', mLabel: '5M', icon: Star },
   ];
 
   return (
@@ -55,7 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       position: 'sticky',
       top: 0,
       zIndex: 1000,
-      background: 'rgba(255, 255, 255, 0.94)',
+      background: 'rgba(255, 255, 255, 0.95)',
       backdropFilter: 'blur(16px)',
       WebkitBackdropFilter: 'blur(16px)',
       borderBottom: '1px solid var(--border-leaf)',
@@ -63,7 +57,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     }}>
       <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '72px' }}>
         
-        {/* Brand Logo & Tagline */}
+        {/* Brand Logo & Motto */}
         <div 
           onClick={() => setActiveTab('dictionary')}
           style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
@@ -71,12 +65,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           <img 
             src="./logo-waste2wisdom.svg" 
             alt="Waste2Wisdom Logo" 
-            style={{ height: '44px', width: 'auto' }}
+            style={{ height: '42px', width: 'auto' }}
           />
         </div>
 
         {/* Desktop Nav Items (5M Navigation) */}
-        <nav style={{ display: 'none', alignItems: 'center', gap: '0.4rem' }} className="desktop-nav">
+        <nav style={{ display: 'none', alignItems: 'center', gap: '0.35rem' }} className="desktop-nav">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -88,133 +82,147 @@ export const Navbar: React.FC<NavbarProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.45rem',
-                  padding: '0.55rem 0.9rem',
+                  padding: '0.55rem 0.85rem',
                   borderRadius: 'var(--radius-full)',
-                  fontSize: '0.88rem',
+                  fontSize: '0.86rem',
                   fontWeight: isActive ? 700 : 500,
                   color: isActive ? 'var(--leaf-deep)' : 'var(--text-muted)',
                   backgroundColor: isActive ? 'var(--leaf-subtle)' : 'transparent',
                   border: isActive ? '1.5px solid var(--leaf-mint)' : '1.5px solid transparent',
                   transition: 'all var(--transition-fast)',
+                  position: 'relative'
                 }}
               >
                 <Icon size={16} color={isActive ? '#10B981' : '#64748B'} />
                 <span>{item.label}</span>
-                {isActive && (
+                {item.badge && item.badge > 0 ? (
                   <span style={{
                     fontSize: '0.65rem',
-                    background: '#10B981',
+                    background: '#0284C7',
                     color: '#fff',
                     padding: '1px 6px',
                     borderRadius: '10px',
                     fontWeight: 700
                   }}>
-                    {item.mLabel.split(':')[0]}
+                    {item.badge}
                   </span>
-                )}
+                ) : null}
               </button>
             );
           })}
         </nav>
 
-        {/* Header Right Actions */}
+        {/* Right Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
           
-          {/* Offline / Localhost Badge */}
-          <div 
-            title={isOnline ? "Tersambung ke Jaringan Lokal/Cloud" : "Mode Offline Mandiri (Tanpa Internet)"}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              padding: '0.3rem 0.65rem',
-              background: '#F1F5F9',
-              borderRadius: 'var(--radius-full)',
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              color: '#475569'
-            }}
-          >
-            {isOnline ? (
-              <>
-                <Wifi size={13} color="#10B981" />
-                <span style={{ display: 'none' }} className="status-label">Online</span>
-              </>
-            ) : (
-              <>
-                <HardDrive size={13} color="#F59E0B" />
-                <span>Offline</span>
-              </>
-            )}
-          </div>
+          {/* Admin Verification Button (Only prominent for Admin or when items pending) */}
+          {(isAdmin || pendingCount > 0) && (
+            <button
+              onClick={onOpenAdminModal}
+              className="btn-outline btn-sm"
+              style={{
+                position: 'relative',
+                borderRadius: 'var(--radius-full)',
+                borderColor: '#10B981',
+                color: '#065F46'
+              }}
+              title="Dashboard Moderasi Admin"
+            >
+              <ShieldCheck size={15} color="#059669" />
+              <span className="admin-btn-text">Admin ({pendingCount})</span>
+              {pendingCount > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: '-4px',
+                  right: '-4px',
+                  background: '#EF4444',
+                  color: '#fff',
+                  fontSize: '0.68rem',
+                  fontWeight: 800,
+                  width: '18px',
+                  height: '18px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  {pendingCount}
+                </span>
+              )}
+            </button>
+          )}
 
-          {/* Admin Verification Modal Trigger */}
-          <button
-            onClick={onOpenAdminModal}
-            className="btn-outline"
-            style={{
-              position: 'relative',
-              padding: '0.45rem 0.85rem',
-              fontSize: '0.82rem',
-              borderRadius: 'var(--radius-full)'
-            }}
-            title="Dashboard Verifikasi Inovasi Admin"
-          >
-            <ShieldCheck size={16} color="#059669" />
-            <span style={{ display: 'none' }} className="admin-btn-text">Verifikasi</span>
-            {pendingCount > 0 && (
-              <span style={{
-                position: 'absolute',
-                top: '-4px',
-                right: '-4px',
-                background: '#EF4444',
-                color: '#fff',
-                fontSize: '0.68rem',
-                fontWeight: 800,
-                width: '18px',
-                height: '18px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 0 8px rgba(239, 68, 68, 0.5)'
-              }}>
-                {pendingCount}
-              </span>
-            )}
-          </button>
-
-          {/* Submit Innovation Button */}
+          {/* Quick Submit Innovation CTA */}
           <button
             onClick={onOpenSubmitModal}
             className="btn-primary"
             style={{
-              padding: '0.5rem 1.1rem',
-              fontSize: '0.85rem'
+              padding: '0.5rem 1rem',
+              fontSize: '0.84rem'
             }}
           >
-            <PlusCircle size={16} />
-            <span>Ajukan Inovasi</span>
+            <PlusCircle size={15} />
+            <span className="cta-text">Ajukan Inovasi</span>
           </button>
 
-          {/* Mobile Menu Button */}
+          {/* User Account & Role Indicator */}
+          <button
+            onClick={onOpenAuthModal}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              padding: '0.35rem 0.75rem',
+              borderRadius: 'var(--radius-full)',
+              background: '#F1F5F9',
+              border: '1.5px solid var(--border-light)',
+              cursor: 'pointer',
+              transition: 'all var(--transition-fast)'
+            }}
+            title="Klik untuk ganti peran atau edit profil"
+          >
+            <div style={{
+              width: '26px',
+              height: '26px',
+              borderRadius: '50%',
+              background: user.role === 'admin' ? '#064E3B' : user.role === 'industry' ? '#0284C7' : '#10B981',
+              color: '#FFFFFF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 800,
+              fontSize: '0.75rem'
+            }}>
+              {user.name.charAt(0)}
+            </div>
+            <div style={{ textAlign: 'left', display: 'none' }} className="user-text-info">
+              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.1 }}>
+                {user.name.split(' ')[0]}
+              </div>
+              <div style={{ fontSize: '0.68rem', color: '#059669', fontWeight: 600 }}>
+                {user.roleLabel.split(' ')[0]}
+              </div>
+            </div>
+          </button>
+
+          {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             style={{
               display: 'flex',
-              padding: '0.5rem',
+              padding: '0.4rem',
               borderRadius: 'var(--radius-md)',
               color: 'var(--text-main)'
             }}
             className="mobile-menu-toggle"
-            aria-label="Toggle menu"
+            aria-label="Toggle navigation"
           >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div style={{
           background: '#FFFFFF',
@@ -243,21 +251,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                   borderRadius: 'var(--radius-md)',
                   backgroundColor: isActive ? 'var(--leaf-subtle)' : 'transparent',
                   color: isActive ? 'var(--leaf-deep)' : 'var(--text-main)',
-                  fontWeight: isActive ? 700 : 500,
-                  textAlign: 'left'
+                  fontWeight: isActive ? 700 : 500
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <Icon size={18} color={isActive ? '#10B981' : '#64748B'} />
                   <span>{item.label}</span>
                 </div>
-                <span style={{
-                  fontSize: '0.7rem',
-                  color: '#059669',
-                  background: 'var(--leaf-surface-soft)',
-                  padding: '2px 8px',
-                  borderRadius: '10px'
-                }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#059669' }}>
                   {item.mLabel}
                 </span>
               </button>
@@ -266,17 +267,21 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       )}
 
-      {/* Responsive media query inject for navbar */}
       <style>{`
-        @media (min-width: 900px) {
+        @media (min-width: 960px) {
           .desktop-nav {
             display: flex !important;
           }
           .mobile-menu-toggle {
             display: none !important;
           }
-          .admin-btn-text, .status-label {
-            display: inline !important;
+          .admin-btn-text, .user-text-info {
+            display: block !important;
+          }
+        }
+        @media (max-width: 600px) {
+          .cta-text {
+            display: none;
           }
         }
       `}</style>

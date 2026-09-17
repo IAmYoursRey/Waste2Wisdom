@@ -1,5 +1,18 @@
 export type WasteSafetyCategory = 'non-b3' | 'b3';
 
+export type UserRole = 'user' | 'industry' | 'umkm' | 'community' | 'admin';
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  roleLabel: string;
+  organization: string;
+  phone?: string;
+  avatarUrl?: string;
+}
+
 export interface WasteItem {
   id: string;
   name: string;
@@ -26,6 +39,8 @@ export interface InnovationStep {
   tip?: string;
 }
 
+export type InnovationStatus = 'verified' | 'pending' | 'rejected';
+
 export interface InnovationItem {
   id: string;
   title: string;
@@ -43,9 +58,12 @@ export interface InnovationItem {
   tools: string[];
   steps: InnovationStep[];
   safetyTips: string[];
-  status: 'verified' | 'pending';
+  status: InnovationStatus;
+  authorId?: string;
   submittedBy?: string;
   submissionDate?: string;
+  rejectionReason?: string;
+  moderationDate?: string;
 }
 
 export interface FacilityMachine {
@@ -89,12 +107,36 @@ export interface MatchmakingItem {
   phone: string;
   email: string;
   description: string;
+  authorId?: string;
+}
+
+export type SupplyRequestStatus = 'pending' | 'accepted' | 'rejected' | 'completed';
+
+export interface SupplyRequestRecord {
+  id: string;
+  partnerId: string;
+  partnerName: string;
+  targetType: 'industry_supplier' | 'community_buyer';
+  requesterId: string;
+  requesterName: string;
+  organizationName: string;
+  phone: string;
+  email: string;
+  wasteType: string;
+  requestedVolume: string;
+  pickupMethod: string;
+  intendedProduct: string;
+  status: SupplyRequestStatus;
+  statusNote?: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface ReviewItem {
   id: string;
   innovationId: string;
   innovationTitle: string;
+  userId?: string;
   userName: string;
   userRole: 'Siswa / Mahasiswa' | 'Pengrajin UMKM' | 'Warga Komunitas' | 'Praktisi Daur Ulang';
   rating: number;
@@ -104,4 +146,13 @@ export interface ReviewItem {
   troubleshootingTip?: string;
   createdAt: string;
   likes: number;
+  isReported?: boolean;
+  reportReason?: string;
+}
+
+export interface TutorialProgress {
+  innovationId: string;
+  completedSteps: number[];
+  isFinished: boolean;
+  updatedAt: string;
 }
