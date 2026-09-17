@@ -28,6 +28,16 @@ const KEYS = {
   FACILITIES: 'w2w_facilities_v2',
 };
 
+export const guestUser: UserProfile = {
+  id: 'guest',
+  name: 'Pengunjung (Tamu)',
+  email: '-',
+  role: 'user',
+  roleLabel: 'Guest / Belum Login',
+  organization: '-',
+  phone: '-'
+};
+
 // Initial default user profiles for quick testing
 const defaultUsers: UserProfile[] = [
   {
@@ -143,7 +153,7 @@ export const api = {
   auth: {
     async getCurrentUser(): Promise<UserProfile> {
       await delay(100);
-      const user = getStorage<UserProfile>(KEYS.CURRENT_USER, defaultUsers[0]);
+      const user = getStorage<UserProfile>(KEYS.CURRENT_USER, guestUser);
       return user;
     },
 
@@ -220,7 +230,7 @@ export const api = {
     async logout(): Promise<void> {
       await delay(100);
       // Reset to default guest user
-      setStorage(KEYS.CURRENT_USER, defaultUsers[0]);
+      setStorage(KEYS.CURRENT_USER, guestUser);
     }
   },
 
@@ -261,13 +271,32 @@ export const api = {
   innovations: {
     async getAll(): Promise<InnovationItem[]> {
       await delay(150);
-      return getStorage<InnovationItem[]>(KEYS.INNOVATIONS, initialInnovationData);
+      const innovations = getStorage<InnovationItem[]>(KEYS.INNOVATIONS, initialInnovationData);
+      const reviews = getStorage<ReviewItem[]>(KEYS.REVIEWS, initialReviewsData);
+      
+      return innovations.map(inv => {
+        const invReviews = reviews.filter(r => r.innovationId === inv.id);
+        const reviewCount = invReviews.length;
+        const rating = reviewCount > 0 
+          ? Number((invReviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount).toFixed(1)) 
+          : 0;
+        return { ...inv, rating, reviewCount };
+      });
     },
 
     async getById(id: string): Promise<InnovationItem | null> {
       await delay(100);
       const list = getStorage<InnovationItem[]>(KEYS.INNOVATIONS, initialInnovationData);
-      return list.find((i) => i.id === id) || null;
+      const reviews = getStorage<ReviewItem[]>(KEYS.REVIEWS, initialReviewsData);
+      const inv = list.find((i) => i.id === id);
+      if (!inv) return null;
+
+      const invReviews = reviews.filter(r => r.innovationId === inv.id);
+      const reviewCount = invReviews.length;
+      const rating = reviewCount > 0 
+        ? Number((invReviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount).toFixed(1)) 
+        : 0;
+      return { ...inv, rating, reviewCount };
     },
 
     async create(item: Omit<InnovationItem, 'id' | 'status' | 'rating' | 'reviewCount' | 'successRate'>): Promise<InnovationItem> {
@@ -277,9 +306,9 @@ export const api = {
         ...item,
         id: `inv-${Date.now()}`,
         status: 'pending',
-        rating: 5.0,
+        rating: 0,
         reviewCount: 0,
-        successRate: 95,
+        successRate: null,
         submissionDate: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
       };
       const updated = [newItem, ...list];

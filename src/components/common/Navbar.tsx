@@ -115,8 +115,8 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Right Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
           
-          {/* Admin Verification Button (Only prominent for Admin or when items pending) */}
-          {(isAdmin || pendingCount > 0) && (
+          {/* Admin Verification Button (Only prominent for Admin) */}
+          {isAdmin && (
             <button
               onClick={onOpenAdminModal}
               className="btn-outline btn-sm"
@@ -268,7 +268,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       )}
 
       <style>{`
-        @media (min-width: 960px) {
+        @media (min-width: 1024px) {
           .desktop-nav {
             display: flex !important;
           }

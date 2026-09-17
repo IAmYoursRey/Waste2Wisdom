@@ -23,7 +23,7 @@ const Waste2WisdomMain: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<string>('dictionary');
   // Deep linked waste filter (from Kamus -> Marketplace)
-  const [activeWasteFilter, setActiveWasteFilter] = useState<string | undefined>(undefined);
+  const [activeWasteFilter, setActiveWasteFilter] = useState<{ id: string, name: string } | undefined>(undefined);
 
   // Modals
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
@@ -55,8 +55,8 @@ const Waste2WisdomMain: React.FC = () => {
   const reportedReviews = reviews.filter((r) => r.isReported);
 
   // Handle deep link from Kamus (1M) -> Marketplace (3M)
-  const handleSelectWasteForInnovation = (wasteName: string) => {
-    setActiveWasteFilter(wasteName);
+  const handleSelectWasteForInnovation = (wasteId: string, wasteName: string) => {
+    setActiveWasteFilter({ id: wasteId, name: wasteName });
     setActiveTab('innovations');
     addToast(`Menampilkan tutorial inovasi berbahan: ${wasteName}`, 'info');
   };

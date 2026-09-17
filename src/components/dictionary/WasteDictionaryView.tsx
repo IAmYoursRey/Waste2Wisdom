@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 interface WasteDictionaryViewProps {
-  onSelectWasteForInnovation: (wasteName: string) => void;
+  onSelectWasteForInnovation: (wasteId: string, wasteName: string) => void;
 }
 
 export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({ onSelectWasteForInnovation }) => {
@@ -410,7 +410,7 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({ onSele
                     {/* Deep Link to Marketplace (Item #30) */}
                     {!isB3 && (
                       <button
-                        onClick={() => onSelectWasteForInnovation(waste.name)}
+                        onClick={() => onSelectWasteForInnovation(waste.id, waste.name)}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
@@ -489,8 +489,8 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({ onSele
         <WasteDetailModal
           waste={selectedWaste}
           onClose={() => setSelectedWaste(null)}
-          onSelectInnovation={(itemTitle) => {
-            onSelectWasteForInnovation(itemTitle);
+          onSelectInnovation={() => {
+            onSelectWasteForInnovation(selectedWaste.id, selectedWaste.name);
           }}
         />
       )}
@@ -498,7 +498,7 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({ onSele
       {/* Admin Add Waste Modal */}
       {isAddWasteModalOpen && (
         <div className="modal-overlay" onClick={() => setIsAddWasteModalOpen(false)}>
-          <div className="modal-content" style={{ maxWidth: '580px' }} onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '580px' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3 style={{ fontSize: '1.25rem', color: 'var(--leaf-deep)' }}>
                 Tambah Data Limbah Baru (Kamus Nasional)
@@ -522,7 +522,7 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({ onSele
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div className="grid-2-col">
                   <div className="form-group">
                     <label className="form-label">Klasifikasi Regulasi *</label>
                     <select

@@ -86,15 +86,19 @@ export const MatchmakingMapView: React.FC = () => {
     return Array.from(set);
   }, [partners]);
 
-  // Filtered partners
+  // Filtered partners (Dummy Matchmaking Algorithm: Material + Volume + Lokasi + Jenis Pihak)
   const filteredPartners = useMemo(() => {
     return partners.filter((p) => {
       const matchType = selectedType === 'all' ? true : p.type === selectedType;
       const matchCity = selectedCity === 'all' ? true : p.city === selectedCity;
+      
+      const searchTerms = searchQuery.toLowerCase();
       const matchSearch =
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.wasteType.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.address.toLowerCase().includes(searchQuery.toLowerCase());
+        p.name.toLowerCase().includes(searchTerms) ||
+        p.wasteType.toLowerCase().includes(searchTerms) ||
+        p.volumeMonthly.toLowerCase().includes(searchTerms) ||
+        p.address.toLowerCase().includes(searchTerms);
+        
       return matchType && matchCity && matchSearch;
     });
   }, [partners, selectedType, selectedCity, searchQuery]);
@@ -187,10 +191,10 @@ export const MatchmakingMapView: React.FC = () => {
         wasteType: listingWasteType,
         volumeMonthly: listingVolume,
         city: listingCity,
-        province: 'Jawa Barat',
+        province: listingCity, // Poin 8: Hilangkan default Jawa Barat, ikuti kota
         address: listingAddress,
-        coordinates: [-6.315, 107.14],
-        isCertifiedNonB3: true,
+        coordinates: [-6.2, 106.8], // Dummy center
+        isCertifiedNonB3: false, // Poin 9: Default Belum Diverifikasi
         priceExpectation: listingPrice,
         contactName: listingContact,
         phone: listingPhone,
@@ -319,7 +323,7 @@ export const MatchmakingMapView: React.FC = () => {
                   <Search size={18} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
                   <input
                     type="text"
-                    placeholder="Cari pabrik, UMKM, atau jenis bahan..."
+                    placeholder="Cari Material, Volume, atau Nama Pihak..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="form-input"
@@ -532,7 +536,7 @@ export const MatchmakingMapView: React.FC = () => {
               Berikut adalah daftar pengajuan pasokan bahan baku daur ulang. Pihak penerima (Pabrik atau UMKM) dapat menyetujui atau menolak permohonan untuk membuka akses kontak logistik.
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '1.25rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: '1.25rem' }}>
               {supplyRequests.map((req) => {
                 const isPending = req.status === 'pending';
                 const isAccepted = req.status === 'accepted';
@@ -661,7 +665,7 @@ export const MatchmakingMapView: React.FC = () => {
       {/* New Listing Modal (Items #68, #69) */}
       {isNewListingModalOpen && (
         <div className="modal-overlay" onClick={() => setIsNewListingModalOpen(false)}>
-          <div className="modal-content" style={{ maxWidth: '620px' }} onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '620px' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3 style={{ fontSize: '1.25rem', color: 'var(--leaf-deep)' }}>
                 {listingType === 'industry_supplier' ? 'Daftarkan Pasokan Limbah Pabrik' : 'Daftarkan Kebutuhan Material UMKM'}
@@ -697,7 +701,7 @@ export const MatchmakingMapView: React.FC = () => {
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div className="grid-2-col">
                   <div className="form-group">
                     <label className="form-label">Jenis Limbah / Bahan *</label>
                     <input
@@ -723,7 +727,7 @@ export const MatchmakingMapView: React.FC = () => {
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div className="grid-2-col">
                   <div className="form-group">
                     <label className="form-label">Kota Lokasi *</label>
                     <input

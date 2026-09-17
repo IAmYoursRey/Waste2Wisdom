@@ -20,13 +20,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile>({
-    id: 'user-pelajar-1',
-    name: 'Muhammad Raihan',
-    email: 'raihan@pelajar.id',
+    id: 'guest',
+    name: 'Pengunjung (Tamu)',
+    email: '-',
     role: 'user',
-    roleLabel: 'Siswa / Mahasiswa',
-    organization: 'SMKN 1 Cikarang - Jurusan Kimia Industri',
-    phone: '0812-3456-7890'
+    roleLabel: 'Guest / Belum Login',
+    organization: '-',
+    phone: '-'
   });
   const [isLoading, setIsLoading] = useState(true);
   const { addToast } = useToast();

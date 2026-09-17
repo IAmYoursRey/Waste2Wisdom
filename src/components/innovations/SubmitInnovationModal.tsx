@@ -116,7 +116,7 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" style={{ maxWidth: '720px' }} onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '720px' }} onClick={(e) => e.stopPropagation()}>
         
         <div className="modal-header">
           <div>
@@ -190,7 +190,7 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
               </div>
 
               {/* Waste Source & Category */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
+              <div className="grid-2-col">
                 <div className="form-group">
                   <label className="form-label">Sumber Limbah Industri *</label>
                   <input
@@ -220,7 +220,7 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
               </div>
 
               {/* Difficulty & Cost */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.85rem' }}>
+              <div className="grid-3-col">
                 <div className="form-group">
                   <label className="form-label">Tingkat Kesulitan</label>
                   <select

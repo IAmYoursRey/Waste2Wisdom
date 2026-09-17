@@ -19,7 +19,7 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
         
         {/* Header */}
         <div className="modal-header" style={{

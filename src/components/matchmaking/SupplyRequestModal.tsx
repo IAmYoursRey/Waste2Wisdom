@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { MatchmakingItem } from '../../types';
 import { X, CheckCircle2, Send, Building2, MapPin, Package, ShieldCheck } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { useAuth } from '../../context/AuthContext';
+import { api } from '../../services/api';
 
 interface SupplyRequestModalProps {
   partner: MatchmakingItem | null;
@@ -12,36 +14,63 @@ export const SupplyRequestModal: React.FC<SupplyRequestModalProps> = ({
   partner,
   onClose
 }) => {
-  const [applicantName, setApplicantName] = useState('');
-  const [organizationName, setOrganizationName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
+  const { user } = useAuth();
+  
+  const [applicantName, setApplicantName] = useState(user.name || '');
+  const [organizationName, setOrganizationName] = useState(user.organization || '');
+  const [phone, setPhone] = useState(user.phone || '');
+  const [email, setEmail] = useState(user.email || '');
   const [requestedVolume, setRequestedVolume] = useState('200 kg / Bulan');
   const [intendedProduct, setIntendedProduct] = useState('');
   const [pickupMethod, setPickupMethod] = useState('Ambil Langsung dengan Armada Sendiri');
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!partner) return null;
 
   const isSupplier = partner.type === 'industry_supplier';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSuccess(true);
-    confetti({
-      particleCount: 80,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
-    setTimeout(() => {
-      setIsSuccess(false);
-      onClose();
-    }, 2800);
+    setIsSubmitting(true);
+    
+    try {
+      await api.matchmaking.sendSupplyRequest({
+        partnerId: partner.id,
+        partnerName: partner.name,
+        targetType: partner.type,
+        requesterId: user.id,
+        requesterName: applicantName,
+        organizationName: organizationName,
+        phone: phone,
+        email: email,
+        wasteType: partner.wasteType,
+        requestedVolume: requestedVolume,
+        pickupMethod: pickupMethod,
+        intendedProduct: intendedProduct
+      });
+      
+      setIsSuccess(true);
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      setTimeout(() => {
+        setIsSuccess(false);
+        onClose();
+      }, 2800);
+    } catch (error) {
+      console.error('Failed to submit request', error);
+      alert('Gagal mengirim pengajuan.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" style={{ maxWidth: '600px' }} onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '600px' }} onClick={(e) => e.stopPropagation()}>
         
         {/* Header */}
         <div className="modal-header" style={{ background: '#F0FDF4', borderBottom: '2px solid #A7F3D0' }}>
@@ -124,7 +153,7 @@ export const SupplyRequestModal: React.FC<SupplyRequestModalProps> = ({
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div className="grid-2-col">
                 <div className="form-group">
                   <label className="form-label">Nomor Telepon / WhatsApp *</label>
                   <input
@@ -149,7 +178,7 @@ export const SupplyRequestModal: React.FC<SupplyRequestModalProps> = ({
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div className="grid-2-col">
                 <div className="form-group">
                   <label className="form-label">Volume Kebutuhan per Bulan *</label>
                   <input
@@ -208,9 +237,9 @@ export const SupplyRequestModal: React.FC<SupplyRequestModalProps> = ({
               <button type="button" onClick={onClose} className="btn-secondary">
                 Batal
               </button>
-              <button type="submit" className="btn-primary">
+              <button type="submit" className="btn-primary" disabled={isSubmitting}>
                 <Send size={16} />
-                <span>Kirim Permohonan Kemitraan</span>
+                <span>{isSubmitting ? 'Mengirim...' : 'Kirim Permohonan Kemitraan'}</span>
               </button>
             </div>
           </form>

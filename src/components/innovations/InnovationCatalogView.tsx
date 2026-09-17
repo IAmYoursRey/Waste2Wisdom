@@ -21,7 +21,7 @@ import {
 interface InnovationCatalogViewProps {
   innovations: InnovationItem[];
   isLoading?: boolean;
-  activeWasteFilter?: string;
+  activeWasteFilter?: { id: string, name: string };
   onClearWasteFilter?: () => void;
   onOpenSubmitModal: () => void;
   onOpenReviewModal: (innovation: InnovationItem) => void;
@@ -65,9 +65,7 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
 
       // Deep linked waste filter from Kamus
       if (activeWasteFilter) {
-        const matchWaste = item.wasteSource.toLowerCase().includes(activeWasteFilter.toLowerCase()) ||
-          item.title.toLowerCase().includes(activeWasteFilter.toLowerCase());
-        if (!matchWaste) return false;
+        if (item.wasteId !== activeWasteFilter.id) return false;
       }
 
       const matchSearch =
@@ -142,7 +140,7 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
               color: '#065F46',
               fontWeight: 600
             }}>
-              <span>🔍 Memfilter Inovasi untuk Bahan: <strong>{activeWasteFilter}</strong></span>
+              <span>🔍 Memfilter Inovasi untuk Bahan: <strong>{activeWasteFilter.name}</strong></span>
               {onClearWasteFilter && (
                 <button onClick={onClearWasteFilter} style={{ display: 'flex', color: '#EF4444', padding: '2px' }}>
                   <X size={16} />
@@ -250,7 +248,7 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
         {isLoading && (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))',
             gap: '1.5rem'
           }}>
             {[1, 2, 3, 4].map((i) => (
@@ -358,9 +356,7 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
                     </div>
 
                     {/* Key metrics row */}
-                    <div style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr',
+                    <div className="grid-2-col" style={{
                       gap: '0.5rem',
                       background: '#F8FAFC',
                       padding: '0.65rem 0.75rem',

@@ -65,7 +65,7 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" style={{ maxWidth: '820px' }} onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '820px' }} onClick={(e) => e.stopPropagation()}>
         
         {/* Header */}
         <div className="modal-header" style={{ background: '#F0FDF4', borderBottom: '2px solid #A7F3D0' }}>

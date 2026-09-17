@@ -58,7 +58,7 @@ export const ExploreFacilitiesView: React.FC = () => {
         {/* Facilities Grid */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
           gap: '1.5rem',
           marginBottom: '3rem'
         }}>
@@ -78,17 +78,30 @@ export const ExploreFacilitiesView: React.FC = () => {
                 
                 {/* Badge Type & City */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                  <span style={{
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    padding: '0.25rem 0.65rem',
-                    borderRadius: 'var(--radius-full)',
-                    background: '#ECFDF5',
-                    color: '#065F46',
-                    border: '1px solid #A7F3D0'
-                  }}>
-                    {fac.type}
-                  </span>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <span style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      padding: '0.25rem 0.65rem',
+                      borderRadius: 'var(--radius-full)',
+                      background: '#ECFDF5',
+                      color: '#065F46',
+                      border: '1px solid #A7F3D0'
+                    }}>
+                      {fac.type}
+                    </span>
+                    <span style={{
+                      fontSize: '0.65rem',
+                      fontWeight: 700,
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: 'var(--radius-full)',
+                      background: '#FEF3C7',
+                      color: '#B45309',
+                      border: '1px solid #FDE68A'
+                    }} title="Data ini adalah simulasi (belum diverifikasi admin)">
+                      Data Demo
+                    </span>
+                  </div>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
                     <MapPin size={14} color="#059669" />
                     <span>{fac.city}, {fac.province}</span>
@@ -239,7 +252,7 @@ export const ExploreFacilitiesView: React.FC = () => {
       {/* Facility Detail / Machine Explorer Modal */}
       {selectedFacility && (
         <div className="modal-overlay" onClick={() => setSelectedFacility(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div>
                 <span className="badge-sector">{selectedFacility.type}</span>
@@ -341,7 +354,7 @@ export const ExploreFacilitiesView: React.FC = () => {
       {/* Booking Modal */}
       {bookingModalFacility && (
         <div className="modal-overlay" onClick={() => setBookingModalFacility(null)}>
-          <div className="modal-content" style={{ maxWidth: '560px' }} onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '560px' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div>
                 <h3 style={{ fontSize: '1.25rem', color: 'var(--leaf-deep)' }}>
@@ -393,7 +406,7 @@ export const ExploreFacilitiesView: React.FC = () => {
                     />
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                  <div className="grid-2-col">
                     <div className="form-group">
                       <label className="form-label">Rencana Tanggal Kunjungan *</label>
                       <input

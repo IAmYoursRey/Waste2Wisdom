@@ -82,7 +82,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
+  /* overflow-x: hidden removed to fix sticky behavior and proper scrolling */
   line-height: 1.55;
   background: radial-gradient(circle at 15% 15%, rgba(16, 185, 129, 0.07) 0%, transparent 45%),
               radial-gradient(circle at 85% 65%, rgba(132, 204, 22, 0.05) 0%, transparent 50%),
@@ -128,6 +128,11 @@ button {
   border: none;
   background: none;
   outline: none;
+}
+
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--leaf-primary);
+  outline-offset: 2px;
 }
 
 input, select, textarea {
@@ -525,4 +530,23 @@ input, select, textarea {
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
+}
+
+/* Responsive Grid Utilities (Items #12, #13) */
+.grid-2-col {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+}
+
+.grid-3-col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.85rem;
+}
+
+@media (max-width: 768px) {
+  .grid-2-col, .grid-3-col {
+    grid-template-columns: 1fr;
+  }
 }

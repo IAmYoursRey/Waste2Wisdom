@@ -58,7 +58,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" style={{ maxWidth: '520px' }} onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '520px' }} onClick={(e) => e.stopPropagation()}>
         
         {/* Header Tabs */}
         <div className="modal-header" style={{ padding: '0.85rem 1.25rem', background: '#F8FAFC' }}>
@@ -139,7 +139,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <span>Demo Cepat: Masuk sebagai Peran Khusus (1-Klik)</span>
             </div>
             
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.4rem' }}>
+            <div className="grid-2-col" style={{ gap: '0.4rem' }}>
               <button
                 type="button"
                 onClick={async () => { await switchRole('user'); onClose(); }}
@@ -229,6 +229,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           {/* TAB 1: LOGIN */}
           {activeTab === 'login' && (
             <form onSubmit={handleLoginSubmit}>
+              <div style={{ marginBottom: '1rem', padding: '0.6rem', background: '#FEF3C7', color: '#92400E', borderRadius: 'var(--radius-sm)', fontSize: '0.8rem', fontWeight: 600 }}>
+                ⚠️ Demo Login: Autentikasi disimulasikan secara lokal untuk purwarupa.
+              </div>
               <div className="form-group">
                 <label className="form-label">Email Terdaftar</label>
                 <input

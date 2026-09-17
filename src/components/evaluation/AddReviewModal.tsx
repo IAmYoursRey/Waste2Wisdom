@@ -85,7 +85,7 @@ export const AddReviewModal: React.FC<AddReviewModalProps> = ({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" style={{ maxWidth: '640px' }} onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '640px' }} onClick={(e) => e.stopPropagation()}>
         
         {/* Header */}
         <div className="modal-header" style={{ background: '#F0FDF4', borderBottom: '2px solid #A7F3D0' }}>
@@ -124,7 +124,7 @@ export const AddReviewModal: React.FC<AddReviewModalProps> = ({
             </div>
 
             {/* User Info */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <div className="grid-2-col">
               <div className="form-group">
                 <label className="form-label">Nama Anda / Kelompok *</label>
                 <input

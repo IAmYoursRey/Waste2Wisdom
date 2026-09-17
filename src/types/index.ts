@@ -53,7 +53,8 @@ export interface InnovationItem {
   economicValue: string;
   rating: number;
   reviewCount: number;
-  successRate: number; // in percent, e.g. 92
+  successRate: number | null; // in percent, e.g. 92
+  wasteId?: string; // Point 7: relation by ID
   materials: { name: string; amount: string }[];
   tools: string[];
   steps: InnovationStep[];
