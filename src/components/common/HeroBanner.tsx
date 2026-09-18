@@ -7,15 +7,15 @@ interface HeroBannerProps {
 
 export const HeroBanner: React.FC<HeroBannerProps> = ({ onSelect5M }) => {
   const metrics = [
-    { label: 'Limbah Terklasifikasi', value: '10+', sub: 'Non-B3 & B3 SNI' },
+    { label: 'Limbah Terklasifikasi', value: '10+', sub: 'Regulasi PP 22/2021' },
     { label: 'Blueprint Inovasi', value: '6+', sub: 'Panduan Praktis' },
     { label: 'Jejaring Sirkular', value: '7+', sub: 'Industri & UMKM' },
     { label: 'Rasio Keberhasilan', value: '94%', sub: 'Evaluasi Komunitas' },
   ];
 
   const steps5M = [
-    { id: 'dictionary', title: '1. Mengenali & Memahami', desc: 'Kamus limbah B3 vs non-B3 aman', icon: BookOpen },
-    { id: 'explore', title: '2. Mengeksplorasi', desc: 'Tur tempat PengNIP & mesin industri', icon: Compass },
+    { id: 'dictionary', title: '1. Mengenali & Memahami', desc: 'Kamus limbah B3 vs Non-B3 terpilah', icon: BookOpen },
+    { id: 'explore', title: '2. Mengeksplorasi', desc: 'Konsep sentra PengNIP & teknologi', icon: Compass },
     { id: 'innovations', title: '3. Menginovasi', desc: 'Katalog kreasi & ajukan ide baru', icon: Lightbulb },
     { id: 'matchmaking', title: '4. Mengomunikasikan', desc: 'Peta penghubung pasokan industri', icon: MapPin },
     { id: 'evaluation', title: '5. Mengevaluasi', desc: 'Uji keberhasilan & kemudahan produk', icon: Star },

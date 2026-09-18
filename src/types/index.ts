@@ -91,6 +91,10 @@ export interface FacilityItem {
   coordinates: [number, number];
   featuredOutput: string;
   isDemo?: boolean;
+  operator?: string;
+  source?: string;
+  verificationStatus?: string;
+  lastVerified?: string;
 }
 
 export interface FacilityBookingRecord {

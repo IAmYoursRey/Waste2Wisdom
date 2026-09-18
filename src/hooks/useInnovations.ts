@@ -59,7 +59,7 @@ export function useInnovations() {
       return;
     }
     try {
-      const approved = await api.innovations.approve(id);
+      const approved = await api.innovations.approve(id, user.role);
       setInnovations((prev) => prev.map((item) => (item.id === id ? approved : item)));
       addToast('Inovasi disetujui & diterbitkan ke marketplace!', 'success');
     } catch {
@@ -73,7 +73,7 @@ export function useInnovations() {
       return;
     }
     try {
-      const rejected = await api.innovations.reject(id, reason);
+      const rejected = await api.innovations.reject(id, reason, user.role);
       setInnovations((prev) => prev.map((item) => (item.id === id ? rejected : item)));
       addToast('Inovasi ditolak/diminta revisi.', 'info');
     } catch {

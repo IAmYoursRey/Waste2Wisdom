@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { InnovationItem, ReviewItem } from '../../types';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 import { 
   X, 
   ShieldCheck, 
@@ -35,6 +36,7 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
   onDeleteReportedReview,
   onSeedMockPending
 }) => {
+  const { isAdmin } = useAuth();
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<'innovations' | 'reviews'>('innovations');
   const [rejectingId, setRejectingId] = useState<string | null>(null);
@@ -42,6 +44,23 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   if (!isOpen) return null;
+
+  if (!isAdmin) {
+    return (
+      <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '440px', textAlign: 'center', padding: '2rem' }} onClick={(e) => e.stopPropagation()}>
+          <AlertCircle size={48} color="#EF4444" style={{ margin: '0 auto 1rem auto' }} />
+          <h3 style={{ fontSize: '1.2rem', color: '#991B1B', marginBottom: '0.5rem' }}>Akses Dibatasi: Khusus Kurator / Admin</h3>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
+            Halaman moderasi ini memerlukan hak akses kurator atau administrator terverifikasi.
+          </p>
+          <button type="button" onClick={onClose} className="btn-primary">
+            Tutup
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleApproveClick = (id: string) => {
     confetti({

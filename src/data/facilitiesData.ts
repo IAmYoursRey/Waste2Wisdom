@@ -3,13 +3,13 @@ import { FacilityItem } from '../types';
 export const initialFacilitiesData: FacilityItem[] = [
   {
     id: 'fac-cikarang-nip',
-    name: 'Pusat Pengolahan Limbah Industri Hijau Cikarang (PengNIP Cikarang)',
+    name: 'Pusat Pengolahan Limbah Industri Hijau Cikarang (Model Demonstrasi Sentra PengNIP)',
     type: 'Tempat PengNIP',
     location: 'Kawasan Industri Greenland Delta Silicon, Cikarang Pusat',
     city: 'Bekasi',
     province: 'Jawa Barat',
     capacity: '120 Ton Limbah Non-B3 Terpilah / Hari',
-    description: 'Fasilitas percontohan nasional Tempat Pengolahan Limbah Non-B3 Industri Terpadu (PengNIP) yang mengintegrasikan pemilahan fraksi industri otomotif, garmen, dan pangan menjadi bahan baku sekunder berstandar industri sirkular.',
+    description: 'Model fasilitas percontohan Tempat Pengolahan Limbah Non-B3 Industri Terpadu (PengNIP) Waste2Wisdom yang menyimulasikan pemilahan fraksi industri otomotif, garmen, dan pangan menjadi bahan baku sekunder berstandar sirkular.',
     technologies: [
       'Optical Sorter Pemilah Polimer Otomatis',
       'Mesin Shredder & Granulator Kecepatan Tinggi',
@@ -34,10 +34,15 @@ export const initialFacilitiesData: FacilityItem[] = [
       }
     ],
     visitSchedule: 'Setiap Selasa & Kamis (Pukul 09.00 - 14.00 WIB) — Terbuka untuk Siswa SMK, Mahasiswa, dan Pelaku UMKM.',
-    contactPerson: 'Ir. Hendra Gunawan, M.T. (Kepala Divisi Kemitraan Sirkular)',
+    contactPerson: 'Ir. Hendra Gunawan, M.T. (Divisi Edukasi Kemitraan Sirkular)',
     phone: '+62 812-9876-5432',
     coordinates: [-6.3486, 107.1528],
-    featuredOutput: 'Biji Plastik Sirkular Mutu A & Bal Serat Kapas Upcycled'
+    featuredOutput: 'Biji Plastik Sirkular Mutu A & Bal Serat Kapas Upcycled',
+    isDemo: true,
+    operator: 'Konsorsium Inisiatif Kawasan Industri & Mitra Daur Ulang',
+    source: 'Model Demonstrasi Konsep Sentra PengNIP Waste2Wisdom',
+    verificationStatus: 'Data Demo / Prototipe Simulasi',
+    lastVerified: 'September 2026'
   },
   {
     id: 'fac-rungkut-surabaya',
@@ -47,16 +52,16 @@ export const initialFacilitiesData: FacilityItem[] = [
     city: 'Surabaya',
     province: 'Jawa Timur',
     capacity: '85 Ton / Hari',
-    description: 'Pusat daur ulang terpadu yang melayani 140+ tenant pabrik di Jawa Timur. Menjadi laboratorium terbuka untuk riset komposit serat alami dan pemanfaatan fly ash batubara.',
+    description: 'Pusat daur ulang terpadu percontohan kawasan industri di Jawa Timur. Menjadi laboratorium terbuka untuk riset komposit serat alami dan pemanfaatan fly ash batubara terkontrol.',
     technologies: [
       'Mesin Pencuci Sentrifugal Residu Kimia Minyak',
       'Peralatan Press Hidrolik Paving Block K-350',
-      'Laboratorium Uji Kuat Tekan & Toksisitas Material'
+      'Laboratorium Uji Kuat Tekan & Pelindian TCLP'
     ],
     machines: [
       {
         name: 'Automated Concrete Paving Block Press Machine',
-        function: 'Mencetak paving block dan kanstin jalan berbasis campuran 40% FABA teruji.',
+        function: 'Mencetak paving block dan kanstin jalan berbasis campuran FABA teruji.',
         capacity: '12.000 Buah Paving / Hari'
       },
       {
@@ -69,7 +74,12 @@ export const initialFacilitiesData: FacilityItem[] = [
     contactPerson: 'Budi Santoso, S.T. (Manajer Operasional & Edukasi)',
     phone: '+62 813-4567-8901',
     coordinates: [-7.3245, 112.7601],
-    featuredOutput: 'Paving Block FABA K-300 SNI & Briket Biomassa Tanpa Asap'
+    featuredOutput: 'Paving Block FABA (Mengacu pada SNI 03-0691-1996, Uji Mutu Berkala)',
+    isDemo: true,
+    operator: 'Pengelola TPST Kawasan Industri & Laboratorium Lingkungan',
+    source: 'Simulasi Studi Lapangan Industri Jawa Timur',
+    verificationStatus: 'Data Demo / Prototipe Simulasi',
+    lastVerified: 'September 2026'
   },
   {
     id: 'fac-sleman-tpst',
@@ -101,7 +111,12 @@ export const initialFacilitiesData: FacilityItem[] = [
     contactPerson: 'Dr. Retno Wulandari (Direktur Edukasi Hayati)',
     phone: '+62 821-3456-7890',
     coordinates: [-7.6892, 110.4124],
-    featuredOutput: 'Pupuk Kasgot Organik Premium & Pakan Unggas Protein Tinggi'
+    featuredOutput: 'Pupuk Kasgot Organik Premium & Pakan Unggas Protein Tinggi',
+    isDemo: true,
+    operator: 'Koperasi Tani Organik & Pusat Riset Hayati Kampus',
+    source: 'Model Edukasi Biokonversi Terpadu DIY',
+    verificationStatus: 'Data Demo / Prototipe Simulasi',
+    lastVerified: 'September 2026'
   },
   {
     id: 'fac-semarang-tekstil',
@@ -111,7 +126,7 @@ export const initialFacilitiesData: FacilityItem[] = [
     city: 'Semarang',
     province: 'Jawa Tengah',
     capacity: '60 Ton Sisa Kain & Benang / Hari',
-    description: 'Sentra penghubung antara 20 pabrik garmen ekspor Jawa Tengah dengan 180+ kelompok pengrajin batik, boneka, dan fashion upcycling se-Jawa.',
+    description: 'Sentra percontohan penghubung antara pabrik garmen ekspor Jawa Tengah dengan kelompok pengrajin batik, kerajinan perca, dan fashion upcycling.',
     technologies: [
       'Sistem Barcode Pemilahan Warna dan Komposisi Serat Kain',
       'Mesin Garnetting Pembuka Serat Kain Perca (Rag Tearing)',
@@ -133,6 +148,11 @@ export const initialFacilitiesData: FacilityItem[] = [
     contactPerson: 'Siti Aminah, S.E. (Ketua Jejaring UMKM Tekstil)',
     phone: '+62 857-2345-6789',
     coordinates: [-7.1428, 110.4075],
-    featuredOutput: 'Serat Kapas Regenerasi & Bahan Baku Anyam Siap Jahit'
+    featuredOutput: 'Serat Kapas Regenerasi & Bahan Baku Anyam Siap Jahit',
+    isDemo: true,
+    operator: 'Asosiasi Koperasi Pengrajin Tekstil Sirkular Jawa Tengah',
+    source: 'Inisiatif Klaster Industri Kreatif Ramah Lingkungan',
+    verificationStatus: 'Data Demo / Prototipe Simulasi',
+    lastVerified: 'September 2026'
   }
 ];

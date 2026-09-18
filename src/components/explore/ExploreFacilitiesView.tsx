@@ -130,7 +130,7 @@ export const ExploreFacilitiesView: React.FC = () => {
               🏭 2M: MENGEKSPLORASI
             </span>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              Fasilitas Tempat PengNIP & Sentra Pengolahan Terdaftar
+              Konsep Sentra PengNIP & Model Demonstrasi Fasilitas Sirkular
             </span>
           </div>
 
@@ -138,8 +138,22 @@ export const ExploreFacilitiesView: React.FC = () => {
             Eksplorasi Sentra Pengolahan Limbah Industri (Tempat PengNIP)
           </h2>
           <p style={{ color: 'var(--text-muted)', maxWidth: '820px', fontSize: '0.98rem' }}>
-            Lihat langsung operasional pemilahan dan teknologi daur ulang di sentra <strong>Tempat PengNIP (Pengolahan Non-B3 Industri Terpadu)</strong>, TPST 3R kawasan industri, dan laboratorium biokonversi. Pelajari mesin-mesin industri dan jadwalkan kunjungan edukatif.
+            Lihat operasional pemilahan dan teknologi daur ulang di sentra <strong>Tempat PengNIP (Pengolahan Non-B3 Industri Terpadu)</strong>, TPST 3R kawasan industri, dan laboratorium biokonversi. Pelajari mesin-mesin industri dan jadwalkan kunjungan edukatif.
           </p>
+
+          {/* Konsep PengNIP Disclaimer Box */}
+          <div style={{
+            background: '#F0FDF4',
+            border: '1px solid #A7F3D0',
+            borderRadius: 'var(--radius-md)',
+            padding: '0.75rem 1rem',
+            marginTop: '1rem',
+            fontSize: '0.82rem',
+            color: '#065F46',
+            lineHeight: 1.45
+          }}>
+            <strong>Catatan Konsep:</strong> "Tempat PengNIP" (Pengolahan Non-B3 Industri Terpadu) merupakan model percontohan rintisan Waste2Wisdom untuk menyimulasikan integrasi sirkular limbah non-B3 tingkat kawasan, bukan nomenklatur atau lembaga resmi pemerintah. Seluruh fasilitas dan data operasional di bawah adalah data demonstrasi pembelajaran.
+          </div>
 
           {/* Sub Navigation Bar */}
           <div style={{
@@ -174,7 +188,7 @@ export const ExploreFacilitiesView: React.FC = () => {
             ) : (
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
                 gap: '1.5rem',
                 marginBottom: '3rem'
               }}>
@@ -219,24 +233,24 @@ export const ExploreFacilitiesView: React.FC = () => {
                         </div>
                         <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
                           <MapPin size={14} color="#059669" />
-                          <span>{fac.city}, {fac.province}</span>
+                          <span>{fac.city}</span>
                         </span>
                       </div>
 
-                      {/* Name */}
-                      <h3 style={{ fontSize: '1.25rem', color: 'var(--leaf-deep)', marginBottom: '0.6rem' }}>
+                      {/* Title */}
+                      <h3 style={{ fontSize: '1.25rem', color: 'var(--leaf-deep)', marginBottom: '0.5rem' }}>
                         {fac.name}
                       </h3>
 
                       {/* Description */}
-                      <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '1rem' }}>
+                      <p className="text-clamp-3" style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem', lineHeight: 1.5 }}>
                         {fac.description}
                       </p>
 
-                      {/* Capacity & Featured Output Box */}
+                      {/* Metrics Mini Box */}
                       <div style={{
                         background: '#F8FAFC',
-                        padding: '0.85rem',
+                        padding: '0.75rem 1rem',
                         borderRadius: 'var(--radius-md)',
                         border: '1px solid var(--border-light)',
                         marginBottom: '1rem',
@@ -250,6 +264,16 @@ export const ExploreFacilitiesView: React.FC = () => {
                         <div style={{ fontSize: '0.78rem', color: '#065F46' }}>
                           <strong>Output Unggulan:</strong> {fac.featuredOutput}
                         </div>
+                        {fac.operator && (
+                          <div style={{ fontSize: '0.74rem', color: 'var(--text-light)' }}>
+                            <strong>Pengelola:</strong> {fac.operator}
+                          </div>
+                        )}
+                        {fac.verificationStatus && (
+                          <div style={{ fontSize: '0.72rem', color: '#B45309' }}>
+                            <strong>Status:</strong> {fac.verificationStatus} ({fac.lastVerified || 'September 2026'})
+                          </div>
+                        )}
                       </div>
 
                       {/* Technology Tags */}
@@ -323,7 +347,7 @@ export const ExploreFacilitiesView: React.FC = () => {
 
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
                 gap: '1rem'
               }}>
                 <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>

@@ -33,7 +33,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAdminModal,
   onOpenAuthModal
 }) => {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isGuest } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
@@ -186,7 +186,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               width: '26px',
               height: '26px',
               borderRadius: '50%',
-              background: user.role === 'admin' ? '#064E3B' : user.role === 'industry' ? '#0284C7' : '#10B981',
+              background: isGuest ? '#94A3B8' : user.role === 'admin' ? '#064E3B' : user.role === 'industry' ? '#0284C7' : '#10B981',
               color: '#FFFFFF',
               display: 'flex',
               alignItems: 'center',
@@ -194,14 +194,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               fontWeight: 800,
               fontSize: '0.75rem'
             }}>
-              {user.name.charAt(0)}
+              {isGuest ? <User size={14} /> : user.name.charAt(0)}
             </div>
             <div style={{ textAlign: 'left', display: 'none' }} className="user-text-info">
               <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.1 }}>
-                {user.name.split(' ')[0]}
+                {isGuest ? 'Mode Tamu' : user.name.split(' ')[0]}
               </div>
-              <div style={{ fontSize: '0.68rem', color: '#059669', fontWeight: 600 }}>
-                {user.roleLabel.split(' ')[0]}
+              <div style={{ fontSize: '0.68rem', color: isGuest ? 'var(--text-muted)' : '#059669', fontWeight: 600 }}>
+                {isGuest ? 'Masuk / Demo' : user.roleLabel.split(' ')[0]}
               </div>
             </div>
           </button>
@@ -216,7 +216,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               color: 'var(--text-main)'
             }}
             className="mobile-menu-toggle"
-            aria-label="Toggle navigation"
+            aria-label={mobileMenuOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
           >
             {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>

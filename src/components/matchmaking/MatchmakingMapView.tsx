@@ -129,7 +129,7 @@ export const MatchmakingMapView: React.FC = () => {
     });
   }, [partners, selectedType, selectedCity, searchQuery]);
 
-  // Filtered supply requests (all vs incoming vs my) (Point 28, 29)
+  // Filtered supply requests (all vs incoming vs my)
   const filteredSupplyRequests = useMemo(() => {
     return supplyRequests.filter((req) => {
       if (requestTabFilter === 'my') {
@@ -137,12 +137,13 @@ export const MatchmakingMapView: React.FC = () => {
       }
       if (requestTabFilter === 'incoming') {
         const isPartnerDirect = req.partnerId === user.id;
-        const matchesOrg = user.organization && req.partnerName.toLowerCase().includes(user.organization.toLowerCase());
-        return isPartnerDirect || matchesOrg || isAdmin;
+        const isCreatedByMe = partners.some((p) => p.id === req.partnerId && p.authorId === user.id);
+        const matchesOrg = Boolean(user.organization && user.organization !== '-' && req.partnerName.toLowerCase().includes(user.organization.toLowerCase()));
+        return isPartnerDirect || isCreatedByMe || matchesOrg || isAdmin;
       }
       return true;
     });
-  }, [supplyRequests, requestTabFilter, user, isAdmin]);
+  }, [supplyRequests, requestTabFilter, user, isAdmin, partners]);
 
   // Focus map bounds on filtered markers (Point 32)
   const handleFitBounds = () => {
@@ -691,7 +692,9 @@ export const MatchmakingMapView: React.FC = () => {
 
                   // Privacy check: only involved parties or admin see full contacts
                   const isRequester = req.requesterId === user.id;
-                  const isPartner = req.partnerId === user.id || Boolean(user.organization && user.organization !== '-' && req.partnerName.toLowerCase().includes(user.organization.toLowerCase()));
+                  const isPartner = req.partnerId === user.id ||
+                    partners.some((p) => p.id === req.partnerId && p.authorId === user.id) ||
+                    Boolean(user.organization && user.organization !== '-' && req.partnerName.toLowerCase().includes(user.organization.toLowerCase()));
                   const canViewContacts = isAccepted && (isRequester || isPartner || isAdmin);
                   
                   // Authority check: requester cannot accept their own request, only the target partner or admin can manage

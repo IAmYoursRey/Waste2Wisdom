@@ -118,7 +118,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </button>
           </div>
 
-          <button onClick={onClose} style={{ padding: '0.35rem' }}>
+          <button onClick={onClose} aria-label="Tutup modal autentikasi" style={{ padding: '0.35rem' }}>
             <X size={18} />
           </button>
         </div>
@@ -137,10 +137,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.3rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 700, color: '#065F46' }}>
                 <Sparkles size={14} color="#10B981" />
-                <span>Simulasi Peran Demo (1-Klik):</span>
+                <span>Simulator Peran — Khusus Demo (Bukan Autentikasi Nyata):</span>
               </div>
-              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', background: '#FFFFFF', padding: '1px 6px', borderRadius: '4px', border: '1px solid #CBD5E1' }}>
-                Mode Demo Prototype
+              <span style={{ fontSize: '0.7rem', color: '#92400E', background: '#FEF3C7', padding: '1px 6px', borderRadius: '4px', border: '1px solid #FDE68A', fontWeight: 700 }}>
+                Simulasi Prototipe
               </span>
             </div>
             
@@ -228,6 +228,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <span>🛡️ Admin Nasional</span>
                 {user.role === 'admin' && <Check size={13} />}
               </button>
+            </div>
+
+            <div style={{ fontSize: '0.72rem', color: '#047857', marginTop: '0.5rem', lineHeight: 1.35 }}>
+              Pemberitahuan UU PDP No. 27/2022: Data demonstrasi ini disimpan secara lokal di peramban (localStorage) Anda. Jangan memasukkan data pribadi atau rahasia sensitif.
             </div>
           </div>
 

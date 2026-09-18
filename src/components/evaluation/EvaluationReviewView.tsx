@@ -432,7 +432,7 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
           <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '480px' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3 style={{ fontSize: '1.2rem', color: '#991B1B' }}>Laporkan Ulasan Ini</h3>
-              <button onClick={() => setReportingReviewId(null)} style={{ padding: '0.3rem' }}>
+              <button onClick={() => setReportingReviewId(null)} aria-label="Tutup modal laporan ulasan" style={{ padding: '0.3rem' }}>
                 <X size={18} />
               </button>
             </div>

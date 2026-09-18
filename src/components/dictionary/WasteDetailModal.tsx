@@ -115,7 +115,7 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
           {/* Legal Reference & Source */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
             gap: '0.85rem'
           }}>
             <div style={{
@@ -208,7 +208,7 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
           </div>
 
           {/* Guidelines vs Prohibitions */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1rem' }}>
             {/* Guidelines */}
             <div style={{
               background: '#F0FDF4',

@@ -75,7 +75,7 @@ const defaultUsers: UserProfile[] = [
     email: 'admin@waste2wisdom.id',
     role: 'admin',
     roleLabel: 'Admin / Kurator Nasional',
-    organization: 'Kementerian Lingkungan Hidup & Kehutanan / Waste2Wisdom',
+    organization: 'Kementerian Lingkungan Hidup / Badan Pengendalian Lingkungan Hidup (KLH/BPLH) - Tim Kurator Waste2Wisdom',
     phone: '0812-0000-9999',
   }
 ];
@@ -427,8 +427,11 @@ export const api = {
       return target;
     },
 
-    async approve(id: string): Promise<InnovationItem> {
+    async approve(id: string, userRole?: string): Promise<InnovationItem> {
       await delay(140);
+      if (userRole && userRole !== 'admin') {
+        throw new Error('Akses ditolak: Hanya Admin Kurator yang berhak menyetujui inovasi.');
+      }
       const list = getStorage<InnovationItem[]>(KEYS.INNOVATIONS, initialInnovationData);
       let target: InnovationItem | null = null;
 
@@ -450,8 +453,11 @@ export const api = {
       return target;
     },
 
-    async reject(id: string, reason: string): Promise<InnovationItem> {
+    async reject(id: string, reason: string, userRole?: string): Promise<InnovationItem> {
       await delay(140);
+      if (userRole && userRole !== 'admin') {
+        throw new Error('Akses ditolak: Hanya Admin Kurator yang berhak menolak inovasi.');
+      }
       const list = getStorage<InnovationItem[]>(KEYS.INNOVATIONS, initialInnovationData);
       let target: InnovationItem | null = null;
 
@@ -530,6 +536,25 @@ export const api = {
     async getSupplyRequests(): Promise<SupplyRequestRecord[]> {
       await delay(100);
       return getStorage<SupplyRequestRecord[]>(KEYS.SUPPLY_REQUESTS, defaultSupplyRequests);
+    },
+
+    async getPendingCountForUser(userId?: string, userRole?: string, userOrg?: string): Promise<number> {
+      const list = getStorage<SupplyRequestRecord[]>(KEYS.SUPPLY_REQUESTS, defaultSupplyRequests);
+      const pending = list.filter((r) => r.status === 'pending');
+      if (userRole === 'admin') {
+        return pending.length;
+      }
+      if (!userId || userId === 'guest') {
+        return 0;
+      }
+      const lowerOrg = (userOrg || '').toLowerCase().trim();
+      const incoming = pending.filter((r) => {
+        const isPartnerDirect = r.partnerId === userId;
+        const matchesOrg = lowerOrg && lowerOrg !== '-' && r.partnerName.toLowerCase().includes(lowerOrg);
+        return isPartnerDirect || matchesOrg;
+      });
+      const myRequests = pending.filter((r) => r.requesterId === userId);
+      return incoming.length > 0 ? incoming.length : myRequests.length;
     },
 
     async sendSupplyRequest(req: Omit<SupplyRequestRecord, 'id' | 'status' | 'createdAt'>): Promise<SupplyRequestRecord> {
@@ -638,6 +663,12 @@ export const api = {
 
       const updated = [newReview, ...list];
       setStorage(KEYS.REVIEWS, updated);
+
+      // Re-aggregate and persist target innovation metrics in storage
+      const updatedInv = computeInnovationMetrics(validInv, updated);
+      const updatedInnovations = innovations.map((inv) => (inv.id === validInv.id ? updatedInv : inv));
+      setStorage(KEYS.INNOVATIONS, updatedInnovations);
+
       return newReview;
     },
 
@@ -693,8 +724,19 @@ export const api = {
     async delete(id: string): Promise<void> {
       await delay(100);
       const list = getStorage<ReviewItem[]>(KEYS.REVIEWS, initialReviewsData);
+      const targetReview = list.find((r) => r.id === id);
       const updated = list.filter((r) => r.id !== id);
       setStorage(KEYS.REVIEWS, updated);
+
+      if (targetReview) {
+        const innovations = getStorage<InnovationItem[]>(KEYS.INNOVATIONS, initialInnovationData);
+        const targetInv = innovations.find((i) => i.id === targetReview.innovationId);
+        if (targetInv) {
+          const updatedInv = computeInnovationMetrics(targetInv, updated);
+          const updatedInnovations = innovations.map((inv) => (inv.id === targetInv.id ? updatedInv : inv));
+          setStorage(KEYS.INNOVATIONS, updatedInnovations);
+        }
+      }
     }
   },
 

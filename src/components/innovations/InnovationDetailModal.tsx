@@ -308,7 +308,7 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
           </div>
 
           {/* Materials & Tools Split */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1rem' }}>
             
             {/* Materials */}
             <div style={{

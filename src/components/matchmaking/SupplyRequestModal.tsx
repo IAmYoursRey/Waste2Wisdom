@@ -3,6 +3,7 @@ import { MatchmakingItem } from '../../types';
 import { X, CheckCircle2, Send, Building2, MapPin, Package, ShieldCheck } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { api } from '../../services/api';
 
 interface SupplyRequestModalProps {
@@ -17,6 +18,7 @@ export const SupplyRequestModal: React.FC<SupplyRequestModalProps> = ({
   onRequestSuccess
 }) => {
   const { user } = useAuth();
+  const { addToast } = useToast();
   
   const [applicantName, setApplicantName] = useState(user.name || '');
   const [organizationName, setOrganizationName] = useState(user.organization || '');
@@ -57,25 +59,32 @@ export const SupplyRequestModal: React.FC<SupplyRequestModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!applicantName.trim() || !phone.trim() || !intendedProduct.trim()) {
+      addToast('Harap lengkapi nama penanggung jawab, kontak telepon, dan rencana pengolahan.', 'warning');
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
-      await api.matchmaking.sendSupplyRequest({
+      const record = await api.matchmaking.sendSupplyRequest({
         partnerId: partner.id,
         partnerName: partner.name,
         targetType: partner.type,
         requesterId: user.id,
-        requesterName: applicantName,
-        organizationName: organizationName,
-        phone: phone,
-        email: email,
+        requesterName: applicantName.trim(),
+        organizationName: organizationName.trim() || 'Mandiri / Komunitas',
+        phone: phone.trim(),
+        email: email.trim() || '-',
         wasteType: partner.wasteType,
-        requestedVolume: requestedVolume,
+        requestedVolume: requestedVolume.trim(),
         pickupMethod: pickupMethod,
-        intendedProduct: intendedProduct
+        intendedProduct: intendedProduct.trim()
       });
       
       setIsSuccess(true);
+      addToast(`Permohonan kemitraan berhasil dikirim ke ${partner.name}!`, 'success');
       if (onRequestSuccess) {
         onRequestSuccess();
       }
@@ -90,9 +99,9 @@ export const SupplyRequestModal: React.FC<SupplyRequestModalProps> = ({
         resetForm();
         onClose();
       }, 2400);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to submit request', error);
-      alert('Gagal mengirim pengajuan.');
+      addToast(error?.message || 'Gagal mengirim pengajuan kemitraan.', 'error');
     } finally {
       setIsSubmitting(false);
     }

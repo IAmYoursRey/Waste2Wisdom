@@ -180,7 +180,7 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({
           
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
             gap: '1rem',
             alignItems: 'center'
           }}>
@@ -268,7 +268,7 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({
               }}
             >
               <CheckCircle2 size={15} color="#10B981" />
-              <span>Aman Diolah Mandiri (Non-B3)</span>
+              <span>Non-B3 — Dapat Dimanfaatkan (SOP)</span>
               <span style={{
                 background: '#A7F3D0',
                 color: '#065F46',
@@ -355,7 +355,7 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({
                     {/* Card Badges */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.75rem' }}>
                       <span className={`badge-national ${isB3 ? 'badge-danger' : 'badge-safe'}`}>
-                        {isB3 ? '⚠️ B3 BERBAHAYA' : '✅ AMAN MANDIRI'}
+                        {isB3 ? '⚠️ B3 BERBAHAYA' : '✅ NON-B3 (SESUAI SOP)'}
                       </span>
                       <span className="badge-sector" style={{ fontSize: '0.7rem' }}>
                         {waste.industrialSector.split('&')[0]}

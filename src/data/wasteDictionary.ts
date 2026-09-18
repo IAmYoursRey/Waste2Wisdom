@@ -239,26 +239,26 @@ export const initialWasteData: WasteItem[] = [
     id: 'w-flyash',
     name: 'Fly Ash & Bottom Ash (FABA)',
     category: 'non-b3',
-    categoryLabel: 'Non-B3 Terdaftar (Kondisi Khusus & SOP Ketat)',
-    industrialSector: 'Pembangkit Listrik PLTU & Boiler Pabrik Tekstil/Kertas',
-    source: 'Abu terbang hasil pembakaran batu bara pada sistem boiler industri terkontrol (PLTU non-stoker).',
+    categoryLabel: 'Non-B3 Terdaftar (PLTU Non-Stoker / SOP Ketat)',
+    industrialSector: 'Pembangkit Listrik PLTU & Boiler Industri Terkontrol',
+    source: 'Abu terbang & abu dasar sisa pembakaran batu bara dari PLTU berteknologi non-stoker (pulverized coal / CFB terkontrol) sesuai Lampiran XIV PP No. 22/2021.',
     physicalForm: 'Serbuk abu-abu sangat halus menyerupai semen abu',
     safetyRating: 'caution',
-    safetyDescription: 'Berdasarkan PP No. 22/2021 Lampiran XIV, FABA dari PLTU/boiler dengan teknologi pembakaran terkontrol diklasifikasikan sebagai Limbah Non-B3 Terdaftar. Namun FABA dari peleburan logam atau pembakaran bahan berbahaya tetap berstatus B3. WAJIB menggunakan respirator debu silika (N95) karena partikel respirabel dapat menyebabkan silikosis paru.',
+    safetyDescription: 'Berdasarkan Lampiran XIV PP No. 22/2021, FABA dari PLTU non-stoker berstatus Limbah Non-B3 Terdaftar. Catatan penting: FABA dari pembakaran sistem stoker atau insinerator limbah berbahaya tetap berstatus Limbah B3. Pengolahan wajib mematuhi SOP penanganan partikulat silika menggunakan respirator N95.',
     requiredPPE: ['Respirator Debu FFP2/N95', 'Goggles Rapat', 'Sarung Tangan Karet Tebal'],
-    legalCode: 'PP No. 22/2021 Lampiran XIV (Limbah Non-B3 Terdaftar dengan Regulasi Pemanfaatan Terpantau)',
-    economicPotential: 'Sangat Tinggi — Paving block standar K-300, substitusi semen beton ramah lingkungan, stabilisasi tanah pondasi jalan tol.',
+    legalCode: 'PP No. 22/2021 Lampiran XIV (Limbah Non-B3 Terdaftar - Pemanfaatan Terpantau)',
+    economicPotential: 'Tinggi untuk Konstruksi — Campuran bata beton/paving block mengacu standar teknis SNI 03-0691-1996, substitusi semen ramah lingkungan, dan stabilisasi tanah (wajib uji kuat tekan & uji TCLP lab).',
     handlingGuidelines: [
-      'Simpan dalam silo tertutup atau gudang kering agar abu tidak beterbangan terbawa angin.',
+      'Simpan dalam silo tertutup atau gudang beratap kering agar abu tidak beterbangan terbawa angin.',
       'Campur dengan agregat pasir dan semen dengan takaran teruji laboratorium teknik sipil.',
-      'Lakukan pengujian pelindian TCLP secara berkala sebelum distribusi produk konstruksi.'
+      'Lakukan pengujian pelindian TCLP secara berkala sebelum produk konstruksi dipasarkan.'
     ],
     prohibitedActions: [
-      'Jangan biarkan terbuka di dekat pemukiman saat angin kencang.',
-      'Jangan biarkan air lindi mengalir bebas ke persawahan tanpa uji pH dan logam terlarut.'
+      'Jangan biarkan terbuka di dekat pemukiman saat cuaca berangin.',
+      'Jangan biarkan air lindi mengalir bebas ke saluran persawahan tanpa pengujian pH dan logam terlarut.'
     ],
     recommendedInnovations: [
-      'Paving Block Ramah Lingkungan FABA K-300',
+      'Paving Block FABA — Mengacu pada SNI 03-0691-1996',
       'Batako Ringan Pengganti Bata Merah',
       'Geopolimer Semen Ramah Lingkungan'
     ],

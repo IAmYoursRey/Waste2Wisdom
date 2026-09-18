@@ -338,15 +338,15 @@ export const initialInnovationData: InnovationItem[] = [
   },
   {
     id: 'inv-paving-faba',
-    title: 'Paving Block Ramah Lingkungan FABA K-300',
-    tagline: 'Solusi sirkular pemanfaatan Fly Ash & Bottom Ash industri boiler menjadi material perkerasan jalan tahan beban',
-    wasteSource: 'Fly Ash & Bottom Ash (FABA) Industri Terpantau',
+    title: 'Paving Block FABA — Mengacu pada SNI 03-0691-1996',
+    tagline: 'Pemanfaatan FABA boiler industri menjadi bata beton perkerasan. Hasil uji laboratorium diperlukan untuk menyatakan kesesuaian mutu.',
+    wasteSource: 'Fly Ash & Bottom Ash (FABA) Industri Terpantau (Non-Stoker)',
     wasteId: 'w-flyash',
     category: 'Material Bangunan Alternatif',
     difficulty: 'Tinggi',
     estimatedTime: '7 - 14 Hari (Curing Air)',
     estimatedCost: 'Rp 2.500 / buah paving block standar',
-    economicValue: 'Dapat menggantikan paving konvensional dengan penghematan biaya semen hingga 40%, lulus uji tekan Dinas PUPR.',
+    economicValue: 'Dapat menghemat biaya semen hingga 40% untuk perkerasan jalan lingkungan (wajib uji kuat tekan lab sebelum instalasi).',
     rating: 0,
     reviewCount: 0,
     successRate: null,
@@ -366,8 +366,8 @@ export const initialInnovationData: InnovationItem[] = [
       {
         stepNumber: 1,
         title: 'Proporsi & Pengujian Material Kering',
-        description: 'Timbang FABA, pasir, dan semen dengan rasio standar SNI 03-0691-1996. Pastikan FABA tidak menggumpal basah.',
-        tip: 'Fly ash bertindak sebagai pozzolan yang bereaksi dengan kalsium hidroksida bebas untuk membentuk gel C-S-H padat.'
+        description: 'Timbang FABA, pasir, dan semen dengan formulasi mengacu spesifikasi teknis SNI 03-0691-1996. Pastikan FABA tidak menggumpal basah.',
+        tip: 'Standar SNI 03-0691-1996 mengatur mutu bata beton. Fly ash bertindak sebagai pozzolanik, namun hasil uji lab independen tetap wajib untuk sertifikasi resmi.'
       },
       {
         stepNumber: 2,

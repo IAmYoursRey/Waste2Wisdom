@@ -130,9 +130,15 @@ button {
   outline: none;
 }
 
-button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-  outline: 2px solid var(--leaf-primary);
-  outline-offset: 2px;
+:focus-visible {
+  outline: 2px solid var(--leaf-primary) !important;
+  outline-offset: 2px !important;
+}
+
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+input:focus:not(:focus-visible) {
+  outline: none;
 }
 
 input, select, textarea {
@@ -579,4 +585,55 @@ input, select, textarea {
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 0.75rem;
+  }
+
+  .btn-primary, .btn-secondary, .btn-outline {
+    white-space: normal;
+    text-align: center;
+    word-break: break-word;
+  }
+
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+
+  .modal-content {
+    max-height: 94vh;
+    border-radius: var(--radius-lg);
+  }
+
+  .modal-header {
+    padding: 0.85rem 1rem;
+  }
+
+  .modal-body {
+    padding: 0.85rem 1rem;
+  }
+
+  .modal-footer {
+    padding: 0.75rem 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .modal-footer button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+
+  .btn-primary, .btn-secondary, .btn-outline {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.82rem;
+  }
+}
+
 

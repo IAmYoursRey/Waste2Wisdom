@@ -14,7 +14,7 @@ export const Footer: React.FC = () => {
         
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
           gap: '2.5rem',
           marginBottom: '2.5rem'
         }}>
@@ -67,11 +67,11 @@ export const Footer: React.FC = () => {
               </li>
               <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
                 <FileCheck size={16} color="#34D399" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span><strong>SNI 03-0691-1996:</strong> Standar Uji Kuat Tekan Bata Beton & Paving Block.</span>
+                <span><strong>SNI 03-0691-1996:</strong> Spesifikasi Teknis Bata Beton / Paving Block (Uji Mutu Lab Berkala).</span>
               </li>
               <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
                 <FileCheck size={16} color="#34D399" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span><strong>SNI 19-7030-2004:</strong> Standar Spesifikasi Kompos Alami Organik.</span>
+                <span><strong>SNI 19-7030-2004:</strong> Spesifikasi Kompos Alami dari Sampah Organik Domestik.</span>
               </li>
             </ul>
           </div>
@@ -108,7 +108,7 @@ export const Footer: React.FC = () => {
             &copy; {new Date().getFullYear()} <strong>Waste2Wisdom Platform</strong>. Inisiatif Pengelolaan Limbah Industri Menjadi Sumber Daya Sirkular.
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <span>Berbasis Standar Industri & Nasional RI</span>
+            <span>Mengacu pada Regulasi Lingkungan Hidup RI & Standar Teknis Terkait</span>
             <span>•</span>
             <span>Multi-Platform Offline Ready</span>
           </div>

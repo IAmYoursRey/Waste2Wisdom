@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ToastProvider, useToast } from './context/ToastContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { Navbar } from './components/common/Navbar';
 import { HeroBanner } from './components/common/HeroBanner';
 import { Footer } from './components/common/Footer';
@@ -64,8 +65,7 @@ const Waste2WisdomMain: React.FC = () => {
 
   const loadPendingSupplyRequests = async () => {
     try {
-      const reqs = await api.matchmaking.getSupplyRequests();
-      const count = reqs.filter((r) => r.status === 'pending').length;
+      const count = await api.matchmaking.getPendingCountForUser(user.id, user.role, user.organization);
       setPendingRequestsCount(count);
     } catch (e) {
       console.error(e);
@@ -83,7 +83,7 @@ const Waste2WisdomMain: React.FC = () => {
       window.removeEventListener('w2w:supply_request_updated', handleSupplyUpdate);
       clearInterval(interval);
     };
-  }, []);
+  }, [user.id, user.role, user.organization]);
 
   const {
     innovations,
@@ -249,11 +249,13 @@ const Waste2WisdomMain: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    <ToastProvider>
-      <AuthProvider>
-        <Waste2WisdomMain />
-      </AuthProvider>
-    </ToastProvider>
+    <ErrorBoundary>
+      <ToastProvider>
+        <AuthProvider>
+          <Waste2WisdomMain />
+        </AuthProvider>
+      </ToastProvider>
+    </ErrorBoundary>
   );
 };
 
