@@ -141,7 +141,7 @@ export const AddReviewModal: React.FC<AddReviewModalProps> = ({
       <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '640px' }} onClick={(e) => e.stopPropagation()}>
         
         {/* Header */}
-        <div className="modal-header" style={{ background: '#F0FDF4', borderBottom: '2px solid #A7F3D0' }}>
+        <div className="modal-header" style={{ background: '#E8F5E9', borderBottom: '2px solid #A5D6A7' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
               <span className="badge-5m">5M: MENGEVALUASI</span>
@@ -257,7 +257,7 @@ export const AddReviewModal: React.FC<AddReviewModalProps> = ({
                 background: '#F8FAFC',
                 padding: '1rem',
                 borderRadius: 'var(--radius-md)',
-                border: isEasyToMake ? '1.5px solid #10B981' : '1.5px solid var(--border-light)',
+                border: isEasyToMake ? '1.5px solid #2E7D32' : '1.5px solid var(--border-light)',
                 marginBottom: '1rem'
               }}>
                 <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text-main)', marginBottom: '0.5rem' }}>
@@ -274,9 +274,9 @@ export const AddReviewModal: React.FC<AddReviewModalProps> = ({
                         borderRadius: 'var(--radius-sm)',
                         fontSize: '0.78rem',
                         fontWeight: isEasyToMake === opt ? 700 : 500,
-                        background: isEasyToMake === opt ? '#10B981' : '#FFFFFF',
+                        background: isEasyToMake === opt ? '#2E7D32' : '#FFFFFF',
                         color: isEasyToMake === opt ? '#FFFFFF' : 'var(--text-main)',
-                        border: isEasyToMake === opt ? '1px solid #10B981' : '1px solid #CBD5E1',
+                        border: isEasyToMake === opt ? '1px solid #2E7D32' : '1px solid #CBD5E1',
                         cursor: 'pointer',
                         transition: 'all var(--transition-fast)'
                       }}
@@ -292,7 +292,7 @@ export const AddReviewModal: React.FC<AddReviewModalProps> = ({
                 background: '#F8FAFC',
                 padding: '1rem',
                 borderRadius: 'var(--radius-md)',
-                border: isSuccessful ? '1.5px solid #10B981' : '1.5px solid var(--border-light)',
+                border: isSuccessful ? '1.5px solid #2E7D32' : '1.5px solid var(--border-light)',
                 marginBottom: '1rem'
               }}>
                 <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text-main)', marginBottom: '0.5rem' }}>
@@ -309,7 +309,7 @@ export const AddReviewModal: React.FC<AddReviewModalProps> = ({
                         borderRadius: 'var(--radius-sm)',
                         fontSize: '0.78rem',
                         fontWeight: isSuccessful === opt ? 700 : 500,
-                        background: isSuccessful === opt ? (opt === 'Gagal / Perlu Coba Lagi' ? '#EF4444' : '#059669') : '#FFFFFF',
+                        background: isSuccessful === opt ? (opt === 'Gagal / Perlu Coba Lagi' ? '#EF4444' : '#2E7D32') : '#FFFFFF',
                         color: isSuccessful === opt ? '#FFFFFF' : 'var(--text-main)',
                         border: isSuccessful === opt ? '1px solid transparent' : '1px solid #CBD5E1',
                         cursor: 'pointer',

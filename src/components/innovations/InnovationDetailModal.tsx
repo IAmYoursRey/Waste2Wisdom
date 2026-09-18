@@ -84,7 +84,7 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
       <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '820px' }} onClick={(e) => e.stopPropagation()}>
         
         {/* Header */}
-        <div className="modal-header" style={{ background: '#F0FDF4', borderBottom: '2px solid #A7F3D0' }}>
+        <div className="modal-header" style={{ background: '#E8F5E9', borderBottom: '2px solid #A5D6A7' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem' }}>
               <span className="badge-sector">{innovation.category}</span>
@@ -93,8 +93,8 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
                 fontWeight: 700,
                 padding: '0.2rem 0.6rem',
                 borderRadius: 'var(--radius-full)',
-                background: innovation.difficulty === 'Mudah' ? '#DCFCE7' : innovation.difficulty === 'Menengah' ? '#FEF3C7' : '#FEE2E2',
-                color: innovation.difficulty === 'Mudah' ? '#166534' : innovation.difficulty === 'Menengah' ? '#92400E' : '#991B1B',
+                background: innovation.difficulty === 'Mudah' ? '#E8F5E9' : innovation.difficulty === 'Menengah' ? '#FEF3C7' : '#FEE2E2',
+                color: innovation.difficulty === 'Mudah' ? '#1B5E20' : innovation.difficulty === 'Menengah' ? '#92400E' : '#991B1B',
               }}>
                 Kesulitan: {innovation.difficulty}
               </span>
@@ -132,7 +132,7 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
               {innovation.tagline}
             </div>
             <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-              <strong>Bahan Limbah Utama:</strong> <span style={{ color: '#059669', fontWeight: 700 }}>{innovation.wasteSource}</span>
+              <strong>Bahan Limbah Utama:</strong> <span style={{ color: '#1B5E20', fontWeight: 700 }}>{innovation.wasteSource}</span>
             </div>
           </div>
 
@@ -142,9 +142,9 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
             gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
             gap: '0.75rem'
           }}>
-            <div style={{ background: '#ECFDF5', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid #A7F3D0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', color: '#065F46', fontWeight: 600 }}>
-                <Clock size={15} color="#059669" />
+            <div style={{ background: '#E8F5E9', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid #A5D6A7' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', color: '#1B5E20', fontWeight: 600 }}>
+                <Clock size={15} color="#2E7D32" />
                 <span>ESTIMASI WAKTU</span>
               </div>
               <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--leaf-deep)', marginTop: '0.2rem' }}>
@@ -152,9 +152,9 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
               </div>
             </div>
 
-            <div style={{ background: '#ECFDF5', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid #A7F3D0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', color: '#065F46', fontWeight: 600 }}>
-                <DollarSign size={15} color="#059669" />
+            <div style={{ background: '#E8F5E9', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid #A5D6A7' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', color: '#1B5E20', fontWeight: 600 }}>
+                <DollarSign size={15} color="#2E7D32" />
                 <span>ESTIMASI MODAL</span>
               </div>
               <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--leaf-deep)', marginTop: '0.2rem' }}>
@@ -162,12 +162,12 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
               </div>
             </div>
 
-            <div style={{ background: '#ECFDF5', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid #A7F3D0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', color: '#065F46', fontWeight: 600 }}>
-                <TrendingUp size={15} color="#059669" />
+            <div style={{ background: '#E8F5E9', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid #A5D6A7' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', color: '#1B5E20', fontWeight: 600 }}>
+                <TrendingUp size={15} color="#2E7D32" />
                 <span>TINGKAT KEBERHASILAN</span>
               </div>
-              <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#059669', marginTop: '0.2rem' }}>
+              <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#1B5E20', marginTop: '0.2rem' }}>
                 {innovation.successRate !== null && innovation.successRate !== undefined
                   ? `${innovation.successRate}% Sukses Komunitas`
                   : 'Belum Ada Evaluasi'}
@@ -177,8 +177,8 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
 
           {/* Progress Tracker Card */}
           <div style={{
-            background: isAllStepsFinished ? '#ECFDF5' : '#F8FAFC',
-            border: isAllStepsFinished ? '2px solid #10B981' : '1px solid var(--border-light)',
+            background: isAllStepsFinished ? '#E8F5E9' : '#F8FAFC',
+            border: isAllStepsFinished ? '2px solid #A5D6A7' : '1px solid var(--border-light)',
             padding: '0.85rem 1.1rem',
             borderRadius: 'var(--radius-md)',
             display: 'flex',
@@ -188,7 +188,7 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
             gap: '0.75rem'
           }}>
             <div>
-              <div style={{ fontWeight: 700, fontSize: '0.88rem', color: isAllStepsFinished ? '#065F46' : 'var(--text-main)' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.88rem', color: isAllStepsFinished ? '#1B5E20' : 'var(--text-main)' }}>
                 {isAllStepsFinished ? '🎉 Semua Langkah Telah Selesai Dipraktikkan!' : `Progress Praktik: ${completedSteps.length} dari ${innovation.steps.length} langkah selesai`}
               </div>
               <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
@@ -232,8 +232,8 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
               right: '12px',
               zIndex: 3,
               background: 'rgba(15, 23, 42, 0.85)',
-              border: '1px solid rgba(16, 185, 129, 0.4)',
-              color: '#A7F3D0',
+              border: '1px solid rgba(165, 214, 167, 0.5)',
+              color: '#E8F5E9',
               padding: '3px 10px',
               borderRadius: '20px',
               fontSize: '0.72rem',
@@ -246,7 +246,7 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
             <div style={{
               position: 'absolute',
               inset: 0,
-              background: 'radial-gradient(circle at center, rgba(16, 185, 129, 0.25) 0%, rgba(15, 23, 42, 0.95) 80%)'
+              background: 'radial-gradient(circle at center, rgba(46, 125, 50, 0.25) 0%, rgba(15, 23, 42, 0.95) 80%)'
             }} />
 
             <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', padding: '1.5rem', width: '100%' }}>
@@ -262,12 +262,12 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
                   width: '64px',
                   height: '64px',
                   borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                  background: 'linear-gradient(135deg, #388E3C 0%, #2E7D32 100%)',
                   color: '#FFFFFF',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 0 25px rgba(16, 185, 129, 0.6)',
+                  boxShadow: '0 0 25px rgba(165, 214, 167, 0.6)',
                   marginBottom: '0.75rem',
                   border: 'none',
                   cursor: 'pointer',
@@ -281,7 +281,7 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
                 {isPlayingVideo ? `Simulasi Video Praktik: ${innovation.title}` : `Video Panduan Visual & Infografis`}
               </div>
               
-              <div style={{ fontSize: '0.8rem', color: '#A7F3D0', marginBottom: '0.75rem' }}>
+              <div style={{ fontSize: '0.8rem', color: '#E8F5E9', marginBottom: '0.75rem' }}>
                 {isPlayingVideo
                   ? `Durasi Berjalan: ${Math.floor(videoTime / 60)}:${String(videoTime % 60).padStart(2, '0')} / 04:30`
                   : 'Klik tombol putar untuk menyimak simulasi alur langkah video pengolahan'}
@@ -300,7 +300,7 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
                 <div style={{
                   width: `${(videoTime / 270) * 100}%`,
                   height: '100%',
-                  background: '#10B981',
+                  background: '#A5D6A7',
                   transition: 'width 0.3s ease'
                 }} />
               </div>
@@ -331,7 +331,7 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
                     borderBottom: '1px dashed #E2E8F0'
                   }}>
                     <span style={{ color: 'var(--text-main)' }}>• {mat.name}</span>
-                    <span style={{ fontWeight: 700, color: '#059669', background: '#ECFDF5', padding: '1px 6px', borderRadius: '4px' }}>
+                    <span style={{ fontWeight: 700, color: '#1B5E20', background: '#E8F5E9', padding: '1px 6px', borderRadius: '4px' }}>
                       {mat.amount}
                     </span>
                   </div>
@@ -387,8 +387,8 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
                     style={{
                       padding: '1rem',
                       borderRadius: 'var(--radius-md)',
-                      border: activeStep === idx ? '2px solid #10B981' : '1px solid var(--border-light)',
-                      background: isStepCompleted ? '#F0FDF4' : '#FFFFFF',
+                      border: activeStep === idx ? '2px solid #A5D6A7' : '1px solid var(--border-light)',
+                      background: isStepCompleted ? '#E8F5E9' : '#FFFFFF',
                       cursor: 'pointer',
                       transition: 'all var(--transition-fast)'
                     }}
@@ -403,19 +403,19 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
                           handleToggleStep(step.stepNumber);
                         }}
                         aria-label={isStepCompleted ? `Tandai langkah ${step.stepNumber} belum selesai` : `Tandai langkah ${step.stepNumber} selesai`}
-                        style={{ padding: '2px', color: isStepCompleted ? '#10B981' : '#94A3B8', marginTop: '2px', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                        style={{ padding: '2px', color: isStepCompleted ? '#2E7D32' : '#94A3B8', marginTop: '2px', background: 'transparent', border: 'none', cursor: 'pointer' }}
                         title={isStepCompleted ? 'Tandai belum selesai' : 'Tandai langkah sudah selesai'}
                       >
-                        {isStepCompleted ? <CheckSquare size={22} color="#10B981" /> : <Square size={22} />}
+                        {isStepCompleted ? <CheckSquare size={22} color="#2E7D32" /> : <Square size={22} />}
                       </button>
 
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <div style={{ fontWeight: 700, fontSize: '0.95rem', color: isStepCompleted ? '#065F46' : 'var(--text-main)', marginBottom: '0.25rem' }}>
+                          <div style={{ fontWeight: 700, fontSize: '0.95rem', color: isStepCompleted ? '#1B5E20' : 'var(--text-main)', marginBottom: '0.25rem' }}>
                             Langkah {step.stepNumber}: {step.title}
                           </div>
                           {isStepCompleted && (
-                            <span style={{ fontSize: '0.72rem', color: '#166534', background: '#DCFCE7', padding: '1px 7px', borderRadius: '10px', fontWeight: 700 }}>
+                            <span style={{ fontSize: '0.72rem', color: '#1B5E20', background: '#E8F5E9', padding: '1px 7px', borderRadius: '10px', fontWeight: 700 }}>
                               Selesai ✓
                             </span>
                           )}
@@ -481,7 +481,7 @@ export const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
               onOpenReviewModal(innovation);
             }}
             className="btn-primary"
-            style={{ background: 'linear-gradient(135deg, #059669 0%, #047857 100%)' }}
+            style={{ background: 'linear-gradient(135deg, #388E3C 0%, #2E7D32 100%)' }}
           >
             <Star size={16} />
             <span>Beri Ulasan Evaluasi (5M)</span>

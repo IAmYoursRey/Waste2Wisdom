@@ -20,9 +20,9 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
   const isB3 = waste.category === 'b3';
   const isCaution = waste.safetyRating === 'caution';
 
-  const headerBg = isB3 ? '#FEF2F2' : isCaution ? '#FFFBEB' : '#F0FDF4';
-  const headerBorder = isB3 ? '2px solid #FECACA' : isCaution ? '2px solid #FDE68A' : '2px solid #A7F3D0';
-  const headerTextColor = isB3 ? '#991B1B' : isCaution ? '#92400E' : '#065F46';
+  const headerBg = isB3 ? '#FEF2F2' : isCaution ? '#FFFBEB' : '#E8F5E9';
+  const headerBorder = isB3 ? '2px solid #FECACA' : isCaution ? '2px solid #FDE68A' : '2px solid #A5D6A7';
+  const headerTextColor = isB3 ? '#991B1B' : isCaution ? '#92400E' : '#1B5E20';
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -36,8 +36,9 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', flexWrap: 'wrap' }}>
               <span className={`badge-national ${isB3 ? 'badge-danger' : isCaution ? 'badge-caution' : 'badge-safe'}`} style={{
-                background: isB3 ? '#FEE2E2' : isCaution ? '#FEF3C7' : '#DCFCE7',
-                color: isB3 ? '#991B1B' : isCaution ? '#92400E' : '#166534',
+                background: isB3 ? '#FEE2E2' : isCaution ? '#FEF3C7' : '#E8F5E9',
+                color: isB3 ? '#991B1B' : isCaution ? '#92400E' : '#1B5E20',
+                border: isB3 ? '1px solid #FECACA' : isCaution ? '1px solid #FDE68A' : '1px solid #A5D6A7',
                 padding: '2px 8px',
                 borderRadius: '6px',
                 fontWeight: 700,
@@ -77,8 +78,8 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
           <div style={{
             padding: '1rem',
             borderRadius: 'var(--radius-md)',
-            background: isB3 ? '#FFF1F2' : isCaution ? '#FFFBEB' : '#F0FDF4',
-            border: isB3 ? '1.5px solid #FDA4AF' : isCaution ? '1.5px solid #FCD34D' : '1.5px solid #86EFAC',
+            background: isB3 ? '#FFF1F2' : isCaution ? '#FFFBEB' : '#E8F5E9',
+            border: isB3 ? '1.5px solid #FDA4AF' : isCaution ? '1.5px solid #FCD34D' : '1.5px solid #A5D6A7',
             display: 'flex',
             gap: '0.85rem'
           }}>
@@ -87,13 +88,13 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
             ) : isCaution ? (
               <AlertCircle size={26} color="#D97706" style={{ flexShrink: 0, marginTop: '2px' }} />
             ) : (
-              <CheckCircle2 size={26} color="#059669" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <CheckCircle2 size={26} color="#2E7D32" style={{ flexShrink: 0, marginTop: '2px' }} />
             )}
             <div>
               <div style={{
                 fontWeight: 700,
                 fontSize: '0.95rem',
-                color: isB3 ? '#9F1239' : isCaution ? '#B45309' : '#065F46'
+                color: isB3 ? '#9F1239' : isCaution ? '#B45309' : '#1B5E20'
               }}>
                 {isB3
                   ? 'Peringatan Regulasi: Kategori Limbah B3 Berbahaya'
@@ -103,7 +104,7 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
               </div>
               <div style={{
                 fontSize: '0.85rem',
-                color: isB3 ? '#881337' : isCaution ? '#78350F' : '#047857',
+                color: isB3 ? '#881337' : isCaution ? '#78350F' : '#1B5E20',
                 marginTop: '0.2rem',
                 lineHeight: 1.5
               }}>
@@ -125,7 +126,7 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
               border: '1px solid var(--border-light)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                <Scale size={15} color="#059669" />
+                <Scale size={15} color="#2E7D32" />
                 <span>DASAR HUKUM & STATUS REGULASI</span>
               </div>
               <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '0.25rem' }}>
@@ -140,7 +141,7 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
               border: '1px solid var(--border-light)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                <FileText size={15} color="#059669" />
+                <FileText size={15} color="#2E7D32" />
                 <span>SUMBER ALIRAN PROSES INDUSTRI</span>
               </div>
               <div style={{ fontSize: '0.84rem', color: 'var(--text-main)', marginTop: '0.25rem', lineHeight: 1.4 }}>
@@ -187,7 +188,7 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
             border: '1px solid #CBD5E1'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-main)', marginBottom: '0.5rem' }}>
-              <HardHat size={16} color="#059669" />
+              <HardHat size={16} color="#2E7D32" />
               <span>Alat Pelindung Diri (APD) Minimal Wajib:</span>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
@@ -199,7 +200,7 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
                   color: 'var(--leaf-deep)',
                   padding: '0.3rem 0.75rem',
                   borderRadius: 'var(--radius-full)',
-                  border: '1px solid #A7F3D0'
+                  border: '1px solid #A5D6A7'
                 }}>
                   🛡️ {ppe}
                 </span>
@@ -211,16 +212,16 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1rem' }}>
             {/* Guidelines */}
             <div style={{
-              background: '#F0FDF4',
+              background: '#E8F5E9',
               padding: '1rem',
               borderRadius: 'var(--radius-md)',
-              border: '1px solid #BBF7D0'
+              border: '1px solid #A5D6A7'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, fontSize: '0.85rem', color: '#166534', marginBottom: '0.5rem' }}>
-                <CheckCircle2 size={16} color="#16A34A" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, fontSize: '0.85rem', color: '#1B5E20', marginBottom: '0.5rem' }}>
+                <CheckCircle2 size={16} color="#2E7D32" />
                 <span>Panduan Penanganan yang Dianjurkan (SOP):</span>
               </div>
-              <ul style={{ paddingLeft: '1.2rem', fontSize: '0.82rem', color: '#14532D', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+              <ul style={{ paddingLeft: '1.2rem', fontSize: '0.82rem', color: '#1B5E20', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                 {waste.handlingGuidelines.map((guide, idx) => (
                   <li key={idx}>{guide}</li>
                 ))}
@@ -248,20 +249,20 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
 
           {/* Economic Potential & Innovations */}
           <div style={{
-            background: 'linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%)',
+            background: 'linear-gradient(135deg, #E8F5E9 0%, #F1F8F2 100%)',
             padding: '1rem',
             borderRadius: 'var(--radius-md)',
-            border: '1.5px solid #A7F3D0'
+            border: '1.5px solid #A5D6A7'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, fontSize: '0.9rem', color: '#065F46', marginBottom: '0.35rem' }}>
-              <Sparkles size={17} color="#10B981" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, fontSize: '0.9rem', color: '#1B5E20', marginBottom: '0.35rem' }}>
+              <Sparkles size={17} color="#2E7D32" />
               <span>Potensi Ekonomi & Inovasi Bernilai Tambah:</span>
             </div>
-            <p style={{ fontSize: '0.85rem', color: '#047857', marginBottom: '0.75rem', lineHeight: 1.5 }}>
+            <p style={{ fontSize: '0.85rem', color: '#1B5E20', marginBottom: '0.75rem', lineHeight: 1.5 }}>
               {waste.economicPotential}
             </p>
 
-            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#065F46', marginBottom: '0.4rem' }}>
+            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#1B5E20', marginBottom: '0.4rem' }}>
               Rekomendasi Kreasi Inovasi di Marketplace / Katalog:
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -284,22 +285,22 @@ export const WasteDetailModal: React.FC<WasteDetailModalProps> = ({
                     gap: '0.3rem',
                     padding: '0.35rem 0.85rem',
                     background: '#FFFFFF',
-                    border: '1.5px solid #34D399',
+                    border: '1.5px solid #A5D6A7',
                     borderRadius: 'var(--radius-full)',
                     fontSize: '0.8rem',
                     fontWeight: 700,
-                    color: '#047857',
+                    color: '#1B5E20',
                     boxShadow: 'var(--shadow-sm)',
                     cursor: 'pointer',
                     transition: 'all var(--transition-fast)'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#10B981';
+                    e.currentTarget.style.background = '#2E7D32';
                     e.currentTarget.style.color = '#FFFFFF';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = '#FFFFFF';
-                    e.currentTarget.style.color = '#047857';
+                    e.currentTarget.style.color = '#1B5E20';
                   }}
                 >
                   💡 {item}

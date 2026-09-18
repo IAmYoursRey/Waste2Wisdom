@@ -199,7 +199,7 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({
 
             {/* Sector Selector */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Filter size={18} color="#059669" />
+              <Filter size={18} color="#2E7D32" />
               <select
                 value={selectedSector}
                 onChange={(e) => setSelectedSector(e.target.value)}
@@ -234,18 +234,20 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({
                 borderRadius: 'var(--radius-full)',
                 fontSize: '0.85rem',
                 fontWeight: selectedCategory === 'all' ? 700 : 500,
-                background: selectedCategory === 'all' ? 'var(--leaf-deep)' : '#F1F5F9',
-                color: selectedCategory === 'all' ? '#FFFFFF' : 'var(--text-main)',
-                border: '1px solid transparent',
+                background: selectedCategory === 'all' ? '#E8F5E9' : '#FFFFFF',
+                color: selectedCategory === 'all' ? '#1B5E20' : 'var(--text-muted)',
+                border: selectedCategory === 'all' ? '1.5px solid #A5D6A7' : '1px solid var(--border-light)',
                 transition: 'all var(--transition-fast)'
               }}
             >
               <span>Semua Kategori</span>
               <span style={{
-                background: selectedCategory === 'all' ? 'rgba(255,255,255,0.2)' : '#E2E8F0',
+                background: selectedCategory === 'all' ? '#A5D6A7' : '#E2E8F0',
+                color: selectedCategory === 'all' ? '#1B5E20' : 'var(--text-muted)',
                 padding: '1px 7px',
                 borderRadius: '10px',
-                fontSize: '0.72rem'
+                fontSize: '0.72rem',
+                fontWeight: 700
               }}>
                 {wasteList.length}
               </span>
@@ -261,17 +263,17 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({
                 borderRadius: 'var(--radius-full)',
                 fontSize: '0.85rem',
                 fontWeight: selectedCategory === 'non-b3' ? 700 : 500,
-                background: selectedCategory === 'non-b3' ? '#ECFDF5' : '#FFFFFF',
-                color: '#065F46',
-                border: selectedCategory === 'non-b3' ? '1.5px solid #10B981' : '1px solid #D1FAE5',
+                background: selectedCategory === 'non-b3' ? '#E8F5E9' : '#FFFFFF',
+                color: '#1B5E20',
+                border: selectedCategory === 'non-b3' ? '1.5px solid #A5D6A7' : '1px solid #E1EBE2',
                 transition: 'all var(--transition-fast)'
               }}
             >
-              <CheckCircle2 size={15} color="#10B981" />
+              <CheckCircle2 size={15} color="#2E7D32" />
               <span>Non-B3 — Dapat Dimanfaatkan (SOP)</span>
               <span style={{
-                background: '#A7F3D0',
-                color: '#065F46',
+                background: '#A5D6A7',
+                color: '#1B5E20',
                 padding: '1px 7px',
                 borderRadius: '10px',
                 fontSize: '0.72rem',
@@ -347,7 +349,7 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({
                   className="glass-card"
                   style={{
                     padding: '1.4rem',
-                    borderTop: isB3 ? '4px solid #EF4444' : '4px solid #10B981',
+                    borderTop: isB3 ? '4px solid #EF4444' : '4px solid #A5D6A7',
                   }}
                 >
                   <div>
@@ -376,10 +378,10 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({
                     <div style={{
                       padding: '0.65rem 0.85rem',
                       borderRadius: 'var(--radius-sm)',
-                      background: isB3 ? '#FFF1F2' : '#F0FDF4',
-                      border: isB3 ? '1px solid #FDA4AF' : '1px solid #BBF7D0',
+                      background: isB3 ? '#FFF1F2' : '#E8F5E9',
+                      border: isB3 ? '1px solid #FDA4AF' : '1px solid #A5D6A7',
                       fontSize: '0.8rem',
-                      color: isB3 ? '#881337' : '#166534',
+                      color: isB3 ? '#881337' : '#1B5E20',
                       marginBottom: '0.85rem'
                     }}>
                       <strong>{isB3 ? 'Aturan Keselamatan:' : 'Status Daur Ulang:'}</strong> {waste.safetyDescription.slice(0, 110)}...
@@ -388,7 +390,7 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({
                     {/* PPE Preview Badges */}
                     <div style={{ marginBottom: '1rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-light)', marginBottom: '0.35rem' }}>
-                        <HardHat size={14} color="#059669" />
+                        <HardHat size={14} color="#2E7D32" />
                         <span>Standar APD Wajib:</span>
                       </div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
@@ -434,17 +436,17 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({
                           gap: '0.4rem',
                           fontSize: '0.78rem',
                           fontWeight: 700,
-                          color: '#047857',
-                          background: '#ECFDF5',
+                          color: '#1B5E20',
+                          background: '#E8F5E9',
                           padding: '0.45rem',
                           borderRadius: 'var(--radius-md)',
-                          border: '1px dashed #34D399',
+                          border: '1px dashed #A5D6A7',
                           transition: 'all var(--transition-fast)'
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.borderColor = '#059669'}
-                        onMouseLeave={(e) => e.currentTarget.style.borderColor = '#34D399'}
+                        onMouseEnter={(e) => e.currentTarget.style.borderColor = '#2E7D32'}
+                        onMouseLeave={(e) => e.currentTarget.style.borderColor = '#A5D6A7'}
                       >
-                        <Sparkles size={14} color="#10B981" />
+                        <Sparkles size={14} color="#2E7D32" />
                         <span>Cari Tutorial Inovasi dari Bahan Ini</span>
                         <ArrowRight size={13} />
                       </button>
@@ -463,11 +465,11 @@ export const WasteDictionaryView: React.FC<WasteDictionaryViewProps> = ({
                           gap: '0.3rem',
                           fontSize: '0.82rem',
                           fontWeight: 700,
-                          color: isB3 ? '#DC2626' : '#059669',
-                          background: isB3 ? '#FEF2F2' : '#F0FDF4',
+                          color: isB3 ? '#DC2626' : '#1B5E20',
+                          background: isB3 ? '#FEF2F2' : '#E8F5E9',
                           padding: '0.4rem 0.75rem',
                           borderRadius: 'var(--radius-full)',
-                          border: isB3 ? '1px solid #FECACA' : '1px solid #A7F3D0',
+                          border: isB3 ? '1px solid #FECACA' : '1px solid #A5D6A7',
                         }}
                       >
                         <span>Panduan Lengkap</span>

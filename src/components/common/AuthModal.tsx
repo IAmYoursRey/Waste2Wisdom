@@ -73,7 +73,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 borderRadius: 'var(--radius-full)',
                 fontSize: '0.85rem',
                 fontWeight: activeTab === 'login' ? 700 : 500,
-                background: activeTab === 'login' ? '#10B981' : 'transparent',
+                background: activeTab === 'login' ? '#2E7D32' : 'transparent',
                 color: activeTab === 'login' ? '#FFFFFF' : 'var(--text-muted)'
               }}
             >
@@ -91,7 +91,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 borderRadius: 'var(--radius-full)',
                 fontSize: '0.85rem',
                 fontWeight: activeTab === 'register' ? 700 : 500,
-                background: activeTab === 'register' ? '#10B981' : 'transparent',
+                background: activeTab === 'register' ? '#2E7D32' : 'transparent',
                 color: activeTab === 'register' ? '#FFFFFF' : 'var(--text-muted)'
               }}
             >
@@ -109,7 +109,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 borderRadius: 'var(--radius-full)',
                 fontSize: '0.85rem',
                 fontWeight: activeTab === 'profile' ? 700 : 500,
-                background: activeTab === 'profile' ? '#10B981' : 'transparent',
+                background: activeTab === 'profile' ? '#2E7D32' : 'transparent',
                 color: activeTab === 'profile' ? '#FFFFFF' : 'var(--text-muted)'
               }}
             >
@@ -128,15 +128,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           
           {/* Quick Demo Role Switcher Banner */}
           <div style={{
-            background: 'linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%)',
-            border: '1.5px solid #A7F3D0',
+            background: 'linear-gradient(135deg, #E8F5E9 0%, #F1F8F2 100%)',
+            border: '1.5px solid #A5D6A7',
             borderRadius: 'var(--radius-md)',
             padding: '0.85rem',
             marginBottom: '1.25rem'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.3rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 700, color: '#065F46' }}>
-                <Sparkles size={14} color="#10B981" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 700, color: '#1B5E20' }}>
+                <Sparkles size={14} color="#2E7D32" />
                 <span>Simulator Peran — Khusus Demo (Bukan Autentikasi Nyata):</span>
               </div>
               <span style={{ fontSize: '0.7rem', color: '#92400E', background: '#FEF3C7', padding: '1px 6px', borderRadius: '4px', border: '1px solid #FDE68A', fontWeight: 700 }}>
@@ -153,12 +153,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   alignItems: 'center',
                   gap: '0.35rem',
                   padding: '0.4rem 0.6rem',
-                  background: user.role === 'user' ? '#10B981' : '#FFFFFF',
-                  color: user.role === 'user' ? '#FFFFFF' : '#065F46',
+                  background: user.role === 'user' ? '#2E7D32' : '#FFFFFF',
+                  color: user.role === 'user' ? '#FFFFFF' : '#1B5E20',
                   borderRadius: 'var(--radius-sm)',
                   fontSize: '0.74rem',
                   fontWeight: 600,
-                  border: '1px solid #A7F3D0',
+                  border: '1px solid #A5D6A7',
                   textAlign: 'left'
                 }}
               >
@@ -174,12 +174,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   alignItems: 'center',
                   gap: '0.35rem',
                   padding: '0.4rem 0.6rem',
-                  background: user.role === 'industry' ? '#10B981' : '#FFFFFF',
-                  color: user.role === 'industry' ? '#FFFFFF' : '#065F46',
+                  background: user.role === 'industry' ? '#2E7D32' : '#FFFFFF',
+                  color: user.role === 'industry' ? '#FFFFFF' : '#1B5E20',
                   borderRadius: 'var(--radius-sm)',
                   fontSize: '0.74rem',
                   fontWeight: 600,
-                  border: '1px solid #A7F3D0',
+                  border: '1px solid #A5D6A7',
                   textAlign: 'left'
                 }}
               >
@@ -195,12 +195,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   alignItems: 'center',
                   gap: '0.35rem',
                   padding: '0.4rem 0.6rem',
-                  background: user.role === 'umkm' ? '#10B981' : '#FFFFFF',
-                  color: user.role === 'umkm' ? '#FFFFFF' : '#065F46',
+                  background: user.role === 'umkm' ? '#2E7D32' : '#FFFFFF',
+                  color: user.role === 'umkm' ? '#FFFFFF' : '#1B5E20',
                   borderRadius: 'var(--radius-sm)',
                   fontSize: '0.74rem',
                   fontWeight: 600,
-                  border: '1px solid #A7F3D0',
+                  border: '1px solid #A5D6A7',
                   textAlign: 'left'
                 }}
               >
@@ -216,12 +216,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   alignItems: 'center',
                   gap: '0.35rem',
                   padding: '0.4rem 0.6rem',
-                  background: user.role === 'admin' ? '#064E3B' : '#FFFFFF',
-                  color: user.role === 'admin' ? '#FFFFFF' : '#064E3B',
+                  background: user.role === 'admin' ? '#1B5E20' : '#FFFFFF',
+                  color: user.role === 'admin' ? '#FFFFFF' : '#1B5E20',
                   borderRadius: 'var(--radius-sm)',
                   fontSize: '0.74rem',
                   fontWeight: 700,
-                  border: '1px solid #A7F3D0',
+                  border: '1px solid #A5D6A7',
                   textAlign: 'left'
                 }}
               >
@@ -230,7 +230,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </button>
             </div>
 
-            <div style={{ fontSize: '0.72rem', color: '#047857', marginTop: '0.5rem', lineHeight: 1.35 }}>
+            <div style={{ fontSize: '0.72rem', color: '#1B5E20', marginTop: '0.5rem', lineHeight: 1.35 }}>
               Pemberitahuan UU PDP No. 27/2022: Data demonstrasi ini disimpan secara lokal di peramban (localStorage) Anda. Jangan memasukkan data pribadi atau rahasia sensitif.
             </div>
           </div>
@@ -357,7 +357,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   width: '44px',
                   height: '44px',
                   borderRadius: '50%',
-                  background: '#10B981',
+                  background: '#2E7D32',
                   color: '#FFFFFF',
                   display: 'flex',
                   alignItems: 'center',

@@ -112,7 +112,7 @@ export const SupplyRequestModal: React.FC<SupplyRequestModalProps> = ({
       <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '600px' }} onClick={(e) => e.stopPropagation()}>
         
         {/* Header */}
-        <div className="modal-header" style={{ background: '#F0FDF4', borderBottom: '2px solid #A7F3D0' }}>
+        <div className="modal-header" style={{ background: '#E8F5E9', borderBottom: '2px solid #A5D6A7' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
               <span className="badge-5m">4M: MATCHMAKING</span>
@@ -131,7 +131,7 @@ export const SupplyRequestModal: React.FC<SupplyRequestModalProps> = ({
 
         {isSuccess ? (
           <div style={{ padding: '3rem 1.5rem', textAlign: 'center' }}>
-            <CheckCircle2 size={60} color="#10B981" style={{ margin: '0 auto 1rem auto' }} />
+            <CheckCircle2 size={60} color="#2E7D32" style={{ margin: '0 auto 1rem auto' }} />
             <h3 style={{ fontSize: '1.35rem', color: 'var(--leaf-deep)', marginBottom: '0.5rem' }}>
               Pengajuan Kemitraan Terkirim!
             </h3>
@@ -155,10 +155,10 @@ export const SupplyRequestModal: React.FC<SupplyRequestModalProps> = ({
                   {partner.name}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
-                  <MapPin size={14} color="#059669" />
+                  <MapPin size={14} color="#2E7D32" />
                   <span>{partner.address}</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.82rem', color: '#065F46', fontWeight: 600 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.82rem', color: '#1B5E20', fontWeight: 600 }}>
                   <Package size={14} />
                   <span>Bahan: {partner.wasteType} ({partner.volumeMonthly})</span>
                 </div>
@@ -260,13 +260,13 @@ export const SupplyRequestModal: React.FC<SupplyRequestModalProps> = ({
                 alignItems: 'center',
                 gap: '0.5rem',
                 fontSize: '0.76rem',
-                color: '#065F46',
-                background: '#ECFDF5',
+                color: '#1B5E20',
+                background: '#E8F5E9',
                 padding: '0.65rem 0.85rem',
                 borderRadius: 'var(--radius-sm)',
-                border: '1px solid #A7F3D0'
+                border: '1px solid #A5D6A7'
               }}>
-                <ShieldCheck size={16} color="#10B981" style={{ flexShrink: 0 }} />
+                <ShieldCheck size={16} color="#2E7D32" style={{ flexShrink: 0 }} />
                 <span>Seluruh transaksi bahan baku terikat pada pakta kepatuhan pemanfaatan limbah Non-B3 (PP No. 22/2021).</span>
               </div>
 

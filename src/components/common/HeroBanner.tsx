@@ -24,11 +24,11 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onSelect5M }) => {
   return (
     <div style={{
       position: 'relative',
-      background: 'linear-gradient(135deg, #064E3B 0%, #065F46 40%, #047857 75%, #059669 100%)',
-      color: '#FFFFFF',
+      background: 'linear-gradient(135deg, #F4FAF5 0%, #E8F5E9 35%, #E0F2F1 70%, #C8E6C9 100%)',
+      color: '#133E24',
       padding: '3.5rem 0 3rem 0',
       overflow: 'hidden',
-      borderBottom: '4px solid var(--leaf-lime)'
+      borderBottom: '3px solid #A5D6A7'
     }}>
       {/* Dynamic Background Glows */}
       <div style={{
@@ -38,7 +38,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onSelect5M }) => {
         width: '450px',
         height: '450px',
         borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(52, 211, 153, 0.25) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(165, 214, 167, 0.45) 0%, transparent 70%)',
         filter: 'blur(40px)',
         pointerEvents: 'none'
       }} />
@@ -49,7 +49,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onSelect5M }) => {
         width: '350px',
         height: '350px',
         borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(132, 204, 22, 0.2) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(128, 203, 196, 0.35) 0%, transparent 70%)',
         filter: 'blur(40px)',
         pointerEvents: 'none'
       }} />
@@ -64,15 +64,16 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onSelect5M }) => {
             gap: '0.4rem',
             padding: '0.35rem 0.85rem',
             borderRadius: 'var(--radius-full)',
-            background: 'rgba(255, 255, 255, 0.15)',
+            background: 'rgba(255, 255, 255, 0.9)',
             backdropFilter: 'blur(8px)',
-            border: '1px solid rgba(167, 243, 208, 0.3)',
+            border: '1.5px solid #A5D6A7',
             fontSize: '0.78rem',
             fontWeight: 700,
-            color: '#A7F3D0',
+            color: '#1B5E20',
+            boxShadow: '0 2px 8px rgba(46, 125, 50, 0.06)',
             letterSpacing: '0.4px'
           }}>
-            <Sparkles size={14} color="#34D399" />
+            <Sparkles size={14} color="#2E7D32" />
             <span>METODE 5M SIRKULAR</span>
           </div>
 
@@ -82,13 +83,14 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onSelect5M }) => {
             gap: '0.4rem',
             padding: '0.35rem 0.85rem',
             borderRadius: 'var(--radius-full)',
-            background: 'rgba(255, 255, 255, 0.12)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
+            background: 'rgba(255, 255, 255, 0.9)',
+            border: '1.5px solid #80CBC4',
             fontSize: '0.78rem',
             fontWeight: 600,
-            color: '#E2E8F0'
+            color: '#00695C',
+            boxShadow: '0 2px 8px rgba(0, 105, 92, 0.06)'
           }}>
-            <Shield size={14} color="#BEF264" />
+            <Shield size={14} color="#00897B" />
             <span>Sesuai PP No. 22/2021 & Permen LHK</span>
           </div>
         </div>
@@ -99,14 +101,14 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onSelect5M }) => {
           <div>
             <h1 style={{
               fontSize: 'clamp(2rem, 3.8vw, 3.1rem)',
-              color: '#FFFFFF',
+              color: '#133E24',
               fontWeight: 800,
               lineHeight: 1.15,
               marginBottom: '1rem',
               letterSpacing: '-0.5px'
             }}>
               Transformasi Limbah Industri Menjadi <span style={{
-                background: 'linear-gradient(90deg, #A7F3D0 0%, #BEF264 100%)',
+                background: 'linear-gradient(90deg, #1B5E20 0%, #00796B 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent'
               }}>Karya Berdaya Guna</span>
@@ -114,7 +116,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onSelect5M }) => {
 
             <p style={{
               fontSize: 'clamp(0.95rem, 1.6vw, 1.1rem)',
-              color: '#D1FAE5',
+              color: '#2D5038',
               lineHeight: 1.6,
               marginBottom: '1.75rem',
               maxWidth: '650px'
@@ -132,26 +134,27 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onSelect5M }) => {
                 <div 
                   key={idx}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.1)',
+                    background: 'rgba(255, 255, 255, 0.88)',
                     backdropFilter: 'blur(10px)',
                     borderRadius: 'var(--radius-md)',
                     padding: '0.85rem 1rem',
-                    border: '1px solid rgba(255, 255, 255, 0.18)'
+                    border: '1.5px solid #A5D6A7',
+                    boxShadow: '0 4px 14px rgba(46, 125, 50, 0.06)'
                   }}
                 >
                   <div style={{
                     fontSize: '1.65rem',
                     fontWeight: 800,
-                    color: '#BEF264',
+                    color: '#1B5E20',
                     lineHeight: 1.1,
                     fontFamily: 'var(--font-display)'
                   }}>
                     {m.value}
                   </div>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#FFFFFF', marginTop: '0.2rem' }}>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#133E24', marginTop: '0.2rem' }}>
                     {m.label}
                   </div>
-                  <div style={{ fontSize: '0.7rem', color: '#A7F3D0', marginTop: '0.1rem' }}>
+                  <div style={{ fontSize: '0.7rem', color: '#4B6B52', marginTop: '0.1rem' }}>
                     {m.sub}
                   </div>
                 </div>
@@ -164,14 +167,15 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onSelect5M }) => {
             <div 
               className="animate-float"
               style={{
-                position: 'relative',
                 borderRadius: 'var(--radius-xl)',
                 overflow: 'hidden',
-                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35)',
-                border: '3px solid rgba(167, 243, 208, 0.35)',
-                background: 'rgba(255, 255, 255, 0.05)',
+                boxShadow: '0 16px 36px rgba(46, 125, 50, 0.12)',
+                border: '2.5px solid #A5D6A7',
+                background: '#FFFFFF',
                 maxWidth: '480px',
-                width: '100%'
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column'
               }}
             >
               <img 
@@ -181,25 +185,37 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onSelect5M }) => {
                   width: '100%',
                   height: 'auto',
                   display: 'block',
-                  objectFit: 'cover'
+                  objectFit: 'contain'
                 }}
               />
               <div style={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                padding: '0.75rem 1rem',
-                background: 'linear-gradient(to top, rgba(6, 78, 59, 0.95) 0%, transparent 100%)',
-                fontSize: '0.76rem',
-                color: '#D1FAE5',
-                fontWeight: 600,
+                padding: '0.75rem 1.15rem',
+                background: 'linear-gradient(90deg, #E8F5E9 0%, #E0F2F1 100%)',
+                borderTop: '1.5px solid #A5D6A7',
+                fontSize: '0.78rem',
+                color: '#133E24',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
+                gap: '0.5rem',
+                flexWrap: 'wrap'
               }}>
-                <span>Siklus Sirkular Industri Hijau</span>
-                <span style={{ color: '#BEF264' }}>100% Berdaya Guna</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 700 }}>
+                  <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#2E7D32' }} />
+                  <span>Siklus Sirkular Industri Hijau</span>
+                </div>
+                <span style={{
+                  background: '#FFFFFF',
+                  border: '1px solid #A5D6A7',
+                  padding: '2px 9px',
+                  borderRadius: 'var(--radius-full)',
+                  color: '#00796B',
+                  fontWeight: 800,
+                  fontSize: '0.74rem',
+                  boxShadow: '0 1px 3px rgba(46, 125, 50, 0.08)'
+                }}>
+                  100% Berdaya Guna
+                </span>
               </div>
             </div>
           </div>
@@ -216,17 +232,19 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onSelect5M }) => {
 
         {/* 5M Interactive Flow Navigation Bar */}
         <div style={{
-          background: 'rgba(0, 0, 0, 0.25)',
+          background: 'rgba(255, 255, 255, 0.78)',
+          backdropFilter: 'blur(12px)',
           borderRadius: 'var(--radius-lg)',
           padding: '1.25rem',
-          border: '1px solid rgba(255, 255, 255, 0.15)'
+          border: '1.5px solid #A5D6A7',
+          boxShadow: '0 4px 18px rgba(46, 125, 50, 0.08)'
         }}>
           <div style={{
             fontSize: '0.82rem',
             fontWeight: 700,
             textTransform: 'uppercase',
             letterSpacing: '1px',
-            color: '#BEF264',
+            color: '#1B5E20',
             marginBottom: '0.85rem'
           }}>
             Eksplorasi Pembelajaran 5M:
@@ -244,36 +262,39 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onSelect5M }) => {
                   key={step.id}
                   onClick={() => onSelect5M(step.id)}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.08)',
-                    border: '1px solid rgba(167, 243, 208, 0.2)',
+                    background: '#FFFFFF',
+                    border: '1.5px solid #C8E6C9',
                     borderRadius: 'var(--radius-md)',
                     padding: '0.75rem 0.9rem',
                     textAlign: 'left',
-                    color: '#FFFFFF',
+                    color: '#133E24',
                     transition: 'all var(--transition-fast)',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '0.35rem'
+                    gap: '0.35rem',
+                    boxShadow: '0 2px 6px rgba(46, 125, 50, 0.04)'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.18)';
+                    e.currentTarget.style.background = '#E8F5E9';
                     e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.borderColor = '#BEF264';
+                    e.currentTarget.style.borderColor = '#A5D6A7';
+                    e.currentTarget.style.boxShadow = '0 6px 14px rgba(46, 125, 50, 0.1)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                    e.currentTarget.style.background = '#FFFFFF';
                     e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.borderColor = 'rgba(167, 243, 208, 0.2)';
+                    e.currentTarget.style.borderColor = '#C8E6C9';
+                    e.currentTarget.style.boxShadow = '0 2px 6px rgba(46, 125, 50, 0.04)';
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Icon size={18} color="#34D399" />
-                    <ArrowRight size={13} color="#A7F3D0" />
+                    <Icon size={18} color="#2E7D32" />
+                    <ArrowRight size={13} color="#2E7D32" />
                   </div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#FFFFFF' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#133E24' }}>
                     {step.title}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#D1FAE5', lineHeight: 1.3 }}>
+                  <div style={{ fontSize: '0.72rem', color: '#4B6B52', lineHeight: 1.3 }}>
                     {step.desc}
                   </div>
                 </button>

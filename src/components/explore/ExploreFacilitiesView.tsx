@@ -143,13 +143,13 @@ export const ExploreFacilitiesView: React.FC = () => {
 
           {/* Konsep PengNIP Disclaimer Box */}
           <div style={{
-            background: '#F0FDF4',
-            border: '1px solid #A7F3D0',
+            background: '#E8F5E9',
+            border: '1px solid #A5D6A7',
             borderRadius: 'var(--radius-md)',
             padding: '0.75rem 1rem',
             marginTop: '1rem',
             fontSize: '0.82rem',
-            color: '#065F46',
+            color: '#1B5E20',
             lineHeight: 1.45
           }}>
             <strong>Catatan Konsep:</strong> "Tempat PengNIP" (Pengolahan Non-B3 Industri Terpadu) merupakan model percontohan rintisan Waste2Wisdom untuk menyimulasikan integrasi sirkular limbah non-B3 tingkat kawasan, bukan nomenklatur atau lembaga resmi pemerintah. Seluruh fasilitas dan data operasional di bawah adalah data demonstrasi pembelajaran.
@@ -201,7 +201,7 @@ export const ExploreFacilitiesView: React.FC = () => {
                       flexDirection: 'column',
                       justifyContent: 'space-between',
                       padding: '1.5rem',
-                      borderLeft: '5px solid #10B981'
+                      borderLeft: '5px solid #A5D6A7'
                     }}
                   >
                     <div>
@@ -213,9 +213,9 @@ export const ExploreFacilitiesView: React.FC = () => {
                             fontWeight: 700,
                             padding: '0.25rem 0.65rem',
                             borderRadius: 'var(--radius-full)',
-                            background: '#ECFDF5',
-                            color: '#065F46',
-                            border: '1px solid #A7F3D0'
+                            background: '#E8F5E9',
+                            color: '#1B5E20',
+                            border: '1px solid #A5D6A7'
                           }}>
                             {fac.type}
                           </span>
@@ -232,7 +232,7 @@ export const ExploreFacilitiesView: React.FC = () => {
                           </span>
                         </div>
                         <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                          <MapPin size={14} color="#059669" />
+                          <MapPin size={14} color="#2E7D32" />
                           <span>{fac.city}</span>
                         </span>
                       </div>
@@ -261,7 +261,7 @@ export const ExploreFacilitiesView: React.FC = () => {
                         <div style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>
                           <strong>Kapasitas Pengolahan:</strong> {fac.capacity}
                         </div>
-                        <div style={{ fontSize: '0.78rem', color: '#065F46' }}>
+                        <div style={{ fontSize: '0.78rem', color: '#1B5E20' }}>
                           <strong>Output Unggulan:</strong> {fac.featuredOutput}
                         </div>
                         {fac.operator && (
@@ -314,7 +314,7 @@ export const ExploreFacilitiesView: React.FC = () => {
                         className="btn-outline"
                         style={{ fontSize: '0.82rem', padding: '0.45rem 0.9rem' }}
                       >
-                        <Cog size={15} color="#059669" />
+                        <Cog size={15} color="#2E7D32" />
                         <span>Bedah Mesin & Alur</span>
                       </button>
 
@@ -336,7 +336,7 @@ export const ExploreFacilitiesView: React.FC = () => {
             {/* Industrial Machines Education Section */}
             <div className="glass-card" style={{ padding: '2rem', border: '1.5px solid var(--border-leaf)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                <Cog size={22} color="#10B981" />
+                <Cog size={22} color="#2E7D32" />
                 <h3 style={{ fontSize: '1.35rem', color: 'var(--leaf-deep)' }}>
                   Edukasi Mesin Industri Pengolah Limbah
                 </h3>
@@ -394,20 +394,20 @@ export const ExploreFacilitiesView: React.FC = () => {
         {activeTab === 'bookings' && (
           <div style={{ marginBottom: '3rem' }}>
             <div style={{
-              background: '#ECFDF5',
+              background: '#E8F5E9',
               padding: '1rem',
               borderRadius: 'var(--radius-md)',
-              border: '1px solid #A7F3D0',
+              border: '1px solid #A5D6A7',
               marginBottom: '1.5rem',
               fontSize: '0.85rem',
-              color: '#065F46'
+              color: '#1B5E20'
             }}>
               <strong>Simulasi Pengajuan Kunjungan:</strong> Seluruh permohonan kunjungan tersimpan secara persisten di penyimpanan browser lokal Anda (localStorage) untuk simulasi prototipe.
             </div>
 
             {userBookings.length === 0 ? (
               <div className="empty-state">
-                <Calendar size={36} color="#059669" style={{ margin: '0 auto 0.75rem auto' }} />
+                <Calendar size={36} color="#2E7D32" style={{ margin: '0 auto 0.75rem auto' }} />
                 <h3 style={{ fontSize: '1.15rem', color: 'var(--leaf-deep)' }}>
                   Belum Ada Jadwal Kunjungan yang Diajukan
                 </h3>
@@ -555,18 +555,18 @@ export const ExploreFacilitiesView: React.FC = () => {
 
               {/* Visit Guidelines */}
               <div style={{
-                background: '#ECFDF5',
+                background: '#E8F5E9',
                 padding: '1rem',
                 borderRadius: 'var(--radius-md)',
-                border: '1px solid #A7F3D0'
+                border: '1px solid #A5D6A7'
               }}>
-                <div style={{ fontWeight: 700, fontSize: '0.88rem', color: '#065F46', marginBottom: '0.25rem' }}>
+                <div style={{ fontWeight: 700, fontSize: '0.88rem', color: '#1B5E20', marginBottom: '0.25rem' }}>
                   Jadwal Kunjungan Edukasi Langsung:
                 </div>
-                <div style={{ fontSize: '0.84rem', color: '#047857' }}>
+                <div style={{ fontSize: '0.84rem', color: '#1B5E20' }}>
                   {selectedFacility.visitSchedule}
                 </div>
-                <div style={{ fontSize: '0.82rem', color: '#047857', marginTop: '0.5rem' }}>
+                <div style={{ fontSize: '0.82rem', color: '#1B5E20', marginTop: '0.5rem' }}>
                   <strong>Narahubung:</strong> {selectedFacility.contactPerson} ({selectedFacility.phone})
                 </div>
               </div>
@@ -598,7 +598,7 @@ export const ExploreFacilitiesView: React.FC = () => {
           <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '580px' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div>
-                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#059669', marginBottom: '0.2rem' }}>
+                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2E7D32', marginBottom: '0.2rem' }}>
                   SIMULASI PENGAJUAN KUNJUNGAN EDUKASI (PROTOTYPE)
                 </div>
                 <h3 style={{ fontSize: '1.25rem', color: 'var(--leaf-deep)' }}>
@@ -612,7 +612,7 @@ export const ExploreFacilitiesView: React.FC = () => {
 
             {bookingSuccess ? (
               <div style={{ padding: '2.5rem 1.5rem', textAlign: 'center' }}>
-                <CheckCircle2 size={54} color="#10B981" style={{ margin: '0 auto 1rem auto' }} />
+                <CheckCircle2 size={54} color="#2E7D32" style={{ margin: '0 auto 1rem auto' }} />
                 <h3 style={{ fontSize: '1.3rem', color: 'var(--leaf-deep)', marginBottom: '0.5rem' }}>
                   Permohonan Kunjungan Berhasil Disimpan!
                 </h3>

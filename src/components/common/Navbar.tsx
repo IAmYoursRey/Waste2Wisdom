@@ -52,8 +52,8 @@ export const Navbar: React.FC<NavbarProps> = ({
       background: 'rgba(255, 255, 255, 0.95)',
       backdropFilter: 'blur(16px)',
       WebkitBackdropFilter: 'blur(16px)',
-      borderBottom: '1px solid var(--border-leaf)',
-      boxShadow: '0 4px 20px -2px rgba(16, 185, 129, 0.08)'
+      borderBottom: '1.5px solid var(--border-leaf)',
+      boxShadow: '0 4px 20px -2px rgba(46, 125, 50, 0.08)'
     }}>
       <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '72px' }}>
         
@@ -87,14 +87,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                   borderRadius: 'var(--radius-full)',
                   fontSize: '0.86rem',
                   fontWeight: isActive ? 700 : 500,
-                  color: isActive ? 'var(--leaf-deep)' : 'var(--text-muted)',
-                  backgroundColor: isActive ? 'var(--leaf-subtle)' : 'transparent',
-                  border: isActive ? '1.5px solid var(--leaf-mint)' : '1.5px solid transparent',
+                  color: isActive ? '#1B5E20' : 'var(--text-muted)',
+                  backgroundColor: isActive ? '#E8F5E9' : 'transparent',
+                  border: isActive ? '1.5px solid #A5D6A7' : '1.5px solid transparent',
                   transition: 'all var(--transition-fast)',
                   position: 'relative'
                 }}
               >
-                <Icon size={16} color={isActive ? '#10B981' : '#64748B'} />
+                <Icon size={16} color={isActive ? '#2E7D32' : '#64748B'} />
                 <span>{item.label}</span>
                 {item.badge && item.badge > 0 ? (
                   <span style={{
@@ -124,12 +124,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               style={{
                 position: 'relative',
                 borderRadius: 'var(--radius-full)',
-                borderColor: '#10B981',
-                color: '#065F46'
+                borderColor: '#A5D6A7',
+                color: '#1B5E20',
+                background: '#E8F5E9'
               }}
               title="Dashboard Moderasi Admin"
             >
-              <ShieldCheck size={15} color="#059669" />
+              <ShieldCheck size={15} color="#2E7D32" />
               <span className="admin-btn-text">Admin ({pendingCount})</span>
               {pendingCount > 0 && (
                 <span style={{
@@ -186,7 +187,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               width: '26px',
               height: '26px',
               borderRadius: '50%',
-              background: isGuest ? '#94A3B8' : user.role === 'admin' ? '#064E3B' : user.role === 'industry' ? '#0284C7' : '#10B981',
+              background: isGuest ? '#94A3B8' : user.role === 'admin' ? '#1B5E20' : user.role === 'industry' ? '#0284C7' : '#2E7D32',
               color: '#FFFFFF',
               display: 'flex',
               alignItems: 'center',
@@ -200,7 +201,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.1 }}>
                 {isGuest ? 'Mode Tamu' : user.name.split(' ')[0]}
               </div>
-              <div style={{ fontSize: '0.68rem', color: isGuest ? 'var(--text-muted)' : '#059669', fontWeight: 600 }}>
+              <div style={{ fontSize: '0.68rem', color: isGuest ? 'var(--text-muted)' : '#2E7D32', fontWeight: 600 }}>
                 {isGuest ? 'Masuk / Demo' : user.roleLabel.split(' ')[0]}
               </div>
             </div>
@@ -250,13 +251,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                   justifyContent: 'space-between',
                   padding: '0.75rem 1rem',
                   borderRadius: 'var(--radius-md)',
-                  backgroundColor: isActive ? 'var(--leaf-subtle)' : 'transparent',
-                  color: isActive ? 'var(--leaf-deep)' : 'var(--text-main)',
+                  backgroundColor: isActive ? '#E8F5E9' : 'transparent',
+                  color: isActive ? '#1B5E20' : 'var(--text-main)',
+                  border: isActive ? '1.5px solid #A5D6A7' : '1.5px solid transparent',
                   fontWeight: isActive ? 700 : 500
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <Icon size={18} color={isActive ? '#10B981' : '#64748B'} />
+                  <Icon size={18} color={isActive ? '#2E7D32' : '#64748B'} />
                   <span>{item.label}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
@@ -272,7 +274,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       {item.badge}
                     </span>
                   ) : null}
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#059669' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2E7D32' }}>
                     {item.mLabel}
                   </span>
                 </div>
@@ -292,14 +294,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 justifyContent: 'space-between',
                 padding: '0.75rem 1rem',
                 borderRadius: 'var(--radius-md)',
-                backgroundColor: '#ECFDF5',
-                color: '#065F46',
+                backgroundColor: '#E8F5E9',
+                color: '#1B5E20',
                 fontWeight: 700,
-                border: '1.5px solid #10B981'
+                border: '1.5px solid #A5D6A7'
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <ShieldCheck size={18} color="#059669" />
+                <ShieldCheck size={18} color="#2E7D32" />
                 <span>Moderasi Admin ({pendingCount})</span>
               </div>
               {pendingCount > 0 && (

@@ -52,11 +52,15 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       }}>
         {toasts.map((toast) => {
           let bg = '#FFFFFF';
-          let border = '#10B981';
-          let textColor = '#065F46';
+          let border = '#2E7D32';
+          let textColor = '#1B5E20';
           let Icon = CheckCircle2;
 
-          if (toast.type === 'error') {
+          if (toast.type === 'success') {
+            bg = '#F7FAF7';
+            border = '#2E7D32';
+            textColor = '#1B5E20';
+          } else if (toast.type === 'error') {
             border = '#EF4444';
             textColor = '#991B1B';
             Icon = AlertCircle;

@@ -102,7 +102,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.4rem',
-                  background: '#10B981',
+                  background: '#2E7D32',
                   color: '#FFFFFF',
                   padding: '0.65rem 1.25rem',
                   borderRadius: '9999px',

@@ -142,13 +142,13 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.6rem',
-              background: '#ECFDF5',
+              background: '#E8F5E9',
               padding: '0.5rem 1rem',
               borderRadius: 'var(--radius-full)',
-              border: '1.5px solid #10B981',
+              border: '1.5px solid #A5D6A7',
               width: 'fit-content',
               fontSize: '0.86rem',
-              color: '#065F46',
+              color: '#1B5E20',
               fontWeight: 600
             }}>
               <span>🔍 Memfilter Inovasi untuk Bahan: <strong>{activeWasteFilter.name}</strong></span>
@@ -166,13 +166,13 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.6rem',
-              background: '#F0FDF4',
+              background: '#E8F5E9',
               padding: '0.5rem 1rem',
               borderRadius: 'var(--radius-full)',
-              border: '1.5px solid #059669',
+              border: '1.5px solid #A5D6A7',
               width: 'fit-content',
               fontSize: '0.86rem',
-              color: '#065F46',
+              color: '#1B5E20',
               fontWeight: 600
             }}>
               <span>💡 Menampilkan Inovasi Terpilih dari Kamus: <strong>{innovations.find(i => i.id === highlightInnovationId)?.title || highlightInnovationId}</strong></span>
@@ -200,8 +200,9 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
                 borderRadius: 'var(--radius-full)',
                 fontSize: '0.85rem',
                 fontWeight: activeTabFilter === 'all' ? 700 : 500,
-                background: activeTabFilter === 'all' ? 'var(--leaf-deep)' : '#F1F5F9',
-                color: activeTabFilter === 'all' ? '#FFFFFF' : 'var(--text-main)'
+                background: activeTabFilter === 'all' ? '#E8F5E9' : '#FFFFFF',
+                color: activeTabFilter === 'all' ? '#1B5E20' : 'var(--text-muted)',
+                border: activeTabFilter === 'all' ? '1.5px solid #A5D6A7' : '1px solid var(--border-light)'
               }}
             >
               <span>Katalog Publik</span>
@@ -217,8 +218,9 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
                 borderRadius: 'var(--radius-full)',
                 fontSize: '0.85rem',
                 fontWeight: activeTabFilter === 'my' ? 700 : 500,
-                background: activeTabFilter === 'my' ? '#059669' : '#F1F5F9',
-                color: activeTabFilter === 'my' ? '#FFFFFF' : 'var(--text-main)'
+                background: activeTabFilter === 'my' ? '#E8F5E9' : '#FFFFFF',
+                color: activeTabFilter === 'my' ? '#1B5E20' : 'var(--text-muted)',
+                border: activeTabFilter === 'my' ? '1.5px solid #A5D6A7' : '1px solid var(--border-light)'
               }}
             >
               <User size={15} />
@@ -247,7 +249,7 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
 
             {/* Category Select */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Filter size={18} color="#059669" />
+              <Filter size={18} color="#2E7D32" />
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
@@ -315,7 +317,7 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
                   className="glass-card"
                   style={{
                     padding: '1.5rem',
-                    borderTop: isPending ? '4px solid #F59E0B' : isRejected ? '4px solid #EF4444' : '4px solid #10B981',
+                    borderTop: isPending ? '4px solid #F59E0B' : isRejected ? '4px solid #EF4444' : '4px solid #A5D6A7',
                   }}
                 >
                   <div>
@@ -340,8 +342,8 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
                           fontWeight: 700,
                           padding: '0.2rem 0.6rem',
                           borderRadius: 'var(--radius-full)',
-                          background: inv.difficulty === 'Mudah' ? '#DCFCE7' : inv.difficulty === 'Menengah' ? '#FEF3C7' : '#FEE2E2',
-                          color: inv.difficulty === 'Mudah' ? '#166534' : inv.difficulty === 'Menengah' ? '#92400E' : '#991B1B',
+                          background: inv.difficulty === 'Mudah' ? '#E8F5E9' : inv.difficulty === 'Menengah' ? '#FEF3C7' : '#FEE2E2',
+                          color: inv.difficulty === 'Mudah' ? '#1B5E20' : inv.difficulty === 'Menengah' ? '#92400E' : '#991B1B',
                         }}>
                           {inv.difficulty}
                         </span>
@@ -378,12 +380,12 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '0.35rem',
-                      background: '#F0FDF4',
+                      background: '#E8F5E9',
                       padding: '0.3rem 0.65rem',
                       borderRadius: 'var(--radius-sm)',
-                      border: '1px solid #BBF7D0',
+                      border: '1px solid #A5D6A7',
                       fontSize: '0.78rem',
-                      color: '#166534',
+                      color: '#1B5E20',
                       fontWeight: 600,
                       marginBottom: '0.85rem'
                     }}>
@@ -401,11 +403,11 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
                       fontSize: '0.76rem'
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--text-muted)' }}>
-                        <Clock size={14} color="#059669" />
+                        <Clock size={14} color="#2E7D32" />
                         <span>{inv.estimatedTime}</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--text-muted)' }}>
-                        <DollarSign size={14} color="#059669" />
+                        <DollarSign size={14} color="#2E7D32" />
                         <span>{inv.estimatedCost}</span>
                       </div>
                     </div>
@@ -418,7 +420,7 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
                           {inv.reviewCount > 0 ? `${inv.rating} (${inv.reviewCount} ulasan)` : 'Belum ada ulasan'}
                         </span>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#059669', fontWeight: 700 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#2E7D32', fontWeight: 700 }}>
                         <TrendingUp size={15} />
                         <span>
                           {inv.successRate !== null && inv.successRate !== undefined ? `${inv.successRate}% Berhasil` : 'Belum ada data uji'}
@@ -455,7 +457,7 @@ export const InnovationCatalogView: React.FC<InnovationCatalogViewProps> = ({
                         <button
                           onClick={() => onEditRejectedInnovation(inv)}
                           className="btn-outline btn-sm"
-                          style={{ color: '#059669', borderColor: '#34D399', background: '#ECFDF5' }}
+                          style={{ color: '#1B5E20', borderColor: '#A5D6A7', background: '#E8F5E9' }}
                         >
                           <span>Revisi & Ajukan</span>
                         </button>

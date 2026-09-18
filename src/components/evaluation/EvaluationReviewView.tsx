@@ -164,12 +164,12 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
             </div>
           </div>
 
-          <div className="glass-card" style={{ padding: '1.25rem', borderLeft: '5px solid #10B981' }}>
+          <div className="glass-card" style={{ padding: '1.25rem', borderLeft: '5px solid #A5D6A7' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
               <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-muted)' }}>TINGKAT KEBERHASILAN</span>
-              <CheckCircle2 size={18} color="#10B981" />
+              <CheckCircle2 size={18} color="#2E7D32" />
             </div>
-            <div style={{ fontSize: '1.9rem', fontWeight: 800, color: '#059669', fontFamily: 'var(--font-display)' }}>
+            <div style={{ fontSize: '1.9rem', fontWeight: 800, color: '#1B5E20', fontFamily: 'var(--font-display)' }}>
               {stats.successPercent}%
             </div>
             <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
@@ -214,7 +214,7 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
 
             {/* Product Filter */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Filter size={18} color="#059669" />
+              <Filter size={18} color="#2E7D32" />
               <select
                 value={selectedInnovationFilter}
                 onChange={(e) => setSelectedInnovationFilter(e.target.value)}
@@ -245,7 +245,7 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
 
             {/* Sorting (Item #59) */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <ArrowUpDown size={16} color="#059669" />
+              <ArrowUpDown size={16} color="#2E7D32" />
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
@@ -308,12 +308,12 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
                 <div style={{
                   fontSize: '0.8rem',
                   fontWeight: 700,
-                  color: '#065F46',
-                  background: '#ECFDF5',
+                  color: '#1B5E20',
+                  background: '#E8F5E9',
                   padding: '0.3rem 0.65rem',
                   borderRadius: 'var(--radius-sm)',
                   marginBottom: '0.85rem',
-                  border: '1px solid #A7F3D0'
+                  border: '1px solid #A5D6A7'
                 }}>
                   🛠️ Produk: {rev.innovationTitle}
                 </div>
@@ -325,8 +325,8 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
                     fontWeight: 700,
                     padding: '0.25rem 0.65rem',
                     borderRadius: 'var(--radius-full)',
-                    background: rev.isSuccessful.includes('100%') ? '#DCFCE7' : '#FEF3C7',
-                    color: rev.isSuccessful.includes('100%') ? '#166534' : '#92400E',
+                    background: rev.isSuccessful.includes('100%') ? '#E8F5E9' : '#FEF3C7',
+                    color: rev.isSuccessful.includes('100%') ? '#1B5E20' : '#92400E',
                     border: '1px solid currentColor'
                   }}>
                     🎯 {rev.isSuccessful}
@@ -401,7 +401,7 @@ export const EvaluationReviewView: React.FC<EvaluationReviewViewProps> = ({
                   className="btn-outline btn-sm"
                   style={{ borderRadius: 'var(--radius-full)' }}
                 >
-                  <ThumbsUp size={13} color="#059669" />
+                  <ThumbsUp size={13} color="#2E7D32" />
                   <span>Membantu ({rev.likes})</span>
                 </button>
               </div>

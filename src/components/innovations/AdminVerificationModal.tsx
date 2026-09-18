@@ -92,13 +92,13 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
       <div className="modal-content" role="dialog" aria-modal="true" style={{ maxWidth: '840px' }} onClick={(e) => e.stopPropagation()}>
         
         {/* Header */}
-        <div className="modal-header" style={{ background: '#F0FDF4', borderBottom: '2px solid #A7F3D0' }}>
+        <div className="modal-header" style={{ background: '#E8F5E9', borderBottom: '2px solid #A5D6A7' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
             <div style={{
               width: '38px',
               height: '38px',
               borderRadius: '50%',
-              background: '#064E3B',
+              background: '#1B5E20',
               color: '#FFFFFF',
               display: 'flex',
               alignItems: 'center',
@@ -135,7 +135,7 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
               borderRadius: 'var(--radius-full)',
               fontSize: '0.82rem',
               fontWeight: activeTab === 'innovations' ? 700 : 500,
-              background: activeTab === 'innovations' ? '#10B981' : 'transparent',
+              background: activeTab === 'innovations' ? '#2E7D32' : 'transparent',
               color: activeTab === 'innovations' ? '#FFFFFF' : 'var(--text-muted)',
               border: 'none',
               cursor: 'pointer'
@@ -151,7 +151,7 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
               borderRadius: 'var(--radius-full)',
               fontSize: '0.82rem',
               fontWeight: activeTab === 'reviews' ? 700 : 500,
-              background: activeTab === 'reviews' ? '#10B981' : 'transparent',
+              background: activeTab === 'reviews' ? '#2E7D32' : 'transparent',
               color: activeTab === 'reviews' ? '#FFFFFF' : 'var(--text-muted)',
               border: 'none',
               cursor: 'pointer'
@@ -173,8 +173,8 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
                     width: '54px',
                     height: '54px',
                     borderRadius: '50%',
-                    background: '#ECFDF5',
-                    color: '#059669',
+                    background: '#E8F5E9',
+                    color: '#1B5E20',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -195,7 +195,7 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
                       onClick={onSeedMockPending}
                       className="btn-secondary btn-sm"
                     >
-                      <Sparkles size={14} color="#059669" />
+                      <Sparkles size={14} color="#2E7D32" />
                       <span>Buat Contoh Pengajuan Uji Coba</span>
                     </button>
                   )}
@@ -411,7 +411,7 @@ export const AdminVerificationModal: React.FC<AdminVerificationModalProps> = ({
             <div>
               {reportedReviews.length === 0 ? (
                 <div className="empty-state">
-                  <Check size={28} color="#10B981" />
+                  <Check size={28} color="#2E7D32" />
                   <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                     Tidak ada ulasan komunitas yang dilaporkan bermasalah.
                   </p>

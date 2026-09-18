@@ -185,7 +185,7 @@ export const MatchmakingMapView: React.FC = () => {
             width: 34px; 
             height: 34px; 
             border-radius: 50%; 
-            background: ${isSupplier ? '#10B981' : '#0284C7'}; 
+            background: ${isSupplier ? '#2E7D32' : '#0284C7'}; 
             color: #FFFFFF; 
             display: flex; 
             align-items: center; 
@@ -206,7 +206,7 @@ export const MatchmakingMapView: React.FC = () => {
 
       marker.bindPopup(`
         <div style="font-family: 'Plus Jakarta Sans', sans-serif; padding: 4px; max-width: 220px;">
-          <div style="font-size: 11px; font-weight: 700; color: ${isSupplier ? '#059669' : '#0284C7'}; text-transform: uppercase;">
+          <div style="font-size: 11px; font-weight: 700; color: ${isSupplier ? '#2E7D32' : '#0284C7'}; text-transform: uppercase;">
             ${isSupplier ? 'Pabrik Industri (Penyedia)' : 'UMKM (Pencari Bahan)'}
           </div>
           <div style="font-size: 13px; font-weight: 700; color: #0F172A; margin: 3px 0;">
@@ -215,7 +215,7 @@ export const MatchmakingMapView: React.FC = () => {
           <div style="font-size: 12px; color: #475569; margin-bottom: 6px;">
             ${partner.wasteType}
           </div>
-          <div style="font-size: 11px; font-weight: 600; color: #10B981;">
+          <div style="font-size: 11px; font-weight: 600; color: #2E7D32;">
             Volume: ${partner.volumeMonthly}
           </div>
         </div>
@@ -331,9 +331,9 @@ export const MatchmakingMapView: React.FC = () => {
               borderRadius: 'var(--radius-full)',
               fontSize: '0.86rem',
               fontWeight: viewTab === 'map' ? 700 : 500,
-              background: viewTab === 'map' ? 'var(--leaf-deep)' : '#FFFFFF',
-              color: viewTab === 'map' ? '#FFFFFF' : 'var(--text-main)',
-              border: viewTab === 'map' ? '1px solid transparent' : '1.5px solid var(--border-light)'
+              background: viewTab === 'map' ? '#E8F5E9' : '#FFFFFF',
+              color: viewTab === 'map' ? '#1B5E20' : 'var(--text-main)',
+              border: viewTab === 'map' ? '1.5px solid #A5D6A7' : '1.5px solid var(--border-light)'
             }}
           >
             Peta & Direktori Mitra ({partners.length})
@@ -392,7 +392,7 @@ export const MatchmakingMapView: React.FC = () => {
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <MapPin size={18} color="#059669" />
+                  <MapPin size={18} color="#2E7D32" />
                   <select
                     value={selectedCity}
                     onChange={(e) => setSelectedCity(e.target.value)}
@@ -415,8 +415,9 @@ export const MatchmakingMapView: React.FC = () => {
                       borderRadius: 'var(--radius-full)',
                       fontSize: '0.8rem',
                       fontWeight: selectedType === 'all' ? 700 : 500,
-                      background: selectedType === 'all' ? 'var(--leaf-deep)' : '#F1F5F9',
-                      color: selectedType === 'all' ? '#FFFFFF' : 'var(--text-main)',
+                      background: selectedType === 'all' ? '#E8F5E9' : '#FFFFFF',
+                      color: selectedType === 'all' ? '#1B5E20' : 'var(--text-muted)',
+                      border: selectedType === 'all' ? '1.5px solid #A5D6A7' : '1px solid var(--border-light)',
                     }}
                   >
                     Semua ({partners.length})
@@ -429,9 +430,9 @@ export const MatchmakingMapView: React.FC = () => {
                       borderRadius: 'var(--radius-full)',
                       fontSize: '0.8rem',
                       fontWeight: selectedType === 'industry_supplier' ? 700 : 500,
-                      background: selectedType === 'industry_supplier' ? '#ECFDF5' : '#FFFFFF',
-                      color: '#065F46',
-                      border: selectedType === 'industry_supplier' ? '1.5px solid #10B981' : '1px solid #CBD5E1',
+                      background: selectedType === 'industry_supplier' ? '#E8F5E9' : '#FFFFFF',
+                      color: '#1B5E20',
+                      border: selectedType === 'industry_supplier' ? '1.5px solid #A5D6A7' : '1px solid #CBD5E1',
                     }}
                   >
                     🏭 Pabrik (Penyedia)
@@ -477,9 +478,9 @@ export const MatchmakingMapView: React.FC = () => {
                       style={{
                         padding: '1.2rem',
                         cursor: 'pointer',
-                        borderLeft: isSupplier ? '5px solid #10B981' : '5px solid #0284C7',
-                        background: isSelected ? '#F0FDF4' : '#FFFFFF',
-                        borderColor: isSelected ? '#10B981' : 'var(--border-leaf)',
+                        borderLeft: isSupplier ? '5px solid #A5D6A7' : '5px solid #0284C7',
+                        background: isSelected ? '#E8F5E9' : '#FFFFFF',
+                        borderColor: isSelected ? '#2E7D32' : 'var(--border-leaf)',
                         height: 'auto'
                       }}
                     >
@@ -490,8 +491,8 @@ export const MatchmakingMapView: React.FC = () => {
                             fontWeight: 700,
                             padding: '2px 8px',
                             borderRadius: 'var(--radius-full)',
-                            background: isSupplier ? '#DCFCE7' : '#E0F2FE',
-                            color: isSupplier ? '#166534' : '#0369A1',
+                            background: isSupplier ? '#E8F5E9' : '#E0F2FE',
+                            color: isSupplier ? '#1B5E20' : '#0369A1',
                           }}>
                             {partner.entityType}
                           </span>
@@ -500,9 +501,9 @@ export const MatchmakingMapView: React.FC = () => {
                             fontWeight: 800,
                             padding: '2px 6px',
                             borderRadius: 'var(--radius-full)',
-                            background: '#ECFDF5',
-                            color: '#059669',
-                            border: '1px solid #A7F3D0'
+                            background: '#E8F5E9',
+                            color: '#1B5E20',
+                            border: '1px solid #A5D6A7'
                           }} title="Kecocokan algoritma matchmaking berbasis material dan lokasi">
                             ⚡ Cocok {computeMatchScore(partner)}%
                           </span>
@@ -511,9 +512,9 @@ export const MatchmakingMapView: React.FC = () => {
                             fontWeight: 700,
                             padding: '2px 6px',
                             borderRadius: 'var(--radius-full)',
-                            background: partner.isCertifiedNonB3 ? '#DCFCE7' : '#FEF3C7',
-                            color: partner.isCertifiedNonB3 ? '#166534' : '#92400E',
-                            border: partner.isCertifiedNonB3 ? '1px solid #86EFAC' : '1px solid #FDE68A'
+                            background: partner.isCertifiedNonB3 ? '#E8F5E9' : '#FEF3C7',
+                            color: partner.isCertifiedNonB3 ? '#1B5E20' : '#92400E',
+                            border: partner.isCertifiedNonB3 ? '1px solid #A5D6A7' : '1px solid #FDE68A'
                           }}>
                             {partner.isCertifiedNonB3 ? '✓ Terverifikasi Non-B3' : '⏳ Belum Diverifikasi'}
                           </span>
@@ -529,7 +530,7 @@ export const MatchmakingMapView: React.FC = () => {
 
                       <div style={{
                         fontSize: '0.82rem',
-                        color: isSupplier ? '#065F46' : '#0369A1',
+                        color: isSupplier ? '#1B5E20' : '#0369A1',
                         fontWeight: 600,
                         marginBottom: '0.4rem',
                         display: 'flex',
@@ -586,7 +587,7 @@ export const MatchmakingMapView: React.FC = () => {
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                      <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10B981', display: 'inline-block' }} />
+                      <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#2E7D32', display: 'inline-block' }} />
                       <span>Pabrik Industri (Penyedia)</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
@@ -706,7 +707,7 @@ export const MatchmakingMapView: React.FC = () => {
                       className="glass-card"
                       style={{
                         padding: '1.25rem',
-                        borderLeft: isAccepted ? '5px solid #10B981' : isRejected ? '5px solid #EF4444' : '5px solid #F59E0B',
+                        borderLeft: isAccepted ? '5px solid #A5D6A7' : isRejected ? '5px solid #EF4444' : '5px solid #F59E0B',
                         height: 'auto'
                       }}
                     >
@@ -716,8 +717,8 @@ export const MatchmakingMapView: React.FC = () => {
                           fontWeight: 700,
                           padding: '2px 8px',
                           borderRadius: 'var(--radius-full)',
-                          background: isAccepted ? '#DCFCE7' : isRejected ? '#FEE2E2' : '#FEF3C7',
-                          color: isAccepted ? '#166534' : isRejected ? '#991B1B' : '#92400E',
+                          background: isAccepted ? '#E8F5E9' : isRejected ? '#FEE2E2' : '#FEF3C7',
+                          color: isAccepted ? '#1B5E20' : isRejected ? '#991B1B' : '#92400E',
                         }}>
                           {isAccepted ? '✓ Disetujui' : isRejected ? '✕ Ditolak' : '⏳ Menunggu Konfirmasi'}
                         </span>
@@ -730,7 +731,7 @@ export const MatchmakingMapView: React.FC = () => {
                         {req.partnerName}
                       </h4>
 
-                      <div style={{ fontSize: '0.82rem', color: '#065F46', fontWeight: 600, marginBottom: '0.4rem' }}>
+                      <div style={{ fontSize: '0.82rem', color: '#1B5E20', fontWeight: 600, marginBottom: '0.4rem' }}>
                         Bahan: {req.wasteType} ({req.requestedVolume})
                       </div>
 
@@ -745,12 +746,12 @@ export const MatchmakingMapView: React.FC = () => {
                       {/* Unlocked Contact Details if accepted and party authorized */}
                       {canViewContacts ? (
                         <div style={{
-                          background: '#ECFDF5',
-                          border: '1px solid #A7F3D0',
+                          background: '#E8F5E9',
+                          border: '1px solid #A5D6A7',
                           padding: '0.65rem 0.85rem',
                           borderRadius: 'var(--radius-sm)',
                           fontSize: '0.78rem',
-                          color: '#065F46',
+                          color: '#1B5E20',
                           marginBottom: '0.75rem'
                         }}>
                           <div style={{ fontWeight: 700, marginBottom: '0.2rem' }}>Kontak Resmi Terhubung:</div>

@@ -223,7 +223,7 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
 
         {isSuccess ? (
           <div style={{ padding: '3rem 1.5rem', textAlign: 'center' }}>
-            <CheckCircle2 size={60} color="#10B981" style={{ margin: '0 auto 1rem auto' }} />
+            <CheckCircle2 size={60} color="#2E7D32" style={{ margin: '0 auto 1rem auto' }} />
             <h3 style={{ fontSize: '1.4rem', color: 'var(--leaf-deep)', marginBottom: '0.6rem' }}>
               {initialData ? 'Inovasi Berhasil Direvisi & Diajukan Ulang!' : 'Inovasi Anda Berhasil Diajukan!'}
             </h3>
@@ -257,17 +257,17 @@ export const SubmitInnovationModal: React.FC<SubmitInnovationModalProps> = ({
 
               {/* Notice */}
               <div style={{
-                background: '#ECFDF5',
+                background: '#E8F5E9',
                 padding: '0.85rem 1rem',
                 borderRadius: 'var(--radius-md)',
-                border: '1px solid #A7F3D0',
+                border: '1px solid #A5D6A7',
                 marginBottom: '1.25rem',
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: '0.6rem'
               }}>
-                <Sparkles size={18} color="#059669" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <div style={{ fontSize: '0.82rem', color: '#065F46', lineHeight: 1.45 }}>
+                <Sparkles size={18} color="#2E7D32" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div style={{ fontSize: '0.82rem', color: '#1B5E20', lineHeight: 1.45 }}>
                   <strong>Prinsip 5M (Menginovasi):</strong> Produk yang baru diajukan belum memiliki rating/ulasan (0 ulasan) sampai dicoba dan dinilai oleh komunitas pada tahapan 5M (Menguji & Mengulas).
                 </div>
               </div>
