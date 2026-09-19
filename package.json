@@ -1,0 +1,8 @@
+{
+  "name": "waste2wisdom-dist",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "echo Prebuilt static assets ready"
+  }
+}
