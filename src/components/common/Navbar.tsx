@@ -38,12 +38,61 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { id: 'home', label: 'Beranda', mLabel: 'Home', icon: Home },
-    { id: 'dictionary', label: 'Kamus & Literasi', mLabel: '1M', icon: BookOpen },
-    { id: 'explore', label: 'Pusat Pemanfaatan Limbah Industri', mLabel: '2M', icon: Compass },
-    { id: 'innovations', label: 'Marketplace Inovasi', mLabel: '3M', icon: Lightbulb },
-    { id: 'matchmaking', label: 'Peta Penghubung', mLabel: '4M', icon: MapPin, badge: pendingRequestsCount },
-    { id: 'evaluation', label: 'Evaluasi & Ulasan', mLabel: '5M', icon: Star },
+    { 
+      id: 'home', 
+      label: 'Beranda', 
+      shortLabel: 'Beranda', 
+      compactLabel: 'Beranda', 
+      mLabel: 'Home', 
+      icon: Home,
+      tooltip: 'Beranda Waste2Wisdom'
+    },
+    { 
+      id: 'dictionary', 
+      label: 'Kamus & Literasi', 
+      shortLabel: 'Kamus & Literasi', 
+      compactLabel: 'Kamus Literasi', 
+      mLabel: '1M', 
+      icon: BookOpen,
+      tooltip: '1M: Kamus & Literasi Limbah Industri'
+    },
+    { 
+      id: 'explore', 
+      label: 'Pusat Pemanfaatan Limbah Industri', 
+      shortLabel: 'Pusat Pemanfaatan', 
+      compactLabel: 'Pusat Limbah', 
+      mLabel: '2M', 
+      icon: Compass,
+      tooltip: '2M: Pusat Pemanfaatan Limbah Industri & Fasilitas Sirkular'
+    },
+    { 
+      id: 'innovations', 
+      label: 'Marketplace Inovasi', 
+      shortLabel: 'Marketplace Inovasi', 
+      compactLabel: 'Marketplace', 
+      mLabel: '3M', 
+      icon: Lightbulb,
+      tooltip: '3M: Marketplace Inovasi Daur Ulang'
+    },
+    { 
+      id: 'matchmaking', 
+      label: 'Peta Penghubung', 
+      shortLabel: 'Peta Penghubung', 
+      compactLabel: 'Peta Hubung', 
+      mLabel: '4M', 
+      icon: MapPin, 
+      badge: pendingRequestsCount,
+      tooltip: '4M: Peta Penghubung Pasokan Industri & UMKM'
+    },
+    { 
+      id: 'evaluation', 
+      label: 'Evaluasi & Ulasan', 
+      shortLabel: 'Evaluasi & Ulasan', 
+      compactLabel: 'Evaluasi', 
+      mLabel: '5M', 
+      icon: Star,
+      tooltip: '5M: Evaluasi & Ulasan Keberhasilan Produk'
+    },
   ];
 
   return (
@@ -51,24 +100,27 @@ export const Navbar: React.FC<NavbarProps> = ({
       position: 'sticky',
       top: 0,
       zIndex: 1000,
-      background: 'rgba(255, 255, 255, 0.95)',
+      background: 'rgba(255, 255, 255, 0.96)',
       backdropFilter: 'blur(16px)',
       WebkitBackdropFilter: 'blur(16px)',
       borderBottom: '1.5px solid var(--border-leaf)',
-      boxShadow: '0 4px 20px -2px rgba(46, 125, 50, 0.08)'
+      boxShadow: '0 4px 20px -2px rgba(46, 125, 50, 0.08)',
+      width: '100%'
     }}>
-      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '72px' }}>
+      <div className="navbar-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '72px', width: '100%', boxSizing: 'border-box' }}>
         
         {/* Brand Logo & Motto */}
         <button 
           onClick={() => setActiveTab('home')}
           aria-label="Beranda Waste2Wisdom"
-          style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+          className="nav-logo-btn"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', background: 'none', border: 'none', padding: 0, flexShrink: 0 }}
         >
           <img 
             src="./logo-waste2wisdom.svg" 
             alt="Waste2Wisdom Logo" 
-            style={{ height: '42px', width: 'auto' }}
+            className="nav-logo-img"
+            style={{ height: '42px', width: 'auto', display: 'block' }}
           />
         </button>
 
@@ -81,24 +133,33 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
+                title={item.tooltip}
+                className={`desktop-nav-btn ${isActive ? 'is-active' : ''}`}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.45rem',
-                  padding: '0.55rem 0.85rem',
+                  padding: '0.52rem 0.8rem',
                   borderRadius: 'var(--radius-full)',
-                  fontSize: '0.86rem',
-                  fontWeight: isActive ? 700 : 500,
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
                   color: isActive ? '#1B5E20' : 'var(--text-muted)',
                   backgroundColor: isActive ? '#E8F5E9' : 'transparent',
                   border: isActive ? '1.5px solid #A5D6A7' : '1.5px solid transparent',
-                  transition: 'all var(--transition-fast)',
+                  boxShadow: isActive ? '0 2px 6px rgba(46, 125, 50, 0.1)' : 'none',
+                  transition: 'background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease',
                   position: 'relative',
-                  whiteSpace: 'nowrap'
+                  whiteSpace: 'nowrap',
+                  cursor: 'pointer',
+                  flexShrink: 0
                 }}
               >
-                <Icon size={16} color={isActive ? '#2E7D32' : '#64748B'} />
-                <span>{item.label}</span>
+                <Icon size={16} color={isActive ? '#2E7D32' : '#64748B'} style={{ flexShrink: 0 }} />
+                <span className="nav-label-wrapper">
+                  <span className="label-full">{item.label}</span>
+                  <span className="label-short">{item.shortLabel}</span>
+                  <span className="label-compact">{item.compactLabel}</span>
+                </span>
                 {item.badge && item.badge > 0 ? (
                   <span style={{
                     fontSize: '0.65rem',
@@ -106,7 +167,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                     color: '#fff',
                     padding: '1px 6px',
                     borderRadius: '10px',
-                    fontWeight: 700
+                    fontWeight: 700,
+                    flexShrink: 0
                   }}>
                     {item.badge}
                   </span>
@@ -117,19 +179,20 @@ export const Navbar: React.FC<NavbarProps> = ({
         </nav>
 
         {/* Right Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', flexShrink: 0 }}>
           
           {/* Admin Verification Button (Only prominent for Admin) */}
           {isAdmin && (
             <button
               onClick={onOpenAdminModal}
-              className="btn-outline btn-sm"
+              className="btn-outline btn-sm nav-admin-btn"
               style={{
                 position: 'relative',
                 borderRadius: 'var(--radius-full)',
                 borderColor: '#A5D6A7',
                 color: '#1B5E20',
-                background: '#E8F5E9'
+                background: '#E8F5E9',
+                flexShrink: 0
               }}
               title="Dashboard Moderasi Admin"
             >
@@ -160,10 +223,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Quick Submit Innovation CTA */}
           <button
             onClick={onOpenSubmitModal}
-            className="btn-primary"
+            className="btn-primary nav-cta-btn"
             style={{
-              padding: '0.5rem 1rem',
-              fontSize: '0.84rem'
+              padding: '0.48rem 0.95rem',
+              fontSize: '0.84rem',
+              flexShrink: 0,
+              whiteSpace: 'nowrap'
             }}
           >
             <PlusCircle size={15} />
@@ -173,6 +238,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* User Account & Role Indicator */}
           <button
             onClick={onOpenAuthModal}
+            className="nav-user-btn"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -182,7 +248,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               background: '#F1F5F9',
               border: '1.5px solid var(--border-light)',
               cursor: 'pointer',
-              transition: 'all var(--transition-fast)'
+              transition: 'all var(--transition-fast)',
+              flexShrink: 0
             }}
             title="Klik untuk ganti peran atau edit profil"
           >
@@ -196,7 +263,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: 800,
-              fontSize: '0.75rem'
+              fontSize: '0.75rem',
+              flexShrink: 0
             }}>
               {isGuest ? <User size={14} /> : user.name.charAt(0)}
             </div>
@@ -204,7 +272,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.1 }}>
                 {isGuest ? 'Mode Tamu' : user.name.split(' ')[0]}
               </div>
-              <div style={{ fontSize: '0.68rem', color: isGuest ? 'var(--text-muted)' : '#2E7D32', fontWeight: 600 }}>
+              <div className="user-role-text" style={{ fontSize: '0.68rem', color: isGuest ? 'var(--text-muted)' : '#2E7D32', fontWeight: 600 }}>
                 {isGuest ? 'Masuk / Demo' : user.roleLabel.split(' ')[0]}
               </div>
             </div>
@@ -217,7 +285,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               display: 'flex',
               padding: '0.4rem',
               borderRadius: 'var(--radius-md)',
-              color: 'var(--text-main)'
+              color: 'var(--text-main)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              flexShrink: 0
             }}
             className="mobile-menu-toggle"
             aria-label={mobileMenuOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
@@ -325,7 +397,39 @@ export const Navbar: React.FC<NavbarProps> = ({
       )}
 
       <style>{`
-        @media (min-width: 1024px) {
+        /* Responsive container */
+        .navbar-container {
+          width: 100%;
+          max-width: 1440px;
+          margin: 0 auto;
+          padding: 0 1.5rem;
+          box-sizing: border-box;
+        }
+
+        /* Nav label container & responsive text switching */
+        .nav-label-wrapper {
+          display: inline-flex;
+          align-items: center;
+        }
+        .label-full {
+          display: inline;
+        }
+        .label-short {
+          display: none;
+        }
+        .label-compact {
+          display: none;
+        }
+
+        /* Smooth hover state with zero shift */
+        .desktop-nav-btn:hover:not(.is-active) {
+          background-color: #F1F8F2 !important;
+          color: #1B5E20 !important;
+          border-color: #C8E6C9 !important;
+        }
+
+        /* Large Screens (>= 1400px) */
+        @media (min-width: 1400px) {
           .desktop-nav {
             display: flex !important;
           }
@@ -335,20 +439,115 @@ export const Navbar: React.FC<NavbarProps> = ({
           .admin-btn-text, .user-text-info {
             display: block !important;
           }
+          .label-full {
+            display: inline !important;
+          }
+          .label-short, .label-compact {
+            display: none !important;
+          }
         }
-        @media (min-width: 1024px) and (max-width: 1280px) {
+
+        /* Standard Laptop Screens (1240px - 1399px, e.g. 1366x768, 1280x800) */
+        @media (min-width: 1240px) and (max-width: 1399px) {
+          .navbar-container {
+            padding: 0 1rem !important;
+          }
+          .nav-logo-img {
+            height: 38px !important;
+          }
           .desktop-nav {
+            display: flex !important;
+            gap: 0.25rem !important;
+          }
+          .desktop-nav-btn {
+            padding: 0.48rem 0.65rem !important;
+            font-size: 0.82rem !important;
+            gap: 0.35rem !important;
+          }
+          .mobile-menu-toggle {
+            display: none !important;
+          }
+          .admin-btn-text, .user-text-info {
+            display: block !important;
+          }
+          .label-full {
+            display: none !important;
+          }
+          .label-short {
+            display: inline !important;
+          }
+          .label-compact {
+            display: none !important;
+          }
+          .nav-cta-btn {
+            padding: 0.45rem 0.85rem !important;
+            font-size: 0.82rem !important;
+          }
+        }
+
+        /* Compact Laptop Screens & Tablets Landscape (1024px - 1239px) */
+        @media (min-width: 1024px) and (max-width: 1239px) {
+          .navbar-container {
+            padding: 0 0.75rem !important;
+          }
+          .nav-logo-img {
+            height: 35px !important;
+          }
+          .desktop-nav {
+            display: flex !important;
             gap: 0.2rem !important;
           }
-          .desktop-nav button {
-            padding: 0.45rem 0.55rem !important;
+          .desktop-nav-btn {
+            padding: 0.42rem 0.48rem !important;
             font-size: 0.78rem !important;
             gap: 0.25rem !important;
           }
+          .mobile-menu-toggle {
+            display: none !important;
+          }
+          .admin-btn-text, .user-text-info {
+            display: block !important;
+          }
+          .user-role-text {
+            display: none !important;
+          }
+          .label-full {
+            display: none !important;
+          }
+          .label-short {
+            display: none !important;
+          }
+          .label-compact {
+            display: inline !important;
+          }
+          .nav-cta-btn {
+            padding: 0.42rem 0.75rem !important;
+            font-size: 0.8rem !important;
+          }
+          .nav-user-btn {
+            padding: 0.3rem 0.5rem !important;
+          }
         }
+
+        /* Mobile & Small Screens (< 1024px) */
+        @media (max-width: 1023px) {
+          .desktop-nav {
+            display: none !important;
+          }
+          .mobile-menu-toggle {
+            display: flex !important;
+          }
+          .admin-btn-text, .user-text-info {
+            display: none !important;
+          }
+        }
+
         @media (max-width: 600px) {
           .cta-text {
             display: none;
+          }
+          .nav-cta-btn {
+            padding: 0.45rem 0.6rem !important;
           }
         }
       `}</style>
