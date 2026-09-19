@@ -26,7 +26,7 @@ const KEYS = {
   SUPPLY_REQUESTS: 'w2w_supply_requests_v2',
   REVIEWS: 'w2w_reviews_v2',
   TUTORIAL_PROGRESS: 'w2w_tutorial_progress_v2',
-  FACILITIES: 'w2w_facilities_v2',
+  FACILITIES: 'w2w_facilities_v3',
   FACILITY_BOOKINGS: 'w2w_facility_bookings_v2',
 };
 

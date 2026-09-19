@@ -1,7 +1,11 @@
 import React from 'react';
 import { Shield, Sparkles, Heart, FileCheck, ArrowUpRight } from 'lucide-react';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onSelectTab?: (tab: string) => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onSelectTab }) => {
   return (
     <footer style={{
       background: 'linear-gradient(180deg, #F2F9F4 0%, #E8F5E9 45%, #E0F2F1 100%)',
@@ -21,7 +25,17 @@ export const Footer: React.FC = () => {
           
           {/* Brand & Mission */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
+            <div 
+              onClick={() => onSelectTab && onSelectTab('home')}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.6rem', 
+                marginBottom: '1rem',
+                cursor: onSelectTab ? 'pointer' : 'default',
+                width: 'fit-content'
+              }}
+            >
               <img 
                 src="./favicon.svg" 
                 alt="Logo Waste2Wisdom" 
@@ -48,31 +62,27 @@ export const Footer: React.FC = () => {
               boxShadow: '0 2px 6px rgba(46, 125, 50, 0.05)'
             }}>
               <Sparkles size={14} color="#2E7D32" />
-              <span>Dapat Dijalankan Offline & Localhost</span>
+              <span>Inisiatif Ekonomi Hijau 2026</span>
             </div>
           </div>
 
           {/* Legal & National Standards */}
           <div>
             <h4 style={{ fontSize: '0.98rem', color: '#133E24', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 700 }}>
-              Standar Regulasi Nasional
+              Landasan Hukum & SOP
             </h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.84rem', color: '#33533D' }}>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.82rem', color: '#33533D' }}>
               <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
-                <FileCheck size={16} color="#2E7D32" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span><strong>PP No. 22 Tahun 2021:</strong> Lampiran XIV Pengelolaan Limbah Non-B3 Terdaftar.</span>
+                <Shield size={16} color="#2E7D32" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <span><strong>PP No. 22 Tahun 2021:</strong> Penyelenggaraan Perlindungan & Pengelolaan Lingkungan Hidup.</span>
               </li>
               <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
-                <FileCheck size={16} color="#2E7D32" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span><strong>Permen LHK No. 19/2021:</strong> Tata Kelola dan Pemanfaatan Limbah Non-B3 Industri.</span>
+                <Shield size={16} color="#2E7D32" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <span><strong>Permen LHK No. 19 Tahun 2021:</strong> Tata Cara Pengelolaan Limbah Non-B3 Terdaftar.</span>
               </li>
               <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
                 <FileCheck size={16} color="#2E7D32" style={{ flexShrink: 0, marginTop: '2px' }} />
                 <span><strong>SNI 03-0691-1996:</strong> Spesifikasi Teknis Bata Beton / Paving Block (Uji Mutu Lab Berkala).</span>
-              </li>
-              <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
-                <FileCheck size={16} color="#2E7D32" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span><strong>SNI 19-7030-2004:</strong> Spesifikasi Kompos Alami dari Sampah Organik Domestik.</span>
               </li>
             </ul>
           </div>
@@ -83,11 +93,46 @@ export const Footer: React.FC = () => {
               Kerangka Kurikulum 5M
             </h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.82rem', color: '#33533D' }}>
-              <li><strong>1M. Mengenali & Memahami:</strong> Kamus literasi limbah B3 vs Non-B3.</li>
-              <li><strong>2M. Mengeksplorasi:</strong> Tur sentra Tempat PengNIP & mesin industri.</li>
-              <li><strong>3M. Menginovasi:</strong> Katalog blueprint karya & ajukan ide baru.</li>
-              <li><strong>4M. Mengomunikasikan:</strong> Peta penghubung pasokan industri-UMKM.</li>
-              <li><strong>5M. Mengevaluasi:</strong> Uji kemudahan & tingkat keberhasilan produk.</li>
+              <li>
+                <button
+                  onClick={() => onSelectTab && onSelectTab('dictionary')}
+                  style={{ background: 'none', border: 'none', padding: 0, color: 'inherit', font: 'inherit', cursor: onSelectTab ? 'pointer' : 'default', textAlign: 'left' }}
+                >
+                  <strong>1M. Mengenali & Memahami:</strong> Kamus literasi limbah B3 vs Non-B3.
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onSelectTab && onSelectTab('explore')}
+                  style={{ background: 'none', border: 'none', padding: 0, color: 'inherit', font: 'inherit', cursor: onSelectTab ? 'pointer' : 'default', textAlign: 'left' }}
+                >
+                  <strong>2M. Mengeksplorasi:</strong> Tur Pusat Pemanfaatan Limbah Industri & mesin industri.
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onSelectTab && onSelectTab('innovations')}
+                  style={{ background: 'none', border: 'none', padding: 0, color: 'inherit', font: 'inherit', cursor: onSelectTab ? 'pointer' : 'default', textAlign: 'left' }}
+                >
+                  <strong>3M. Menginovasi:</strong> Katalog blueprint karya & ajukan ide baru.
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onSelectTab && onSelectTab('matchmaking')}
+                  style={{ background: 'none', border: 'none', padding: 0, color: 'inherit', font: 'inherit', cursor: onSelectTab ? 'pointer' : 'default', textAlign: 'left' }}
+                >
+                  <strong>4M. Mengomunikasikan:</strong> Peta penghubung pasokan industri-UMKM.
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onSelectTab && onSelectTab('evaluation')}
+                  style={{ background: 'none', border: 'none', padding: 0, color: 'inherit', font: 'inherit', cursor: onSelectTab ? 'pointer' : 'default', textAlign: 'left' }}
+                >
+                  <strong>5M. Mengevaluasi:</strong> Uji kemudahan & tingkat keberhasilan produk.
+                </button>
+              </li>
             </ul>
           </div>
 

@@ -14,8 +14,8 @@
   - **Khusus / Berbahaya (Limbah B3)**: Oli bekas mesin (B105d), sludge IPAL tekstil (B337-1), aki bekas asam timbal (A102d).
 - Rincian lembar keselamatan (*MSDS ringkas*), SOP penanganan, larangan bahaya, APD wajib (*respirator, kacamata goggle, sarung tangan*), dan tautan langsung ke katalog inovasi terkait.
 
-### 2. Sentra Tempat PengNIP (2M: Mengeksplorasi)
-- Direktori sentra **Tempat PengNIP (Pengolahan Non-B3 Industri Terpadu)** *(Data Demo Prototipe)* di berbagai kawasan industri.
+### 2. Pusat Pemanfaatan Limbah Industri (2M: Mengeksplorasi)
+- Direktori sentra **Pusat Pemanfaatan Limbah Industri** *(Data Demo Prototipe)* di berbagai kawasan industri.
 - Edukasi mesin industri pengolah limbah: *Dual-Shaft Shredder, Extrusion Pelletizer, Mesin Press Hidrolik Paving K-300, Mesin Garnetting Tekstil*.
 - **Simulasi Pengajuan Kunjungan Edukatif**: Formulir jadwal kunjungan/study tour yang tersimpan secara lokal ke dalam riwayat akun.
 

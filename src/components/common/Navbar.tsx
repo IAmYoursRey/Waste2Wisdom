@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { 
+  Home,
   BookOpen, 
   Compass, 
   Lightbulb, 
@@ -37,8 +38,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
+    { id: 'home', label: 'Beranda', mLabel: 'Home', icon: Home },
     { id: 'dictionary', label: 'Kamus & Literasi', mLabel: '1M', icon: BookOpen },
-    { id: 'explore', label: 'Tempat PengNIP', mLabel: '2M', icon: Compass },
+    { id: 'explore', label: 'Pusat Pemanfaatan Limbah Industri', mLabel: '2M', icon: Compass },
     { id: 'innovations', label: 'Marketplace Inovasi', mLabel: '3M', icon: Lightbulb },
     { id: 'matchmaking', label: 'Peta Penghubung', mLabel: '4M', icon: MapPin, badge: pendingRequestsCount },
     { id: 'evaluation', label: 'Evaluasi & Ulasan', mLabel: '5M', icon: Star },
@@ -59,7 +61,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         
         {/* Brand Logo & Motto */}
         <button 
-          onClick={() => setActiveTab('dictionary')}
+          onClick={() => setActiveTab('home')}
           aria-label="Beranda Waste2Wisdom"
           style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
         >
@@ -91,7 +93,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   backgroundColor: isActive ? '#E8F5E9' : 'transparent',
                   border: isActive ? '1.5px solid #A5D6A7' : '1.5px solid transparent',
                   transition: 'all var(--transition-fast)',
-                  position: 'relative'
+                  position: 'relative',
+                  whiteSpace: 'nowrap'
                 }}
               >
                 <Icon size={16} color={isActive ? '#2E7D32' : '#64748B'} />
@@ -331,6 +334,16 @@ export const Navbar: React.FC<NavbarProps> = ({
           }
           .admin-btn-text, .user-text-info {
             display: block !important;
+          }
+        }
+        @media (min-width: 1024px) and (max-width: 1280px) {
+          .desktop-nav {
+            gap: 0.2rem !important;
+          }
+          .desktop-nav button {
+            padding: 0.45rem 0.55rem !important;
+            font-size: 0.78rem !important;
+            gap: 0.25rem !important;
           }
         }
         @media (max-width: 600px) {

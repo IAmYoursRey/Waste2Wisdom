@@ -130,18 +130,18 @@ export const ExploreFacilitiesView: React.FC = () => {
               🏭 2M: MENGEKSPLORASI
             </span>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              Konsep Sentra PengNIP & Model Demonstrasi Fasilitas Sirkular
+              Konsep Pusat Pemanfaatan Limbah Industri & Model Demonstrasi Fasilitas Sirkular
             </span>
           </div>
 
           <h2 style={{ fontSize: 'clamp(1.6rem, 3vw, 2.3rem)', color: 'var(--leaf-deep)', marginBottom: '0.5rem' }}>
-            Eksplorasi Sentra Pengolahan Limbah Industri (Tempat PengNIP)
+            Eksplorasi Pusat Pemanfaatan Limbah Industri
           </h2>
           <p style={{ color: 'var(--text-muted)', maxWidth: '820px', fontSize: '0.98rem' }}>
-            Lihat operasional pemilahan dan teknologi daur ulang di sentra <strong>Tempat PengNIP (Pengolahan Non-B3 Industri Terpadu)</strong>, TPST 3R kawasan industri, dan laboratorium biokonversi. Pelajari mesin-mesin industri dan jadwalkan kunjungan edukatif.
+            Lihat operasional pemilahan dan teknologi daur ulang di <strong>Pusat Pemanfaatan Limbah Industri</strong>, TPST 3R kawasan industri, dan laboratorium biokonversi. Pelajari mesin-mesin industri dan jadwalkan kunjungan edukatif.
           </p>
 
-          {/* Konsep PengNIP Disclaimer Box */}
+          {/* Konsep Pusat Pemanfaatan Limbah Industri Disclaimer Box */}
           <div style={{
             background: '#E8F5E9',
             border: '1px solid #A5D6A7',
@@ -152,7 +152,7 @@ export const ExploreFacilitiesView: React.FC = () => {
             color: '#1B5E20',
             lineHeight: 1.45
           }}>
-            <strong>Catatan Konsep:</strong> "Tempat PengNIP" (Pengolahan Non-B3 Industri Terpadu) merupakan model percontohan rintisan Waste2Wisdom untuk menyimulasikan integrasi sirkular limbah non-B3 tingkat kawasan, bukan nomenklatur atau lembaga resmi pemerintah. Seluruh fasilitas dan data operasional di bawah adalah data demonstrasi pembelajaran.
+            <strong>Catatan Konsep:</strong> "Pusat Pemanfaatan Limbah Industri" merupakan model percontohan rintisan Waste2Wisdom untuk menyimulasikan integrasi sirkular limbah non-B3 tingkat kawasan, bukan nomenklatur atau lembaga resmi pemerintah. Seluruh fasilitas dan data operasional di bawah adalah data demonstrasi pembelajaran.
           </div>
 
           {/* Sub Navigation Bar */}
@@ -412,7 +412,7 @@ export const ExploreFacilitiesView: React.FC = () => {
                   Belum Ada Jadwal Kunjungan yang Diajukan
                 </h3>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.86rem', maxWidth: '420px', margin: '0 auto 1rem auto' }}>
-                  Pilih salah satu sentra Tempat PengNIP di atas untuk menjadwalkan kunjungan belajar atau survei bahan baku industri.
+                  Pilih salah satu Pusat Pemanfaatan Limbah Industri di atas untuk menjadwalkan kunjungan belajar atau survei bahan baku industri.
                 </p>
                 <button
                   type="button"
@@ -517,7 +517,7 @@ export const ExploreFacilitiesView: React.FC = () => {
             <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div>
                 <h4 style={{ fontSize: '0.95rem', color: 'var(--text-main)', marginBottom: '0.4rem' }}>
-                  Profil Sentra PengNIP:
+                  Profil Pusat Pemanfaatan Limbah Industri:
                 </h4>
                 <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
                   {selectedFacility.description}
@@ -617,7 +617,7 @@ export const ExploreFacilitiesView: React.FC = () => {
                   Permohonan Kunjungan Berhasil Disimpan!
                 </h3>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                  Permohonan simulasi telah tersimpan ke dalam riwayat akun Anda. Pihak pengelola Tempat PengNIP akan mengonfirmasi slot kunjungan dan briefing keselamatan K3.
+                  Permohonan simulasi telah tersimpan ke dalam riwayat akun Anda. Pihak pengelola Pusat Pemanfaatan Limbah Industri akan mengonfirmasi slot kunjungan dan briefing keselamatan K3.
                 </p>
               </div>
             ) : (

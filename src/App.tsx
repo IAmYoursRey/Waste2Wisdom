@@ -3,7 +3,7 @@ import { ToastProvider, useToast } from './context/ToastContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { Navbar } from './components/common/Navbar';
-import { HeroBanner } from './components/common/HeroBanner';
+import { HomeView } from './components/home/HomeView';
 import { Footer } from './components/common/Footer';
 import { WasteDictionaryView } from './components/dictionary/WasteDictionaryView';
 import { ExploreFacilitiesView } from './components/explore/ExploreFacilitiesView';
@@ -26,22 +26,24 @@ const Waste2WisdomMain: React.FC = () => {
 
   const getInitialTab = () => {
     const hash = window.location.hash.replace('#', '').trim();
-    const validTabs = ['dictionary', 'explore', 'innovations', 'matchmaking', 'evaluation'];
-    return validTabs.includes(hash) ? hash : 'dictionary';
+    const validTabs = ['home', 'dictionary', 'explore', 'innovations', 'matchmaking', 'evaluation'];
+    return validTabs.includes(hash) ? hash : 'home';
   };
 
   const [activeTab, setActiveTabState] = useState<string>(getInitialTab);
   const setActiveTab = (tab: string) => {
     setActiveTabState(tab);
     window.location.hash = tab;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '').trim();
-      const validTabs = ['dictionary', 'explore', 'innovations', 'matchmaking', 'evaluation'];
+      const validTabs = ['home', 'dictionary', 'explore', 'innovations', 'matchmaking', 'evaluation'];
       if (validTabs.includes(hash)) {
         setActiveTabState(hash);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     };
     window.addEventListener('hashchange', handleHashChange);
@@ -140,15 +142,18 @@ const Waste2WisdomMain: React.FC = () => {
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
       />
 
-      {/* Hero Banner */}
-      <HeroBanner onSelect5M={(tab) => {
-        setActiveWasteFilter(undefined);
-        setHighlightInnovationId(undefined);
-        setActiveTab(tab);
-      }} />
-
       {/* Main 5M Views */}
       <main style={{ flex: 1 }}>
+        {activeTab === 'home' && (
+          <HomeView 
+            onSelect5M={(tab) => {
+              setActiveWasteFilter(undefined);
+              setHighlightInnovationId(undefined);
+              setActiveTab(tab);
+            }} 
+          />
+        )}
+
         {activeTab === 'dictionary' && (
           <WasteDictionaryView 
             onSelectWasteForInnovation={handleSelectWasteForInnovation}
@@ -202,7 +207,7 @@ const Waste2WisdomMain: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <Footer />
+      <Footer onSelectTab={setActiveTab} />
 
       {/* Modals */}
       <SubmitInnovationModal

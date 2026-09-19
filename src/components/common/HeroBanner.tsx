@@ -15,7 +15,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onSelect5M }) => {
 
   const steps5M = [
     { id: 'dictionary', title: '1. Mengenali & Memahami', desc: 'Kamus limbah B3 vs Non-B3 terpilah', icon: BookOpen },
-    { id: 'explore', title: '2. Mengeksplorasi', desc: 'Konsep sentra PengNIP & teknologi', icon: Compass },
+    { id: 'explore', title: '2. Mengeksplorasi', desc: 'Pusat Pemanfaatan Limbah Industri & teknologi', icon: Compass },
     { id: 'innovations', title: '3. Menginovasi', desc: 'Katalog kreasi & ajukan ide baru', icon: Lightbulb },
     { id: 'matchmaking', title: '4. Mengomunikasikan', desc: 'Peta penghubung pasokan industri', icon: MapPin },
     { id: 'evaluation', title: '5. Mengevaluasi', desc: 'Uji keberhasilan & kemudahan produk', icon: Star },

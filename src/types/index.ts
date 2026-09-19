@@ -77,7 +77,7 @@ export interface FacilityMachine {
 export interface FacilityItem {
   id: string;
   name: string;
-  type: 'Tempat PengNIP' | 'TPST 3R Industri' | 'Bank Sampah Induk' | 'Pusat Biokonversi';
+  type: 'Pusat Pemanfaatan Limbah Industri' | 'TPST 3R Industri' | 'Bank Sampah Induk' | 'Pusat Biokonversi';
   location: string;
   city: string;
   province: string;

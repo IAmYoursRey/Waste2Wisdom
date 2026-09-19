@@ -2,14 +2,14 @@ import { FacilityItem } from '../types';
 
 export const initialFacilitiesData: FacilityItem[] = [
   {
-    id: 'fac-cikarang-nip',
-    name: 'Pusat Pengolahan Limbah Industri Hijau Cikarang (Model Demonstrasi Sentra PengNIP)',
-    type: 'Tempat PengNIP',
+    id: 'fac-cikarang-pusat',
+    name: 'Pusat Pengolahan Limbah Industri Hijau Cikarang (Model Demonstrasi Pusat Pemanfaatan Limbah Industri)',
+    type: 'Pusat Pemanfaatan Limbah Industri',
     location: 'Kawasan Industri Greenland Delta Silicon, Cikarang Pusat',
     city: 'Bekasi',
     province: 'Jawa Barat',
     capacity: '120 Ton Limbah Non-B3 Terpilah / Hari',
-    description: 'Model fasilitas percontohan Tempat Pengolahan Limbah Non-B3 Industri Terpadu (PengNIP) Waste2Wisdom yang menyimulasikan pemilahan fraksi industri otomotif, garmen, dan pangan menjadi bahan baku sekunder berstandar sirkular.',
+    description: 'Pusat Pemanfaatan Limbah Industri adalah fasilitas pembelajaran dan pengolahan yang mempertemukan limbah industri terpilah dengan proses pemanfaatan, inovasi, dan pengembangan material atau produk bernilai guna.',
     technologies: [
       'Optical Sorter Pemilah Polimer Otomatis',
       'Mesin Shredder & Granulator Kecepatan Tinggi',
@@ -40,7 +40,7 @@ export const initialFacilitiesData: FacilityItem[] = [
     featuredOutput: 'Biji Plastik Sirkular Mutu A & Bal Serat Kapas Upcycled',
     isDemo: true,
     operator: 'Konsorsium Inisiatif Kawasan Industri & Mitra Daur Ulang',
-    source: 'Model Demonstrasi Konsep Sentra PengNIP Waste2Wisdom',
+    source: 'Model Demonstrasi Konsep Pusat Pemanfaatan Limbah Industri Waste2Wisdom',
     verificationStatus: 'Data Demo / Prototipe Simulasi',
     lastVerified: 'September 2026'
   },
